@@ -1,13 +1,15 @@
-/* Минимальная палитра — расширять под макеты продукта */
+/* Палитра Figma Colors (759:31466) */
 :root {
-  --fs-color-bg: #fff;
-  --fs-color-surface: #f6f6f6;
-  --fs-color-text: #1a1a1a;
-  --fs-color-text-muted: #666;
-  --fs-color-border: #e0e0e0;
-  --fs-color-primary: #2a6ebb;
-  --fs-color-primary-strong: #1e5390;
-  --fs-color-error: #c62828;
+  --fs-color-black: #010101;
+  --fs-color-beige: #d3c59f;
+  --fs-color-gray: #999999;
+  --fs-color-light-hover: #e9e8e3;
+  --fs-color-light: #f3f2ed;
+  --fs-color-white: #ffffff;
+  --fs-color-error: #e9363a;
+
+  --fs-color-bg: var(--fs-color-white);
+  --fs-color-text: var(--fs-color-black);
 
   --fs-font-sans: system-ui, -apple-system, 'Segoe UI', roboto, 'Helvetica Neue', arial, sans-serif;
 }
