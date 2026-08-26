@@ -1,0 +1,31 @@
+# install → verify (lint + types) → build. Node 22 = engines.package.json.
+
+stages:
+  - verify
+  - build
+
+default:
+  image: node:22
+  interruptible: true
+  cache:
+    key:
+      files:
+        - pnpm-lock.yaml
+    paths:
+      - .pnpm-store
+  before_script:
+    - corepack enable
+    - pnpm config set store-dir .pnpm-store
+    - pnpm install --frozen-lockfile
+
+verify:
+  stage: verify
+  script:
+    - pnpm verify
+
+build:
+  stage: build
+  script:
+    - pnpm build
+  needs:
+    - verify

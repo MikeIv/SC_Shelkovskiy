@@ -10,6 +10,9 @@ dist
 node_modules
 .pnpm-store
 
+# Test / coverage
+coverage
+
 # Logs
 logs
 *.log
