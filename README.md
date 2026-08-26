@@ -9,7 +9,7 @@
 1. **`pnpm install`**
 2. **`cp .env.example .env`**: задайте **`NUXT_PUBLIC_API_BASE`**, если фронт ходит на отдельный API (иначе оставьте пустым — относительные пути к текущему origin).
 3. **`pnpm dev`** — [http://localhost:3000](http://localhost:3000)
-4. Правила Cursor — локально в `.cursor/` (каталог в `.gitignore`); см. [`AGENTS.md`](AGENTS.md).
+4. Правила Cursor — локально в `.cursor/`, `AGENTS.md` и `.planning/` (в `.gitignore`).
 
 ## Требования
 
@@ -82,7 +82,7 @@ pnpm approve-builds --all
 
 ### Правила Cursor (Agent)
 
-Правила агента **не в git** — каталог `.cursor/` в `.gitignore`. Карта: [`AGENTS.md`](AGENTS.md).
+Правила агента **не в git** — `.cursor/`, `AGENTS.md` и `.planning/` в `.gitignore`.
 
 | Назначение                     | Файл (локально)                                              |
 | ------------------------------ | ------------------------------------------------------------ |
@@ -90,7 +90,8 @@ pnpm approve-builds --all
 | globs: Nuxt / Vue / SCSS       | `.cursor/rules/nuxt-template.mdc`                            |
 | requestable: Discuss…Verify    | `01` … `06`                                                  |
 | Slash                          | `/brief` `/wave-done` `/verify` `/code-review`               |
-| Планирование (в git)           | [`.planning/PROJECT.md`](.planning/PROJECT.md)               |
+| Планирование (локально)        | `.planning/`                                                 |
+| Справка (локально)             | `AGENTS.md`                                                  |
 
 Макет Figma (поэтапно): fileKey `ODA7GgG6mA0uKOzMFSiV0T`, node `148:15227`.
 

@@ -22,10 +22,12 @@ logs
 .fleet
 .idea
 
-# Cursor — полностью локально (rules, commands, mcp.json)
+# Cursor / агент — полностью локально
 .cursor/
 .cursorrules
 CURSOR_RULES_EXPORT.md
+AGENTS.md
+.planning/
 .vscode
 
 # Локальные артефакты агента (аудит, не в git)
@@ -35,8 +37,3 @@ docs/audit-*.md
 .env
 .env.*
 !.env.example
-
-# Планирование — рабочие файлы сессии (в git: PROJECT.md, шаблоны)
-.planning/brief.md
-.planning/plan.md
-.planning/state.md
