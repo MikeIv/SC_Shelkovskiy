@@ -18,3 +18,15 @@
     @content;
   }
 }
+
+@mixin from-wide {
+  @media (min-width: #{bp.$wide}) {
+    @content;
+  }
+}
+
+@mixin fs-grid {
+  display: grid;
+  grid-template-columns: var(--fs-grid-template);
+  column-gap: var(--fs-grid-gutter);
+}
