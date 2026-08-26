@@ -20,5 +20,14 @@
   @include from-tablet {
     padding: var(--fs-space-4);
   }
+
+  h1 {
+    @include fs-h1;
+    margin: 0;
+  }
+
+  p {
+    margin: var(--fs-space-2) 0 0;
+  }
 }
 </style>

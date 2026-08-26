@@ -11,6 +11,23 @@ export default defineNuxtConfig({
 
   modules: ['@nuxt/eslint'],
 
+  app: {
+    head: {
+      link: [
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        {
+          rel: 'preconnect',
+          href: 'https://fonts.gstatic.com',
+          crossorigin: 'anonymous',
+        },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap',
+        },
+      ],
+    },
+  },
+
   eslint: {
     config: {
       stylistic: false,
