@@ -8,6 +8,7 @@ dist
 
 # Node dependencies
 node_modules
+.pnpm-store
 
 # Logs
 logs
@@ -23,6 +24,9 @@ logs
 .cursorrules
 CURSOR_RULES_EXPORT.md
 .vscode
+
+# Локальные артефакты агента (аудит, не в git)
+docs/audit-*.md
 
 # Local env files
 .env

@@ -15,7 +15,9 @@
     "format:check": "prettier --check .",
     "stylelint": "stylelint \"**/*.{vue,css}\" --allow-empty-input",
     "stylelint:fix": "stylelint \"**/*.{vue,css}\" --fix --allow-empty-input",
-    "lint:all": "eslint . && pnpm format:check && stylelint \"**/*.{vue,css}\" --allow-empty-input"
+    "lint:all": "eslint . && pnpm format:check && stylelint \"**/*.{vue,css}\" --allow-empty-input",
+    "typecheck": "nuxt typecheck",
+    "verify": "pnpm lint:all && pnpm typecheck"
   },
   "dependencies": {
     "nuxt": "^4.5.2",

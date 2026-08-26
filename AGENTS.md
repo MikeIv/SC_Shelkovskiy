@@ -1,46 +1,36 @@
 # Agent workflow — SC_Shelkovskiy
 
-Правила Cursor **локальные** — каталог `.cursor/` в `.gitignore`, в git продукта не хранятся.
+Правила: `.cursor/rules/` (локально, в gitignore) · Продукт: `90-project-context.mdc`, `.planning/PROJECT.md`.
 
-После клонирования установите правила из **`Cursor-rules-template`** (`INSTALL-NUXT-VUE.md`). Контекст продукта: `90-project-context`, `.planning/PROJECT.md`.
+## Карта правил
 
-## Правила (`.cursor/rules/` — локально)
+| Правило         | Режим                                  | Назначение                                          |
+| --------------- | -------------------------------------- | --------------------------------------------------- |
+| `00`            | **always**                             | GSD: классы, фазы, стоп, краткий Verify             |
+| `07`            | **always**                             | Экономия токенов (чат + контекст)                   |
+| `90`            | **always**                             | Фаза, команды, эталоны, Figma, MCP                  |
+| `nuxt-template` | **globs** `app/`, `server/`, `shared/` | TS, Vue, SCSS, mobile-first, линты                  |
+| `01`–`06`       | **requestable**                        | Discuss, Plan, Execute, Verify, Context, Principles |
 
-| Файл                        | Назначение                                                          |
-| --------------------------- | ------------------------------------------------------------------- |
-| `00-workflow-core`          | S/M/L/XL, фазы GSD + Superpowers, Verify/code-review                |
-| `01-discuss-before-code`    | Уточнение до кода                                                   |
-| `02-planning-gsd`           | `.planning/`, волны                                                 |
-| `03-execution-discipline`   | Минимальный diff, `useApi`                                          |
-| `04-verify-and-done`        | Lint, security Nuxt, code-review (local / GitLab MR)                |
-| `05-context-hygiene`        | Узкий контекст                                                      |
-| `06-fundamental-principles` | Мета-принципы: причина vs симптом, типы, эталоны, минимализм правил |
-| `90-project-context`        | Контекст продукта, GitLab                                           |
-| `nuxt-template`             | Nuxt 4.5, Vue, SCSS, линты                                          |
+## Команды
 
-## Slash-команды (`.cursor/commands/` — локально)
+| Команда        | Назначение                      |
+| -------------- | ------------------------------- |
+| `/brief`       | `.planning/brief.md` из шаблона |
+| `/wave-done`   | Итог волны в `state.md`         |
+| `/verify`      | Проверки по классу задачи       |
+| `/code-review` | Local diff или GitLab MR        |
 
-| Команда        | Назначение                               |
-| -------------- | ---------------------------------------- |
-| `/code-review` | Review локальных изменений или GitLab MR |
+MCP: `.cursor/mcp.json` (nuxt, context7, figma).
 
-## После клонирования
-
-1. `pnpm install` и `cp .env.example .env`
-2. Правила Cursor из `Cursor-rules-template` (`INSTALL-NUXT-VUE.md`), если `.cursor/` ещё нет
-3. Контекст: `.cursor/rules/90-project-context.mdc`, `.planning/PROJECT.md`
-
-## Задача агенту
+## Промпт агенту
 
 ```text
-Класс M. Задача: …
-Done when: …
+Класс M. Задача: … Done when: …
 ```
 
-```bash
-cp .planning/brief-template.md .planning/brief.md
-```
+Новая сессия L+: `@.planning/PROJECT.md` `@.planning/brief.md`
 
-## Внешний шаблон правил
+Макет: поэтапно, кадр из `90` (fileKey `ODA7GgG6mA0uKOzMFSiV0T`).
 
-Расширенная инструкция и синхронизация: `d:\_WEB\_Work\_Cursor-rules-template\INSTALL-NUXT-VUE.md`
+Синхронизация workflow: `_Cursor-rules-template`; `90-project-context` — только дополнять.

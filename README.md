@@ -52,6 +52,8 @@ pnpm approve-builds --all
 | `pnpm stylelint`     | Stylelint для `*.vue` и `*.css`                                          |
 | `pnpm stylelint:fix` | Stylelint с автоисправлением                                             |
 | `pnpm lint:all`      | последовательно ESLint + Prettier (check) + Stylelint                    |
+| `pnpm typecheck`     | `nuxt typecheck`                                                         |
+| `pnpm verify`        | `lint:all` + `typecheck`                                                 |
 
 ## Качество кода и pre-commit
 
@@ -80,23 +82,23 @@ pnpm approve-builds --all
 
 ### Правила Cursor (Agent)
 
-Правила агента **не в git** — каталог `.cursor/` в `.gitignore`. Установите локально из **`Cursor-rules-template`** (`INSTALL-NUXT-VUE.md`):
+Правила агента **не в git** — каталог `.cursor/` в `.gitignore`. Карта: [`AGENTS.md`](AGENTS.md).
 
-| Назначение                                  | Файл (локально)                                                        |
-| ------------------------------------------- | ---------------------------------------------------------------------- |
-| Workflow (GSD + Superpowers)                | `.cursor/rules/00-workflow-core.mdc` … `06-fundamental-principles.mdc` |
-| Verify / security / code-review (GitLab MR) | `.cursor/rules/04-verify-and-done.mdc`                                 |
-| Контекст проекта                            | `.cursor/rules/90-project-context.mdc`                                 |
-| Nuxt / Vue / SCSS / API                     | `.cursor/rules/nuxt-template.mdc`                                      |
-| Slash-команда review                        | `.cursor/commands/code-review.md`                                      |
-| Планирование (в git)                        | [`.planning/PROJECT.md`](.planning/PROJECT.md)                         |
-| Справка                                     | [`AGENTS.md`](AGENTS.md)                                               |
+| Назначение                     | Файл (локально)                                              |
+| ------------------------------ | ------------------------------------------------------------ |
+| always: GSD / токены / продукт | `00-workflow-core`, `07-token-economy`, `90-project-context` |
+| globs: Nuxt / Vue / SCSS       | `.cursor/rules/nuxt-template.mdc`                            |
+| requestable: Discuss…Verify    | `01` … `06`                                                  |
+| Slash                          | `/brief` `/wave-done` `/verify` `/code-review`               |
+| Планирование (в git)           | [`.planning/PROJECT.md`](.planning/PROJECT.md)               |
 
-Внешний репозиторий правил: `d:\_WEB\_Work\_Cursor-rules-template\`
+Макет Figma (поэтапно): fileKey `ODA7GgG6mA0uKOzMFSiV0T`, node `148:15227`.
 
-### MCP (локально, опционально)
+Внешний репозиторий workflow: `d:\_WEB\_Work\_Cursor-rules-template\`
 
-Создайте `.cursor/mcp.json` (каталог `.cursor/` полностью в `.gitignore`):
+### MCP (локально)
+
+`.cursor/mcp.json` (каталог `.cursor/` полностью в `.gitignore`):
 
 ```json
 {
@@ -106,6 +108,10 @@ pnpm approve-builds --all
     "context7": {
       "command": "npx",
       "args": ["-y", "@context7/mcp-server"]
+    },
+    "figma": {
+      "type": "http",
+      "url": "https://mcp.figma.com/mcp"
     }
   }
 }

@@ -42,6 +42,13 @@ export default defineNuxtConfig({
   },
 
   vite: {
+    css: {
+      preprocessorOptions: {
+        scss: {
+          loadPaths: ['app/assets/styles'],
+        },
+      },
+    },
     build: {
       target: 'esnext',
       cssMinify: true,
