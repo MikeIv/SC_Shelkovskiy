@@ -9,7 +9,6 @@
 1. **`pnpm install`**
 2. **`cp .env.example .env`**: задайте **`NUXT_PUBLIC_API_BASE`**, если фронт ходит на отдельный API (иначе оставьте пустым — относительные пути к текущему origin).
 3. **`pnpm dev`** — [http://localhost:3000](http://localhost:3000)
-4. Правила Cursor — локально в `.cursor/`, `AGENTS.md` и `.planning/` (в `.gitignore`).
 
 ## Требования
 
@@ -80,46 +79,9 @@ pnpm approve-builds --all
 - Сервер: **`serverApi(event?)`** — [`server/utils/serverApi.ts`](server/utils/serverApi.ts); URL — [`shared/utils/normalizeApiBaseUrl.ts`](shared/utils/normalizeApiBaseUrl.ts) (`normalizeApiBaseUrl`, `joinApiUrl`).
 - Типизация `public.apiBase` — [`types/nuxt-public.d.ts`](types/nuxt-public.d.ts). Приватные ключи `runtimeConfig` добавляйте в `nuxt.config` и отдельное расширение `RuntimeConfig` в `types/`.
 
-### Правила Cursor (Agent)
-
-Правила агента **не в git** — `.cursor/`, `AGENTS.md` и `.planning/` в `.gitignore`.
-
-| Назначение                     | Файл (локально)                                              |
-| ------------------------------ | ------------------------------------------------------------ |
-| always: GSD / токены / продукт | `00-workflow-core`, `07-token-economy`, `90-project-context` |
-| globs: Nuxt / Vue / SCSS       | `.cursor/rules/nuxt-template.mdc`                            |
-| requestable: Discuss…Verify    | `01` … `06`                                                  |
-| Slash                          | `/brief` `/wave-done` `/verify` `/code-review`               |
-| Планирование (локально)        | `.planning/`                                                 |
-| Справка (локально)             | `AGENTS.md`                                                  |
-
-Макет Figma (поэтапно): fileKey `ODA7GgG6mA0uKOzMFSiV0T`, node `148:15227`.
-
-Внешний репозиторий workflow: `d:\_WEB\_Work\_Cursor-rules-template\`
-
-### MCP (локально)
-
-`.cursor/mcp.json` (каталог `.cursor/` полностью в `.gitignore`):
-
-```json
-{
-  "$schema": "https://json.schemastore.org/mcp.json",
-  "mcpServers": {
-    "nuxt": { "url": "https://mcp.nuxt.com/mcp" },
-    "context7": {
-      "command": "npx",
-      "args": ["-y", "@context7/mcp-server"]
-    },
-    "figma": {
-      "type": "http",
-      "url": "https://mcp.figma.com/mcp"
-    }
-  }
-}
-```
-
 ## Документация
 
 - Документация продукта — в **`docs/`** (по мере появления).
+- Макет: [Щёлковский сайт — в разработку](https://www.figma.com/design/ODA7GgG6mA0uKOzMFSiV0T/%D0%A9%D1%91%D0%BB%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%B8%D0%B9-%D1%81%D0%B0%D0%B9%D1%82---%D0%B2-%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D1%83?node-id=148-15227)
 - [Nuxt 4](https://nuxt.com/docs/4.x/getting-started/introduction)
 - [Деплой](https://nuxt.com/docs/getting-started/deployment)
