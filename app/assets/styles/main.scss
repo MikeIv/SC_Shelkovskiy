@@ -1,4 +1,4 @@
-/* Точка входа глобальных стилей (порядок: токены → база). Без UI-фреймворков. */
+/* Точка входа глобальных стилей (порядок: токены → база). Nuxt UI — в `css/ui.css`. */
 @use 'variables/colors';
 @use 'variables/typography';
 @use 'variables/spacing';

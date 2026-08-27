@@ -7,9 +7,26 @@ export default defineNuxtConfig({
   /** Исходники приложения в `app/`. Каталог `server/` — в корне репозитория. */
   srcDir: 'app/',
 
-  css: ['~/assets/styles/main.scss'],
+  css: ['~/assets/css/ui.css', '~/assets/styles/main.scss'],
 
-  modules: ['@nuxt/eslint'],
+  modules: ['@nuxt/eslint', '@nuxt/ui', '@nuxt/icon'],
+
+  ui: {
+    fonts: false,
+    colorMode: false,
+  },
+
+  icon: {
+    customCollections: [
+      {
+        prefix: 'local',
+        dir: './app/assets/icons',
+      },
+    ],
+    clientBundle: {
+      scan: true,
+    },
+  },
 
   app: {
     head: {
@@ -58,6 +75,11 @@ export default defineNuxtConfig({
     devLogs: isDev,
   },
 
+  /** Workaround Vite 8: `#app-manifest` (nuxt#33606). Route rules на клиенте не нужны. */
+  experimental: {
+    appManifest: false,
+  },
+
   vite: {
     css: {
       preprocessorOptions: {
@@ -65,6 +87,9 @@ export default defineNuxtConfig({
           loadPaths: ['app/assets/styles'],
         },
       },
+    },
+    optimizeDeps: {
+      exclude: ['#app-manifest'],
     },
     build: {
       target: 'esnext',

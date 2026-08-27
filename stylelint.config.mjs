@@ -4,7 +4,7 @@ import { propertiesOrderRule } from './stylelint-properties-order.mjs'
 export default {
   extends: ['stylelint-config-recommended-vue'],
   plugins: ['stylelint-order'],
-  ignoreFiles: ['**/node_modules/**', '.nuxt/**', '.output/**', 'dist/**'],
+  ignoreFiles: ['**/node_modules/**', '.nuxt/**', '.output/**', 'dist/**', 'app/assets/css/ui.css'],
   rules: {
     /** Пустой `<style>` в SFC допустим на этапе заготовки */
     'no-empty-source': null,
