@@ -1,35 +1,36 @@
+@use '../tools/functions' as *;
 @use '../tools/mixins' as *;
 
-/* Типографика Figma Typography (759:31465). База — Mob; H1 с tablet 46px; Desk с 1024. */
+/* Типографика Figma Typography (759:31465). База — Mob; H1 с tablet; Desk с 1024. */
 :root {
   --fs-font-display: 'Actay', sans-serif;
   --fs-font-display-wide: 'Actay Wide', sans-serif;
   --fs-font-display-condensed: 'Actay Condensed', sans-serif;
   --fs-font-sans: 'Roboto', system-ui, sans-serif;
 
-  --fs-text-h1-size: 33px;
-  --fs-text-h2-size: 26px;
-  --fs-text-h3-size: 22px;
+  --fs-text-h1-size: #{rem(33)};
+  --fs-text-h2-size: #{rem(26)};
+  --fs-text-h3-size: #{rem(22)};
   --fs-text-h3-line: 1;
-  --fs-text-h4-size: 20px;
-  --fs-text-body-size: 16px;
-  --fs-text-md-size: 16px;
-  --fs-text-sm-size: 13px;
-  --fs-text-lg-size: 16px;
+  --fs-text-h4-size: #{rem(20)};
+  --fs-text-body-size: #{rem(16)};
+  --fs-text-md-size: #{rem(16)};
+  --fs-text-sm-size: #{rem(13)};
+  --fs-text-lg-size: #{rem(16)};
 
   @include from-tablet {
-    --fs-text-h1-size: 46px;
+    --fs-text-h1-size: #{rem(46)};
   }
 
   @include from-desktop {
-    --fs-text-h1-size: 70px;
-    --fs-text-h2-size: 46px;
-    --fs-text-h3-size: 28px;
+    --fs-text-h1-size: #{rem(70)};
+    --fs-text-h2-size: #{rem(46)};
+    --fs-text-h3-size: #{rem(28)};
     --fs-text-h3-line: 1.25;
-    --fs-text-h4-size: 24px;
-    --fs-text-body-size: 24px;
-    --fs-text-md-size: 18px;
-    --fs-text-sm-size: 14px;
-    --fs-text-lg-size: 18px;
+    --fs-text-h4-size: #{rem(24)};
+    --fs-text-body-size: #{rem(24)};
+    --fs-text-md-size: #{rem(18)};
+    --fs-text-sm-size: #{rem(14)};
+    --fs-text-lg-size: #{rem(18)};
   }
 }

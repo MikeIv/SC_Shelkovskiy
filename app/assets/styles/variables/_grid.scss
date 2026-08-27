@@ -1,16 +1,17 @@
+@use '../tools/functions' as *;
 @use '../tools/mixins' as *;
 
-/* Сетка Figma Grid (759:31540). Колонки — minmax(0, 1fr), не фиксированные px. */
+/* Сетка Figma Grid (759:31540). Колонки — minmax(0, 1fr). */
 :root {
   --fs-grid-columns: 2;
   --fs-grid-gutter: var(--fs-space-1);
   --fs-grid-margin: var(--fs-space-2);
-  --fs-grid-content-max: 1560px;
+  --fs-grid-content-max: #{rem(1560)};
   --fs-grid-template: repeat(var(--fs-grid-columns), minmax(0, 1fr));
 
   @include from-tablet {
     --fs-grid-gutter: var(--fs-space-2);
-    --fs-grid-margin: 20px;
+    --fs-grid-margin: #{rem(20)};
   }
 
   @include from-desktop {

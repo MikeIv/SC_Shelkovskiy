@@ -31,20 +31,20 @@ withDefaults(
   color: var(--fs-color-white);
 
   &::before {
-    width: calc(100% + 159px);
+    width: calc(100% + #{rem(159)});
   }
 }
 
 .root {
   position: relative;
   display: inline-flex;
-  gap: 10px;
+  gap: rem(10);
   align-items: center;
   justify-content: center;
   margin: 0;
-  padding: 12px 20px;
+  padding: rem(12) rem(20);
   border: 0;
-  border-radius: 100px;
+  border-radius: rem(100);
   @include fs-text-md;
   color: var(--fs-color-black);
   white-space: nowrap;
@@ -61,10 +61,9 @@ withDefaults(
   &::before {
     position: absolute;
     top: 50%;
-    left: -78px;
-    z-index: 0;
-    width: 73px;
-    height: 105px;
+    left: rem(-78);
+    width: rem(73);
+    height: rem(105);
     border-radius: 50%;
     background-color: var(--fs-color-black);
     pointer-events: none;
@@ -78,8 +77,8 @@ withDefaults(
   }
 
   &:focus-visible:not(:disabled) {
-    outline: 2px solid var(--fs-color-black);
-    outline-offset: 2px;
+    outline: rem(2) solid var(--fs-color-black);
+    outline-offset: rem(2);
   }
 
   &:disabled {
@@ -108,6 +107,6 @@ withDefaults(
 
 .label {
   position: relative;
-  z-index: 1;
+  z-index: z('default');
 }
 </style>

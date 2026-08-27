@@ -1,8 +1,9 @@
 @use 'sass:math';
+@use '../variables/base-font-size' as size;
 
-/* px → rem, база 16px */
+/* px (без единицы, как в Figma) → rem от $base-font-size */
 @function rem($px) {
-  $base: 16;
+  $base: math.div(size.$base-font-size, 1px);
 
   @return math.div($px, $base) * 1rem;
 }
