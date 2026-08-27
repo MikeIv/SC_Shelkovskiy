@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { createStaticVNode } from 'vue'
+import logoSource from '~/assets/images/logo.svg?raw'
+
 export type UiLogoVariant = 'white' | 'black'
 
 withDefaults(
@@ -9,6 +12,11 @@ withDefaults(
     variant: 'black',
   },
 )
+
+const logoNode = createStaticVNode(
+  logoSource.replace('<svg ', '<svg aria-hidden="true" focusable="false" '),
+  1,
+)
 </script>
 
 <template>
@@ -18,7 +26,7 @@ withDefaults(
     role="img"
     aria-label="Щёлковский"
   >
-    <UIcon name="local:logo" :class="$style.icon" aria-hidden="true" />
+    <component :is="logoNode" />
   </span>
 </template>
 
@@ -40,11 +48,11 @@ withDefaults(
   @include from-desktop {
     width: rem(303);
   }
-}
 
-.icon {
-  display: block;
-  width: 100%;
-  height: 100%;
+  :deep(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>
