@@ -1,3 +1,4 @@
+@use 'functions' as *;
 @use '../variables/resolutions' as bp;
 
 /** ≥ 576px. База для узкого телефона — стили без миксина. */
@@ -29,4 +30,38 @@
   display: grid;
   grid-template-columns: var(--fs-grid-template);
   column-gap: var(--fs-grid-gutter);
+}
+
+/** Хит-зона 24×24 для чекбокса и радио. */
+@mixin fs-choice-control {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+  width: rem(24);
+  height: rem(24);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  cursor: pointer;
+  appearance: none;
+  vertical-align: middle;
+
+  &:focus-visible:not(:disabled) {
+    outline: rem(2) solid var(--fs-color-black);
+    outline-offset: rem(2);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+@mixin fs-choice-mark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+  content: '';
+  transform: translate(-50%, -50%);
 }
