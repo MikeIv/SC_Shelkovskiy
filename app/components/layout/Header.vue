@@ -11,15 +11,6 @@ withDefaults(
 )
 
 const hoursLabel = 'Сегодня с 10:00 до 22:00'
-
-const navLabels = [
-  'Магазины',
-  'Кафе и рестораны',
-  'Услуги',
-  'Спорт и развлечения',
-  'Новости и акции',
-  'Мероприятия',
-] as const
 </script>
 
 <template>
@@ -65,8 +56,14 @@ const navLabels = [
       </div>
       <nav :class="$style.nav" aria-label="Разделы">
         <ul :class="$style.navList">
-          <li v-for="label in navLabels" :key="label">
-            <a :class="$style.navLink" href="#" @click.prevent>{{ label }}</a>
+          <li v-for="item in siteNavItems" :key="item.to">
+            <NuxtLink
+              :class="$style.navLink"
+              :to="item.to"
+              :active-class="$style.navLinkActive"
+            >
+              {{ item.label }}
+            </NuxtLink>
           </li>
         </ul>
       </nav>
@@ -365,6 +362,10 @@ const navLabels = [
     outline: rem(2) solid currentColor;
     outline-offset: rem(2);
   }
+}
+
+.navLinkActive {
+  border-bottom-color: var(--fs-color-beige);
 }
 
 .srOnly {
