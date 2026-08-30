@@ -1,27 +1,40 @@
 <script setup lang="ts">
+import { NuxtLink } from '#components'
+
 export type UiButtonVariant = 'primary' | 'auth'
 export type UiButtonSize = 'chrome'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     type?: 'button' | 'submit' | 'reset'
     variant?: UiButtonVariant
     size?: UiButtonSize
+    to?: string
   }>(),
   {
     type: 'button',
     variant: 'primary',
     size: 'chrome',
+    to: undefined,
   },
 )
+
+const rootTag = computed(() => (props.to ? NuxtLink : 'button'))
+const rootBind = computed(() => (props.to ? { to: props.to } : { type: props.type }))
 </script>
 
 <template>
-  <button :class="$style.root" :type="type" :data-variant="variant" :data-size="size">
+  <component
+    :is="rootTag"
+    :class="$style.root"
+    :data-variant="variant"
+    :data-size="size"
+    v-bind="rootBind"
+  >
     <span :class="$style.label">
       <slot />
     </span>
-  </button>
+  </component>
 </template>
 
 <style module lang="scss">
@@ -52,6 +65,7 @@ withDefaults(
   overflow: hidden;
   cursor: pointer;
   appearance: none;
+  text-decoration: none;
   transition: color 0.35s ease;
 
   @include from-desktop {

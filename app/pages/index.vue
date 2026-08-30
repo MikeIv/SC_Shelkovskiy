@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { homeIntroSlides } from '~/data/homeIntroSlides'
+import { homeNewsItems } from '~/data/homeNewsItems'
 
 definePageMeta({
   headerOverlay: true,
@@ -11,9 +12,8 @@ useSeoMeta({
 </script>
 
 <template>
-  <HomeIntro :slides="homeIntroSlides" />
+  <div>
+    <HomeIntro :slides="homeIntroSlides" />
+    <HomeNews :items="homeNewsItems" />
+  </div>
 </template>
-
-<style module lang="scss">
-@use 'tools' as *;
-</style>
