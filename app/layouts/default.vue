@@ -11,6 +11,7 @@ const headerVariant = computed(() => (headerOverlay.value ? 'white' : 'black'))
     <main id="content" :class="$style.main" tabindex="-1">
       <slot />
     </main>
+    <LayoutFooter />
   </div>
 </template>
 
@@ -19,7 +20,13 @@ const headerVariant = computed(() => (headerOverlay.value ? 'white' : 'black'))
 
 .root {
   position: relative;
+  display: flex;
+  flex-direction: column;
   min-height: 100dvh;
+}
+
+.main {
+  flex: 1 1 auto;
 }
 
 .main:focus-visible {
