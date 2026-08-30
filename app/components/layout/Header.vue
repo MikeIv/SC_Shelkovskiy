@@ -4,9 +4,11 @@ export type LayoutHeaderVariant = 'white' | 'black'
 withDefaults(
   defineProps<{
     variant?: LayoutHeaderVariant
+    overlay?: boolean
   }>(),
   {
     variant: 'black',
+    overlay: false,
   },
 )
 
@@ -14,7 +16,7 @@ const hoursLabel = 'Сегодня с 10:00 до 22:00'
 </script>
 
 <template>
-  <header :class="$style.root" :data-variant="variant">
+  <header :class="$style.root" :data-variant="variant" :data-overlay="overlay || undefined">
     <a :class="$style.skip" href="#content">К содержанию</a>
     <div :class="$style.inner">
       <div :class="$style.bar">
@@ -113,6 +115,14 @@ const hoursLabel = 'Сегодня с 10:00 до 22:00'
 
   &[data-variant='white'] {
     color: var(--fs-color-white);
+  }
+
+  &[data-overlay] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
   }
 
   @include from-desktop {
