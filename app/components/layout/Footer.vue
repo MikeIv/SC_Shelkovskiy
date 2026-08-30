@@ -9,14 +9,14 @@ const consent = ref(false)
       <div :class="$style.grid">
         <div :class="$style.brand">
           <NuxtLink :class="$style.logoLink" to="/" aria-label="Щёлковский">
-            <UiLogo :class="$style.logo" aria-hidden="true" />
+            <UiLogo aria-hidden="true" />
           </NuxtLink>
           <p :class="$style.address">
             {{ footerContacts.address }}
           </p>
         </div>
 
-        <nav :class="$style.nav" aria-label="О центре">
+        <nav :class="[$style.nav, $style.navPrimary]" aria-label="О центре">
           <ul :class="$style.navList">
             <li v-for="item in footerNavPrimary" :key="item.to">
               <NuxtLink :class="$style.navLink" :to="item.to">
@@ -26,7 +26,7 @@ const consent = ref(false)
           </ul>
         </nav>
 
-        <nav :class="$style.nav" aria-label="Сервисы">
+        <nav :class="[$style.nav, $style.navSecondary]" aria-label="Сервисы">
           <ul :class="$style.navList">
             <li v-for="item in footerNavSecondary" :key="item.to">
               <NuxtLink :class="$style.navLink" :to="item.to">
@@ -124,8 +124,8 @@ const consent = ref(false)
   border-top-right-radius: var(--fs-space-4);
 
   @include from-desktop {
-    border-top-left-radius: rem(60);
-    border-top-right-radius: rem(60);
+    border-top-left-radius: calc(var(--fs-space-6) + var(--fs-space-2));
+    border-top-right-radius: calc(var(--fs-space-6) + var(--fs-space-2));
   }
 }
 
@@ -140,14 +140,15 @@ const consent = ref(false)
 
   @include from-desktop {
     padding:
-      rem(80)
-      max(var(--fs-grid-margin), calc((100% - var(--fs-grid-content-max)) / 2))
+      calc(var(--fs-space-6) + var(--fs-space-4))
+      var(--fs-grid-margin)
       var(--fs-space-5);
   }
 }
 
 .grid {
   display: grid;
+  /* Пропорции колонок — шаблон Figma, масштабируются через fr */
   grid-template-columns: minmax(0, 172fr) minmax(0, 101fr);
   grid-template-areas:
     'brand brand'
@@ -158,23 +159,23 @@ const consent = ref(false)
   row-gap: var(--fs-space-6);
 
   @include from-tablet {
-    grid-template-columns: rem(334) rem(172) rem(101);
+    grid-template-columns: minmax(0, 334fr) minmax(0, 172fr) minmax(0, 101fr);
     grid-template-areas:
       'brand nav-a nav-b'
       'contact nav-a nav-b'
       'newsletter newsletter newsletter';
-    justify-content: start;
-    row-gap: rem(34);
+    row-gap: var(--fs-space-4);
   }
 
   @include from-desktop {
-    grid-template-columns: rem(306) rem(297) rem(101) minmax(0, 1fr);
+    grid-template-columns:
+      minmax(0, 306fr)
+      minmax(0, 297fr)
+      minmax(0, 101fr)
+      minmax(0, 504fr);
     grid-template-areas:
       'brand nav-a nav-b newsletter'
       'contact nav-a nav-b newsletter';
-    justify-content: initial;
-    column-gap: var(--fs-space-3);
-    row-gap: var(--fs-space-3);
     align-items: start;
   }
 }
@@ -184,6 +185,7 @@ const consent = ref(false)
   flex-direction: column;
   gap: var(--fs-space-2);
   grid-area: brand;
+  min-width: 0;
 }
 
 .logoLink {
@@ -196,50 +198,26 @@ const consent = ref(false)
   }
 }
 
-.logo {
-  width: rem(237);
-
-  @include from-desktop {
-    width: rem(290);
-  }
-}
-
 .address {
   margin: 0;
   @include fs-text-lg;
-
-  @include from-tablet {
-    max-width: rem(207);
-  }
-
-  @include from-desktop {
-    max-width: rem(220);
-  }
 }
 
-.nav {
-  &:first-of-type {
-    grid-area: nav-a;
-  }
+.navPrimary {
+  grid-area: nav-a;
+}
 
-  &:last-of-type {
-    grid-area: nav-b;
+.navSecondary {
+  grid-area: nav-b;
+}
 
-    @include from-tablet {
-      margin-left: rem(83);
-    }
-
-    @include from-desktop {
-      margin-left: 0;
-    }
-  }
+.navPrimary,
+.navSecondary {
+  min-width: 0;
 
   @include from-tablet {
-    &:first-of-type,
-    &:last-of-type {
-      grid-row: 1 / 3;
-      align-self: start;
-    }
+    grid-row: 1 / 3;
+    align-self: start;
   }
 }
 
@@ -275,10 +253,10 @@ const consent = ref(false)
   flex-direction: column;
   gap: var(--fs-space-2);
   grid-area: contact;
+  min-width: 0;
 
   @include from-desktop {
     gap: var(--fs-space-3);
-    padding-top: rem(42);
   }
 }
 
@@ -332,6 +310,11 @@ const consent = ref(false)
   flex-direction: column;
   gap: var(--fs-space-2);
   grid-area: newsletter;
+  min-width: 0;
+
+  @include from-desktop {
+    gap: var(--fs-space-3);
+  }
 }
 
 .newsletterTitle {
@@ -352,7 +335,6 @@ const consent = ref(false)
       'input btn'
       'consent consent';
     grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: var(--fs-space-2);
   }
 }
 
@@ -374,13 +356,12 @@ const consent = ref(false)
 .consent {
   display: flex;
   grid-area: consent;
-  gap: rem(12);
+  gap: var(--fs-space-2);
   align-items: flex-start;
 }
 
 .consentCheck {
   flex-shrink: 0;
-  margin-top: rem(2);
 }
 
 .consentText {
@@ -400,13 +381,12 @@ const consent = ref(false)
 }
 
 .divider {
-  margin: rem(40) 0 var(--fs-space-2);
+  margin: var(--fs-space-5) 0 var(--fs-space-2);
   border: 0;
   border-top: rem(2) solid var(--fs-color-black);
 
   @include from-tablet {
-    margin-top: rem(48);
-    margin-bottom: var(--fs-space-4);
+    margin-block: var(--fs-space-6) var(--fs-space-4);
   }
 
   @include from-desktop {
