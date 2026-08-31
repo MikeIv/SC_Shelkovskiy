@@ -40,3 +40,15 @@ export type HomeLoyaltyCard = {
   buttonLabel: string
   to?: string
 }
+
+export type HomeShopCategoryImageCrop = 'wide'
+
+export type HomeShopCategory = {
+  id: string
+  title: string
+  leftImageSrc: string
+  leftImageAlt: string
+  rightImageSrc: string
+  rightImageAlt: string
+  leftImageCrop?: HomeShopCategoryImageCrop
+}
