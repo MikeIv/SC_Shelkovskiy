@@ -24,3 +24,19 @@ export type HomeBrandRow = {
   direction: 'rtl' | 'ltr'
   items: HomeBrandItem[]
 }
+
+export type HomeLoyaltyCardVariant = 'loyalty' | 'gift'
+
+export type HomeLoyaltyCard = {
+  id: string
+  title: string
+  description: string
+  variant: HomeLoyaltyCardVariant
+  illustrationAlt: string
+  illustrationSrc?: string
+  shadowBackSrc?: string
+  giftCardFrontSrc?: string
+  giftCardBackSrc?: string
+  buttonLabel: string
+  to?: string
+}
