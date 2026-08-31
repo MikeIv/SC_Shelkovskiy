@@ -1,6 +1,24 @@
 <script setup lang="ts">
+/**
+ * Карточка арендатора каталога (Figma: card catalog, node 3032:34727).
+ *
+ * Наполнение (layout `card`):
+ * 1. Логотип — при отсутствии `imageSrc` показывается заглушка.
+ * 2. Теги — опционально, не более трёх (`loyalty` | `action` | `lunch`).
+ * 3. Категория — mob: до 2 строк (3038:34784), tablet/desk: 1 строка (3038:34865, 3032:34727).
+ * 4. Название бренда — mob: до 2 строк, tablet/desk: 1 строка.
+ * 5. Этаж и кнопка перехода на схему.
+ *
+ * Поведение:
+ * - клик по основной области карточки (`to`) → страница описания бренда;
+ * - клик по иконке схемы → `mapUrl` или заглушка `/map` (арендатор подсветится позже).
+ *
+ * Вариант `list` — текстовое представление для спискового режима каталога.
+ */
 import { NuxtLink } from '#components'
 import type { CatalogCardLayout, CatalogCardTag } from '#shared/types/catalog'
+
+const SCHEME_STUB_PATH = '/map'
 
 const tagIconMap: Record<CatalogCardTag, string> = {
   loyalty: 'local:gift',
@@ -19,6 +37,7 @@ const props = withDefaults(
     tags?: CatalogCardTag[]
     to?: string
     mapUrl?: string
+    tenantId?: string
   }>(),
   {
     layout: 'card',
@@ -27,6 +46,7 @@ const props = withDefaults(
     tags: () => [],
     to: undefined,
     mapUrl: undefined,
+    tenantId: undefined,
   },
 )
 
@@ -34,22 +54,39 @@ const emit = defineEmits<{
   'map-click': []
 }>()
 
+const visibleTags = computed(() => props.tags.slice(0, 3))
+
 const listRootTag = computed(() => (props.to ? NuxtLink : 'article'))
 const listRootBind = computed(() => (props.to ? { to: props.to } : {}))
 
 const cardMainTag = computed(() => (props.to ? NuxtLink : 'div'))
 const cardMainBind = computed(() => (props.to ? { to: props.to } : {}))
 
-function onMapClick(event: MouseEvent) {
+const schemeTarget = computed(() => {
+  if (props.mapUrl) {
+    return props.mapUrl
+  }
+
+  if (props.tenantId) {
+    return `${SCHEME_STUB_PATH}?tenant=${encodeURIComponent(props.tenantId)}`
+  }
+
+  return SCHEME_STUB_PATH
+})
+
+async function onMapClick(event: MouseEvent) {
   event.preventDefault()
   event.stopPropagation()
   emit('map-click')
 
-  if (!props.mapUrl) {
+  const target = schemeTarget.value
+
+  if (/^https?:\/\//.test(target)) {
+    window.open(target, '_blank', 'noopener,noreferrer')
     return
   }
 
-  window.open(props.mapUrl, '_blank', 'noopener,noreferrer')
+  await navigateTo(target)
 }
 </script>
 
@@ -57,19 +94,23 @@ function onMapClick(event: MouseEvent) {
   <article v-if="layout === 'card'" :class="$style.root" :data-layout="layout">
     <div :class="$style.card">
       <component :is="cardMainTag" :class="$style.main" v-bind="cardMainBind">
-        <div v-if="imageSrc" :class="$style.media">
+        <div :class="$style.media">
           <img
+            v-if="imageSrc"
             :class="$style.logo"
             :src="imageSrc"
-            :alt="imageAlt"
+            :alt="imageAlt || title"
             loading="lazy"
             decoding="async"
           >
+          <div v-else :class="$style.logoPlaceholder" aria-hidden="true">
+            <UiLogo :class="$style.logoFallback" />
+          </div>
         </div>
 
         <div :class="$style.head">
-          <ul v-if="tags.length" :class="$style.tags" aria-label="Метки">
-            <li v-for="tag in tags" :key="tag">
+          <ul v-if="visibleTags.length" :class="$style.tags" aria-label="Метки">
+            <li v-for="tag in visibleTags" :key="tag">
               <UiTag :variant="tag" :icon="tagIconMap[tag]" />
             </li>
           </ul>
@@ -87,7 +128,7 @@ function onMapClick(event: MouseEvent) {
         <button
           type="button"
           :class="$style.mapButton"
-          :aria-label="`Показать на карте: ${title}, ${floor}`"
+          :aria-label="`Показать на схеме: ${title}, ${floor}`"
           @click="onMapClick"
         >
           <UIcon name="local:map" :class="$style.mapIcon" aria-hidden="true" />
@@ -111,6 +152,17 @@ function onMapClick(event: MouseEvent) {
 
 <style module lang="scss">
 @use 'tools' as *;
+
+@mixin catalog-card-clamp($mobile-lines) {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $mobile-lines;
+
+  @include from-tablet {
+    -webkit-line-clamp: 1;
+  }
+}
 
 .root {
   display: flex;
@@ -209,6 +261,24 @@ function onMapClick(event: MouseEvent) {
   }
 }
 
+.logoPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: var(--fs-color-light);
+}
+
+.logoFallback {
+  width: rem(120);
+  opacity: 0.25;
+
+  @include from-desktop {
+    width: rem(160);
+  }
+}
+
 .head {
   display: flex;
   flex-direction: column;
@@ -244,15 +314,15 @@ function onMapClick(event: MouseEvent) {
 .category {
   margin: 0;
   @include fs-text-lg;
+  @include catalog-card-clamp(2);
   color: var(--fs-color-gray);
-  overflow-wrap: anywhere;
 }
 
 .title {
   margin: 0;
   @include fs-h4;
+  @include catalog-card-clamp(2);
   color: var(--fs-color-black);
-  overflow-wrap: anywhere;
   transition: color 0.2s ease;
 
   @media (prefers-reduced-motion: reduce) {
