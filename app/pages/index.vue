@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { homeBrandRows } from '~/data/homeBrandItems'
+import { homeCinemaItems } from '~/data/homeCinemaItems'
 import { homeIntroSlides } from '~/data/homeIntroSlides'
 import { homeLoyaltyItems } from '~/data/homeLoyaltyItems'
 import { homeNewsItems } from '~/data/homeNewsItems'
@@ -21,5 +22,6 @@ useSeoMeta({
     <HomeBrands :rows="homeBrandRows" />
     <HomeLoyalty :items="homeLoyaltyItems" />
     <HomeShopCategories :items="homeShopCategories" />
+    <HomeCinema :items="homeCinemaItems" />
   </div>
 </template>

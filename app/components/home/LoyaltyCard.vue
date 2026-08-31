@@ -1,7 +1,28 @@
 <script setup lang="ts">
-import type { HomeLoyaltyCard } from '#shared/types/home'
+import type { HomeLoyaltyCardVariant } from '#shared/types/home'
 
-defineProps<HomeLoyaltyCard>()
+withDefaults(
+  defineProps<{
+    id: string
+    title: string
+    description: string
+    variant: HomeLoyaltyCardVariant
+    illustrationAlt: string
+    illustrationSrc?: string
+    shadowBackSrc?: string
+    giftCardFrontSrc?: string
+    giftCardBackSrc?: string
+    buttonLabel: string
+    to?: string
+  }>(),
+  {
+    illustrationSrc: undefined,
+    shadowBackSrc: undefined,
+    giftCardFrontSrc: undefined,
+    giftCardBackSrc: undefined,
+    to: undefined,
+  },
+)
 </script>
 
 <template>

@@ -1,0 +1,202 @@
+<script setup lang="ts">
+import type { HomeCinemaFilm } from '#shared/types/home'
+
+const DESKTOP_QUERY = '(min-width: 1024px)'
+
+const { items } = defineProps<{
+  items: HomeCinemaFilm[]
+}>()
+
+const viewportRef = ref<HTMLElement | null>(null)
+const trackRef = ref<HTMLElement | null>(null)
+const canScrollPrev = ref(false)
+const canScrollNext = ref(false)
+const showNav = ref(false)
+const isDesktop = ref(false)
+
+let desktopMedia: MediaQueryList | null = null
+
+function updateNavState() {
+  const viewport = viewportRef.value
+
+  if (!viewport) {
+    return
+  }
+
+  const hasOverflow = viewport.scrollWidth > viewport.clientWidth + 1
+  showNav.value = isDesktop.value && hasOverflow
+  canScrollPrev.value = viewport.scrollLeft > 1
+  canScrollNext.value = viewport.scrollLeft + viewport.clientWidth < viewport.scrollWidth - 1
+}
+
+function scrollByCard(direction: -1 | 1) {
+  const viewport = viewportRef.value
+  const track = trackRef.value
+  const card = track?.firstElementChild as HTMLElement | null
+
+  if (!viewport || !track || !card) {
+    return
+  }
+
+  const styles = getComputedStyle(track)
+  const gap = Number.parseFloat(styles.gap || styles.columnGap || '0')
+
+  viewport.scrollBy({ left: direction * (card.offsetWidth + gap), behavior: 'smooth' })
+}
+
+function onDesktopChange(event: MediaQueryListEvent) {
+  isDesktop.value = event.matches
+  updateNavState()
+}
+
+onMounted(() => {
+  desktopMedia = window.matchMedia(DESKTOP_QUERY)
+  isDesktop.value = desktopMedia.matches
+  desktopMedia.addEventListener('change', onDesktopChange)
+
+  viewportRef.value?.addEventListener('scroll', updateNavState, { passive: true })
+  window.addEventListener('resize', updateNavState)
+  updateNavState()
+})
+
+onUnmounted(() => {
+  desktopMedia?.removeEventListener('change', onDesktopChange)
+  viewportRef.value?.removeEventListener('scroll', updateNavState)
+  window.removeEventListener('resize', updateNavState)
+})
+</script>
+
+<template>
+  <section :class="$style.root" aria-labelledby="home-cinema-title">
+    <div :class="$style.inner">
+      <div :class="$style.head">
+        <h2 id="home-cinema-title" :class="$style.title">Кино</h2>
+
+        <div v-if="showNav" :class="$style.nav">
+          <UiButtonArrow
+            direction="left"
+            :disabled="!canScrollPrev"
+            @click="scrollByCard(-1)"
+          >
+            Предыдущие фильмы
+          </UiButtonArrow>
+          <UiButtonArrow
+            direction="right"
+            :disabled="!canScrollNext"
+            @click="scrollByCard(1)"
+          >
+            Следующие фильмы
+          </UiButtonArrow>
+        </div>
+      </div>
+
+      <div
+        ref="viewportRef"
+        :class="$style.viewport"
+        aria-roledescription="carousel"
+        aria-label="Кино"
+      >
+        <ul ref="trackRef" :class="$style.track">
+          <li
+            v-for="item in items"
+            :key="item.id"
+            :class="$style.slide"
+          >
+            <HomeCinemaCard v-bind="item" />
+          </li>
+        </ul>
+      </div>
+
+      <UiButton to="/entertainment">Смотреть все</UiButton>
+    </div>
+  </section>
+</template>
+
+<style module lang="scss">
+@use 'tools' as *;
+
+.root {
+  padding-block: rem(60) var(--fs-space-6);
+
+  @include from-desktop {
+    padding-block: rem(80) var(--fs-space-6);
+  }
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-3);
+  align-items: flex-start;
+  max-width: var(--fs-grid-content-max);
+  margin-inline: auto;
+  padding-inline: var(--fs-grid-margin);
+
+  @include from-tablet {
+    align-items: center;
+  }
+
+  @include from-desktop {
+    gap: var(--fs-space-5);
+  }
+}
+
+.head {
+  display: flex;
+  gap: var(--fs-space-3);
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.title {
+  margin: 0;
+  @include fs-h1;
+  color: var(--fs-color-black);
+}
+
+.nav {
+  display: none;
+  gap: var(--fs-space-4);
+  align-items: center;
+  flex-shrink: 0;
+
+  @include from-desktop {
+    display: flex;
+  }
+}
+
+.viewport {
+  width: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.track {
+  display: flex;
+  gap: var(--fs-space-2);
+  width: max-content;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @include from-desktop {
+    gap: var(--fs-space-3);
+  }
+}
+
+.slide {
+  flex: 0 0 rem(280);
+  scroll-snap-align: start;
+
+  @include from-desktop {
+    flex: 0 0 rem(372);
+  }
+}
+</style>

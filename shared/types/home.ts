@@ -52,3 +52,14 @@ export type HomeShopCategory = {
   rightImageAlt: string
   leftImageCrop?: HomeShopCategoryImageCrop
 }
+
+export type HomeCinemaFilm = {
+  id: string
+  title: string
+  genres: string
+  posterSrc: string
+  posterAlt: string
+  ageRating?: string
+  /** URL билетного сервиса; `#` — заглушка до интеграции */
+  ticketUrl?: string
+}
