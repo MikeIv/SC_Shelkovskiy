@@ -173,6 +173,13 @@ async function onMapClick(event: MouseEvent) {
 
   &[data-layout='list'] {
     gap: var(--fs-space-1);
+    max-width: rem(372);
+
+    .category,
+    .title,
+    .floor {
+      @include catalog-card-clamp(1);
+    }
 
     @media (hover: hover) {
       &:hover .title {

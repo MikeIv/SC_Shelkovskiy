@@ -27,3 +27,9 @@ export type CatalogCardItem = {
   /** Идентификатор арендатора для подсветки на схеме (будущий API). */
   tenantId?: string
 }
+
+/** Группа арендаторов в алфавитном списке каталога. */
+export type CatalogListGroup = {
+  letter: string
+  items: CatalogCardItem[]
+}

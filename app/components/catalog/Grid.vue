@@ -8,17 +8,16 @@ defineProps<{
 </script>
 
 <template>
-  <div :class="$style.root">
-    <ul
-      v-if="items.length"
-      :class="[$style.list, layout === 'list' ? $style.listMode : $style.gridMode]"
-    >
+  <CatalogList v-if="layout === 'list'" :items="items" />
+
+  <div v-else :class="$style.root">
+    <ul v-if="items.length" :class="[$style.list, $style.gridMode]">
       <li
         v-for="item in items"
         :key="item.id"
         :class="$style.item"
       >
-        <CatalogCard v-bind="item" :layout="layout" />
+        <CatalogCard v-bind="item" layout="card" />
       </li>
     </ul>
 
@@ -61,10 +60,6 @@ defineProps<{
   @include from-desktop {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-}
-
-.listMode {
-  grid-template-columns: minmax(0, 1fr);
 }
 
 .item {
