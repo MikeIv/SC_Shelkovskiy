@@ -63,3 +63,13 @@ export type HomeCinemaFilm = {
   /** URL билетного сервиса; `#` — заглушка до интеграции */
   ticketUrl?: string
 }
+
+export type HomeGalleryAlbum = {
+  id: string
+  title: string
+  date: string
+  imageSrc: string
+  imageAlt: string
+  photoCount: number
+  to?: string
+}
