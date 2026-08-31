@@ -5,3 +5,22 @@ export type HomeIntroSlide = {
   imageSrc: string
   imageAlt: string
 }
+
+export type HomeBrandShape = 'circle' | 'squircle'
+
+export type HomeBrandImageCrop = 'wide' | 'ekonika'
+
+export type HomeBrandItem = {
+  id: string
+  name: string
+  imageSrc: string
+  imageAlt: string
+  shape: HomeBrandShape
+  imageCrop?: HomeBrandImageCrop
+}
+
+export type HomeBrandRow = {
+  id: string
+  direction: 'rtl' | 'ltr'
+  items: HomeBrandItem[]
+}
