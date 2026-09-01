@@ -3,18 +3,44 @@ import type { UiDropdownOption } from '~/components/ui/Dropdown.vue'
 import type { UiSearchOption } from '~/components/ui/Search.vue'
 import type { CatalogCardLayout } from '#shared/types/catalog'
 
-defineProps<{
-  categoryOptions: UiDropdownOption[]
-  floorOptions: UiDropdownOption[]
-  searchOptions: UiSearchOption[]
-}>()
+export type CatalogFiltersVariant = 'shops' | 'cafes'
+
+const props = withDefaults(
+  defineProps<{
+    variant?: CatalogFiltersVariant
+    categoryOptions: UiDropdownOption[]
+    floorOptions: UiDropdownOption[]
+    searchOptions: UiSearchOption[]
+  }>(),
+  {
+    variant: 'shops',
+  },
+)
 
 const query = defineModel<string>('query', { default: '' })
 const category = defineModel<string>('category', { default: '' })
 const floor = defineModel<string>('floor', { default: '' })
 const loyaltyOnly = defineModel<boolean>('loyaltyOnly', { default: false })
 const actionsOnly = defineModel<boolean>('actionsOnly', { default: false })
+const breakfastOnly = defineModel<boolean>('breakfastOnly', { default: false })
+const businessLunchOnly = defineModel<boolean>('businessLunchOnly', { default: false })
 const viewMode = defineModel<CatalogCardLayout>('viewMode', { default: 'card' })
+
+const texts = computed(() =>
+  props.variant === 'cafes'
+    ? {
+        searchLabel: 'Поиск кафе или ресторана',
+        searchPlaceholder: 'Найти кафе или ресторан',
+        categoryLabel: 'Тип кухни',
+        categoryPlaceholder: 'Тип кухни',
+      }
+    : {
+        searchLabel: 'Поиск магазина',
+        searchPlaceholder: 'Найти магазин',
+        categoryLabel: 'Категория',
+        categoryPlaceholder: 'Категории',
+      },
+)
 
 const viewModes = [
   { mode: 'card' as const, icon: 'local:dashboard', label: 'Плитка' },
@@ -28,15 +54,15 @@ const viewModes = [
       <UiSearch
         v-model="query"
         :class="$style.search"
-        label="Поиск магазина"
-        placeholder="Найти магазин"
+        :label="texts.searchLabel"
+        :placeholder="texts.searchPlaceholder"
         :options="searchOptions"
       />
 
       <UiDropdown
         v-model="category"
-        label="Категория"
-        placeholder="Категории"
+        :label="texts.categoryLabel"
+        :placeholder="texts.categoryPlaceholder"
         :options="categoryOptions"
       />
 
@@ -57,6 +83,16 @@ const viewModes = [
         <label :class="$style.checkbox">
           <UiCheckbox v-model="actionsOnly" />
           <span>Доступные акции</span>
+        </label>
+
+        <label v-if="variant === 'cafes'" :class="$style.checkbox">
+          <UiCheckbox v-model="breakfastOnly" />
+          <span>Завтраки</span>
+        </label>
+
+        <label v-if="variant === 'cafes'" :class="$style.checkbox">
+          <UiCheckbox v-model="businessLunchOnly" />
+          <span>Бизнес-ланч</span>
         </label>
       </div>
     </div>
@@ -105,7 +141,11 @@ const viewModes = [
   }
 
   @include from-desktop {
-    grid-template-columns: rem(440) rem(320) auto;
+    grid-template-columns: rem(440) rem(320) max-content;
+
+    > .floor {
+      width: max-content;
+    }
   }
 }
 
@@ -122,11 +162,6 @@ const viewModes = [
 .floor {
   @include from-tablet {
     grid-column: span 1;
-  }
-
-  @include from-desktop {
-    width: auto;
-    min-width: rem(167);
   }
 }
 
@@ -155,6 +190,7 @@ const viewModes = [
 .view {
   display: inline-flex;
   flex-shrink: 0;
+  gap: var(--fs-space-1);
   align-self: flex-start;
 }
 </style>

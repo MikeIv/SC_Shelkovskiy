@@ -109,7 +109,11 @@ async function onMapClick(event: MouseEvent) {
         </div>
 
         <div :class="$style.head">
-          <ul v-if="visibleTags.length" :class="$style.tags" aria-label="Метки">
+          <ul
+            :class="$style.tags"
+            :aria-label="visibleTags.length ? 'Метки' : undefined"
+            :aria-hidden="visibleTags.length ? undefined : true"
+          >
             <li v-for="tag in visibleTags" :key="tag">
               <UiTag :variant="tag" :icon="tagIconMap[tag]" />
             </li>
@@ -171,6 +175,11 @@ async function onMapClick(event: MouseEvent) {
   color: inherit;
   text-decoration: none;
 
+  &[data-layout='card'] {
+    flex: 1;
+    min-height: 100%;
+  }
+
   &[data-layout='list'] {
     gap: var(--fs-space-1);
     max-width: rem(372);
@@ -191,6 +200,7 @@ async function onMapClick(event: MouseEvent) {
 
 .card {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: rem(12);
   width: 100%;
@@ -219,6 +229,7 @@ async function onMapClick(event: MouseEvent) {
 
 .main {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: rem(12);
   min-width: 0;
@@ -302,9 +313,15 @@ async function onMapClick(event: MouseEvent) {
   display: flex;
   flex-wrap: wrap;
   gap: var(--fs-space-1);
+  align-items: flex-start;
+  min-height: rem(24);
   margin: 0;
   padding: 0;
   list-style: none;
+
+  @include from-desktop {
+    min-height: rem(30);
+  }
 }
 
 .copy {

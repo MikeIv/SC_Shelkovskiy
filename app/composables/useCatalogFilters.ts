@@ -6,7 +6,16 @@ function buildSelectOptions(values: string[], placeholder: string): UiDropdownOp
   return [{ value: '', label: placeholder }, ...values.map((value) => ({ value, label: value }))]
 }
 
-export function useCatalogFilters(items: MaybeRefOrGetter<CatalogCardItem[]>) {
+export interface UseCatalogFiltersOptions {
+  categoryPlaceholder?: string
+  withCafeFilters?: boolean
+}
+
+export function useCatalogFilters(
+  items: MaybeRefOrGetter<CatalogCardItem[]>,
+  options: UseCatalogFiltersOptions = {},
+) {
+  const { categoryPlaceholder = 'Категории', withCafeFilters = false } = options
   const source = computed(() => toValue(items))
 
   const query = ref('')
@@ -14,10 +23,15 @@ export function useCatalogFilters(items: MaybeRefOrGetter<CatalogCardItem[]>) {
   const floor = ref('')
   const loyaltyOnly = ref(false)
   const actionsOnly = ref(false)
+  const breakfastOnly = ref(false)
+  const businessLunchOnly = ref(false)
   const viewMode = ref<CatalogCardLayout>('card')
 
   const categoryOptions = computed(() =>
-    buildSelectOptions([...new Set(source.value.map((item) => item.category))].sort(), 'Категории'),
+    buildSelectOptions(
+      [...new Set(source.value.map((item) => item.category))].sort(),
+      categoryPlaceholder,
+    ),
   )
 
   const floorOptions = computed(() =>
@@ -61,6 +75,14 @@ export function useCatalogFilters(items: MaybeRefOrGetter<CatalogCardItem[]>) {
         return false
       }
 
+      if (withCafeFilters && breakfastOnly.value && !item.breakfast) {
+        return false
+      }
+
+      if (withCafeFilters && businessLunchOnly.value && !item.tags?.includes('lunch')) {
+        return false
+      }
+
       return true
     })
   })
@@ -71,6 +93,8 @@ export function useCatalogFilters(items: MaybeRefOrGetter<CatalogCardItem[]>) {
     floor,
     loyaltyOnly,
     actionsOnly,
+    breakfastOnly,
+    businessLunchOnly,
     viewMode,
     categoryOptions,
     floorOptions,

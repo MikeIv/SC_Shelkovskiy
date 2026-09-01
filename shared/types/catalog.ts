@@ -17,6 +17,8 @@ export type CatalogCardItem = {
   floor: string
   /** До трёх тегов; необязательный блок. */
   tags?: CatalogCardTag[]
+  /** Завтраки (фильтр каталога кафе). */
+  breakfast?: boolean
   /** Страница описания бренда. */
   to?: string
   /**

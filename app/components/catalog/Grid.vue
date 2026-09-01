@@ -63,6 +63,7 @@ defineProps<{
 }
 
 .item {
+  display: flex;
   min-width: 0;
 }
 
