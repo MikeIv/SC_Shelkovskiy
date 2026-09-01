@@ -1,20 +1,36 @@
 <script setup lang="ts">
 import type { NewsCardItem } from '#shared/types/news'
 
-const DESKTOP_QUERY = '(min-width: 1024px)'
+const RELATED_COPY = {
+  news: {
+    heading: 'Другие новости',
+    prev: 'Предыдущие новости',
+    next: 'Следующие новости',
+  },
+  action: {
+    heading: 'Другие акции',
+    prev: 'Предыдущие акции',
+    next: 'Следующие акции',
+  },
+} as const
 
-const { items } = defineProps<{
-  items: NewsCardItem[]
-}>()
+const props = withDefaults(
+  defineProps<{
+    items: NewsCardItem[]
+    kind?: keyof typeof RELATED_COPY
+  }>(),
+  {
+    kind: 'news',
+  },
+)
+
+const copy = computed(() => RELATED_COPY[props.kind])
 
 const viewportRef = ref<HTMLElement | null>(null)
 const trackRef = ref<HTMLElement | null>(null)
 const canScrollPrev = ref(false)
 const canScrollNext = ref(false)
 const showNav = ref(false)
-const isDesktop = ref(false)
-
-let desktopMedia: MediaQueryList | null = null
 
 function updateNavState() {
   const viewport = viewportRef.value
@@ -24,7 +40,7 @@ function updateNavState() {
   }
 
   const hasOverflow = viewport.scrollWidth > viewport.clientWidth + 1
-  showNav.value = isDesktop.value && hasOverflow
+  showNav.value = hasOverflow
   canScrollPrev.value = viewport.scrollLeft > 1
   canScrollNext.value = viewport.scrollLeft + viewport.clientWidth < viewport.scrollWidth - 1
 }
@@ -44,70 +60,56 @@ function scrollByCard(direction: -1 | 1) {
   viewport.scrollBy({ left: direction * (card.offsetWidth + gap), behavior: 'smooth' })
 }
 
-function onDesktopChange(event: MediaQueryListEvent) {
-  isDesktop.value = event.matches
-  updateNavState()
-}
-
 onMounted(() => {
-  desktopMedia = window.matchMedia(DESKTOP_QUERY)
-  isDesktop.value = desktopMedia.matches
-  desktopMedia.addEventListener('change', onDesktopChange)
-
   viewportRef.value?.addEventListener('scroll', updateNavState, { passive: true })
   window.addEventListener('resize', updateNavState)
   updateNavState()
 })
 
 onUnmounted(() => {
-  desktopMedia?.removeEventListener('change', onDesktopChange)
   viewportRef.value?.removeEventListener('scroll', updateNavState)
   window.removeEventListener('resize', updateNavState)
 })
 </script>
 
 <template>
-  <section :class="$style.root" aria-labelledby="home-news-title">
-    <div :class="$style.inner">
-      <div :class="$style.head">
-        <h2 id="home-news-title" :class="$style.title">Новости и акции</h2>
+  <section :class="$style.root" aria-labelledby="news-related-title">
+    <div :class="$style.head">
+      <h2 id="news-related-title" :class="$style.title">{{ copy.heading }}</h2>
 
-        <div v-if="showNav" :class="$style.nav">
-          <UiButtonArrow
-            direction="left"
-            :disabled="!canScrollPrev"
-            @click="scrollByCard(-1)"
-          >
-            Предыдущие новости
-          </UiButtonArrow>
-          <UiButtonArrow
-            direction="right"
-            :disabled="!canScrollNext"
-            @click="scrollByCard(1)"
-          >
-            Следующие новости
-          </UiButtonArrow>
-        </div>
+      <div v-if="showNav" :class="$style.nav">
+        <UiButtonArrow
+          direction="left"
+          :disabled="!canScrollPrev"
+          @click="scrollByCard(-1)"
+        >
+          {{ copy.prev }}
+        </UiButtonArrow>
+        <UiButtonArrow
+          direction="right"
+          :disabled="!canScrollNext"
+          @click="scrollByCard(1)"
+        >
+          {{ copy.next }}
+        </UiButtonArrow>
       </div>
+    </div>
 
-      <div
-        ref="viewportRef"
-        :class="$style.viewport"
-        aria-roledescription="carousel"
-        aria-label="Новости и акции"
-      >
-        <ul ref="trackRef" :class="$style.track">
-          <li
-            v-for="item in items"
-            :key="item.id"
-            :class="$style.slide"
-          >
-            <NewsCard layout="slider" :item="item" />
-          </li>
-        </ul>
-      </div>
-
-      <UiButton to="/news">Смотреть все</UiButton>
+    <div
+      ref="viewportRef"
+      :class="$style.viewport"
+      aria-roledescription="carousel"
+      :aria-label="copy.heading"
+    >
+      <ul ref="trackRef" :class="$style.track">
+        <li
+          v-for="item in items"
+          :key="item.id"
+          :class="$style.slide"
+        >
+          <NewsCard layout="catalog" :item="item" />
+        </li>
+      </ul>
     </div>
   </section>
 </template>
@@ -116,29 +118,11 @@ onUnmounted(() => {
 @use 'tools' as *;
 
 .root {
-  padding-block: rem(100) var(--fs-space-6);
-
-  @include from-desktop {
-    padding-block: rem(140) var(--fs-space-6);
-  }
-}
-
-.inner {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-3);
-  align-items: flex-start;
-  max-width: var(--fs-grid-content-max);
-  margin-inline: auto;
-  padding-inline: var(--fs-grid-margin);
-
-  @include from-tablet {
-    align-items: center;
-  }
-
-  @include from-desktop {
-    gap: var(--fs-space-5);
-  }
+  gap: var(--fs-space-5);
+  width: 100%;
+  padding-top: var(--fs-space-6);
 }
 
 .head {
@@ -146,7 +130,6 @@ onUnmounted(() => {
   gap: var(--fs-space-3);
   align-items: center;
   justify-content: space-between;
-  width: 100%;
 }
 
 .title {

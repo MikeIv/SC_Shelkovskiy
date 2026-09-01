@@ -7,6 +7,7 @@ export type UiTagVariant =
   | 'smi'
   | 'loyalty'
   | 'lunch'
+  | 'period'
 
 withDefaults(
   defineProps<{
@@ -68,6 +69,11 @@ withDefaults(
 
   &[data-variant='lunch'] {
     --fs-tag-bg: var(--fs-color-green);
+  }
+
+  &[data-variant='period'] {
+    --fs-tag-bg: var(--fs-color-light);
+    --fs-tag-color: var(--fs-color-black);
   }
 
   @include from-desktop {

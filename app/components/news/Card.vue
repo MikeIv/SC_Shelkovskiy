@@ -1,50 +1,52 @@
 <script setup lang="ts">
-import { NuxtLink } from '#components'
-import type { UiTagVariant } from '~/components/ui/Tag.vue'
-import type { NewsCardLayout } from '#shared/types/news'
+import type { NewsCardItem, NewsCardLayout } from '#shared/types/news'
+import { getNewsDetailPath } from '#shared/utils/newsPath'
 
 const props = withDefaults(
   defineProps<{
-    imageSrc: string
-    imageAlt: string
-    date: string
-    category: string
-    title: string
-    tagLabel?: string
-    tagVariant?: UiTagVariant
-    to?: string
+    item: NewsCardItem
     layout?: NewsCardLayout
   }>(),
   {
-    tagLabel: 'Новость',
-    tagVariant: 'news',
-    to: undefined,
     layout: 'catalog',
   },
 )
 
-const rootTag = computed(() => (props.to ? NuxtLink : 'article'))
-const rootBind = computed(() => (props.to ? { to: props.to } : {}))
+const linkTarget = computed(() => props.item.to ?? getNewsDetailPath(props.item.id))
 </script>
 
 <template>
-  <component :is="rootTag" :class="$style.root" :data-layout="layout" v-bind="rootBind">
+  <NuxtLink
+    :to="linkTarget"
+    :class="$style.root"
+    :data-layout="layout"
+  >
     <div :class="$style.media">
-      <img :class="$style.image" :src="imageSrc" :alt="imageAlt" loading="lazy" />
+      <img
+        v-if="item.imageSrc"
+        :class="$style.image"
+        :src="item.imageSrc"
+        :alt="item.imageAlt || item.title"
+        loading="lazy"
+        decoding="async"
+      >
+      <div v-else :class="$style.imagePlaceholder" aria-hidden="true">
+        <UiLogo :class="$style.imageFallback" />
+      </div>
     </div>
 
     <div :class="$style.body">
       <div :class="$style.meta">
-        <UiTag :variant="tagVariant">{{ tagLabel }}</UiTag>
-        <span :class="$style.date">{{ date }}</span>
+        <UiTag :variant="item.tagVariant">{{ item.tagLabel }}</UiTag>
+        <span :class="$style.date">{{ item.date }}</span>
       </div>
 
       <div :class="$style.copy">
-        <p :class="$style.category">{{ category }}</p>
-        <h3 :class="$style.title">{{ title }}</h3>
+        <p :class="$style.category">{{ item.category }}</p>
+        <h3 :class="$style.title">{{ item.title }}</h3>
       </div>
     </div>
-  </component>
+  </NuxtLink>
 </template>
 
 <style module lang="scss">
@@ -73,6 +75,24 @@ const rootBind = computed(() => (props.to ? { to: props.to } : {}))
   height: 100%;
   object-fit: cover;
   object-position: center;
+}
+
+.imagePlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: var(--fs-color-light);
+}
+
+.imageFallback {
+  width: rem(120);
+  opacity: 0.25;
+
+  @include from-desktop {
+    width: rem(160);
+  }
 }
 
 .body {
@@ -117,6 +137,7 @@ const rootBind = computed(() => (props.to ? { to: props.to } : {}))
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   color: var(--fs-color-black);
 }
 

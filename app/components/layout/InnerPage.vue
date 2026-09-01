@@ -1,10 +1,10 @@
 <script setup lang="ts">
 const props = defineProps<{
-  title: string
+  title?: string
 }>()
 
 useSeoMeta({
-  title: () => props.title,
+  title: () => props.title ?? '',
 })
 </script>
 
@@ -14,7 +14,7 @@ useSeoMeta({
       <slot name="lead" />
     </div>
 
-    <h1 :class="$style.title">{{ title }}</h1>
+    <h1 v-if="title" :class="$style.title">{{ title }}</h1>
 
     <div v-if="$slots.default" :class="$style.content">
       <slot />

@@ -14,7 +14,10 @@ withDefaults(
 )
 
 const logoNode = createStaticVNode(
-  logoSource.replace('<svg ', '<svg aria-hidden="true" focusable="false" '),
+  logoSource
+    .trim()
+    .replace(/>\s+</g, '><')
+    .replace('<svg ', '<svg aria-hidden="true" focusable="false" '),
   1,
 )
 </script>
