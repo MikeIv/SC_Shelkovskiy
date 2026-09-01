@@ -3,7 +3,7 @@ import type { UiDropdownOption } from '~/components/ui/Dropdown.vue'
 import type { UiSearchOption } from '~/components/ui/Search.vue'
 import type { CatalogCardLayout } from '#shared/types/catalog'
 
-export type CatalogFiltersVariant = 'shops' | 'cafes' | 'services'
+export type CatalogFiltersVariant = 'shops' | 'cafes' | 'services' | 'entertainment'
 
 type CatalogFilterTexts = {
   searchLabel: string
@@ -12,24 +12,32 @@ type CatalogFilterTexts = {
   categoryPlaceholder: string
 }
 
+const DEFAULT_CATEGORY_TEXTS = {
+  categoryLabel: 'Категория',
+  categoryPlaceholder: 'Категории',
+} as const satisfies Pick<CatalogFilterTexts, 'categoryLabel' | 'categoryPlaceholder'>
+
 const CATALOG_FILTER_TEXTS: Record<CatalogFiltersVariant, CatalogFilterTexts> = {
   shops: {
     searchLabel: 'Поиск магазина',
     searchPlaceholder: 'Найти магазин',
-    categoryLabel: 'Категория',
-    categoryPlaceholder: 'Категории',
-  },
-  services: {
-    searchLabel: 'Поиск услуги',
-    searchPlaceholder: 'Найти услугу',
-    categoryLabel: 'Категория',
-    categoryPlaceholder: 'Категории',
+    ...DEFAULT_CATEGORY_TEXTS,
   },
   cafes: {
     searchLabel: 'Поиск кафе или ресторана',
     searchPlaceholder: 'Найти кафе или ресторан',
     categoryLabel: 'Тип кухни',
     categoryPlaceholder: 'Тип кухни',
+  },
+  services: {
+    searchLabel: 'Поиск услуги',
+    searchPlaceholder: 'Найти услугу',
+    ...DEFAULT_CATEGORY_TEXTS,
+  },
+  entertainment: {
+    searchLabel: 'Поиск спорта или развлечения',
+    searchPlaceholder: 'Найти спорт или развлечение',
+    ...DEFAULT_CATEGORY_TEXTS,
   },
 }
 
