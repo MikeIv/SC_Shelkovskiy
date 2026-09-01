@@ -3,7 +3,35 @@ import type { UiDropdownOption } from '~/components/ui/Dropdown.vue'
 import type { UiSearchOption } from '~/components/ui/Search.vue'
 import type { CatalogCardLayout } from '#shared/types/catalog'
 
-export type CatalogFiltersVariant = 'shops' | 'cafes'
+export type CatalogFiltersVariant = 'shops' | 'cafes' | 'services'
+
+type CatalogFilterTexts = {
+  searchLabel: string
+  searchPlaceholder: string
+  categoryLabel: string
+  categoryPlaceholder: string
+}
+
+const CATALOG_FILTER_TEXTS: Record<CatalogFiltersVariant, CatalogFilterTexts> = {
+  shops: {
+    searchLabel: 'Поиск магазина',
+    searchPlaceholder: 'Найти магазин',
+    categoryLabel: 'Категория',
+    categoryPlaceholder: 'Категории',
+  },
+  services: {
+    searchLabel: 'Поиск услуги',
+    searchPlaceholder: 'Найти услугу',
+    categoryLabel: 'Категория',
+    categoryPlaceholder: 'Категории',
+  },
+  cafes: {
+    searchLabel: 'Поиск кафе или ресторана',
+    searchPlaceholder: 'Найти кафе или ресторан',
+    categoryLabel: 'Тип кухни',
+    categoryPlaceholder: 'Тип кухни',
+  },
+}
 
 const props = withDefaults(
   defineProps<{
@@ -26,21 +54,7 @@ const breakfastOnly = defineModel<boolean>('breakfastOnly', { default: false })
 const businessLunchOnly = defineModel<boolean>('businessLunchOnly', { default: false })
 const viewMode = defineModel<CatalogCardLayout>('viewMode', { default: 'card' })
 
-const texts = computed(() =>
-  props.variant === 'cafes'
-    ? {
-        searchLabel: 'Поиск кафе или ресторана',
-        searchPlaceholder: 'Найти кафе или ресторан',
-        categoryLabel: 'Тип кухни',
-        categoryPlaceholder: 'Тип кухни',
-      }
-    : {
-        searchLabel: 'Поиск магазина',
-        searchPlaceholder: 'Найти магазин',
-        categoryLabel: 'Категория',
-        categoryPlaceholder: 'Категории',
-      },
-)
+const texts = computed(() => CATALOG_FILTER_TEXTS[props.variant])
 
 const viewModes = [
   { mode: 'card' as const, icon: 'local:dashboard', label: 'Плитка' },
