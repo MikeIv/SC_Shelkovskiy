@@ -1,7 +1,7 @@
 <script setup lang="ts">
 export type LayoutHeaderVariant = 'white' | 'black'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     variant?: LayoutHeaderVariant
     overlay?: boolean
@@ -17,6 +17,40 @@ const hoursOpen = ref(false)
 const hoursBtnRef = ref<HTMLButtonElement | null>(null)
 const menuOpen = ref(false)
 const menuBtnRef = ref<HTMLButtonElement | null>(null)
+
+const popupOpen = computed(() => hoursOpen.value || menuOpen.value)
+const { pinned, hidden } = useHeaderScroll({
+  pauseHide: popupOpen,
+})
+
+const visualVariant = computed<LayoutHeaderVariant>(() =>
+  pinned.value ? 'black' : props.variant,
+)
+
+const headerRef = ref<HTMLElement | null>(null)
+const spacerHeight = ref(0)
+let measureTimer = 0
+
+function measureSpacer(): void {
+  if (!import.meta.client || !headerRef.value || props.overlay || !pinned.value) {
+    spacerHeight.value = 0
+    return
+  }
+
+  spacerHeight.value = Math.round(headerRef.value.getBoundingClientRect().height)
+}
+
+function scheduleMeasureSpacer(): void {
+  if (!import.meta.client) {
+    return
+  }
+
+  window.clearTimeout(measureTimer)
+  void nextTick(() => {
+    measureSpacer()
+    measureTimer = window.setTimeout(measureSpacer, 320)
+  })
+}
 
 function toggleHours(): void {
   menuOpen.value = false
@@ -35,93 +69,121 @@ function toggleMenu(): void {
 function closeMenu(): void {
   menuOpen.value = false
 }
+
+watch(pinned, scheduleMeasureSpacer)
+
+onMounted(() => {
+  scheduleMeasureSpacer()
+  window.addEventListener('resize', measureSpacer, { passive: true })
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', measureSpacer)
+  window.clearTimeout(measureTimer)
+})
 </script>
 
 <template>
-  <header
-    :class="$style.root"
-    :data-variant="variant"
-    :data-overlay="overlay || undefined"
-  >
-    <a :class="$style.skip" href="#content">К содержанию</a>
-    <div :class="$style.inner">
-      <div :class="$style.bar">
-        <div :class="$style.start">
-          <button :class="[$style.iconBtn, $style.searchMobile]" type="button">
-            <UIcon name="local:search" :class="$style.icon" aria-hidden="true" />
-            <span :class="$style.srOnly">Поиск</span>
-          </button>
-          <div :class="$style.meta">
+  <div :class="$style.shell">
+    <div
+      v-show="pinned && !overlay"
+      :class="$style.spacer"
+      :style="{ height: `${spacerHeight}px` }"
+      aria-hidden="true"
+    />
+    <header
+      ref="headerRef"
+      :class="$style.root"
+      :data-variant="visualVariant"
+      :data-overlay="overlay || undefined"
+      :data-pinned="pinned || undefined"
+      :data-hidden="hidden || undefined"
+    >
+      <a :class="$style.skip" href="#content">К содержанию</a>
+      <div :class="$style.inner">
+        <div :class="$style.bar">
+          <div :class="$style.start">
+            <button :class="[$style.iconBtn, $style.searchMobile]" type="button">
+              <UIcon name="local:search" :class="$style.icon" aria-hidden="true" />
+              <span :class="$style.srOnly">Поиск</span>
+            </button>
+            <div :class="$style.meta">
+              <button
+                ref="hoursBtnRef"
+                :class="$style.hours"
+                type="button"
+                aria-haspopup="dialog"
+                :aria-expanded="hoursOpen"
+                @click="toggleHours"
+              >
+                <span>{{ hoursLabel }}</span>
+                <UIcon name="local:arrow-down" :class="$style.icon" aria-hidden="true" />
+              </button>
+              <a :class="$style.textLink" href="#" @click.prevent>Как добраться</a>
+            </div>
+          </div>
+          <NuxtLink :class="$style.brand" to="/" aria-label="Щёлковский">
+            <UiLogo :class="$style.logo" :variant="visualVariant" aria-hidden="true" />
+          </NuxtLink>
+          <div :class="$style.end">
+            <div :class="$style.endMain">
+              <a :class="$style.action" href="#" @click.prevent>
+                <span :class="$style.actionIcon">
+                  <UIcon name="local:map" :class="$style.icon" aria-hidden="true" />
+                </span>
+                <span :class="$style.actionLabel">Схема</span>
+              </a>
+              <button :class="[$style.action, $style.searchDesk]" type="button">
+                <span :class="$style.actionIcon">
+                  <UIcon name="local:search" :class="$style.icon" aria-hidden="true" />
+                </span>
+                <span :class="$style.actionLabel">Поиск</span>
+              </button>
+            </div>
             <button
-              ref="hoursBtnRef"
-              :class="$style.hours"
+              ref="menuBtnRef"
+              :class="$style.iconBtn"
               type="button"
+              aria-label="Меню"
               aria-haspopup="dialog"
-              :aria-expanded="hoursOpen"
-              @click="toggleHours"
+              :aria-expanded="menuOpen"
+              @click="toggleMenu"
             >
-              <span>{{ hoursLabel }}</span>
-              <UIcon name="local:arrow-down" :class="$style.icon" aria-hidden="true" />
-            </button>
-            <a :class="$style.textLink" href="#" @click.prevent>Как добраться</a>
-          </div>
-        </div>
-        <NuxtLink :class="$style.brand" to="/" aria-label="Щёлковский">
-          <UiLogo :class="$style.logo" :variant="variant" aria-hidden="true" />
-        </NuxtLink>
-        <div :class="$style.end">
-          <div :class="$style.endMain">
-            <a :class="$style.action" href="#" @click.prevent>
-              <span :class="$style.actionIcon">
-                <UIcon name="local:map" :class="$style.icon" aria-hidden="true" />
-              </span>
-              <span :class="$style.actionLabel">Схема</span>
-            </a>
-            <button :class="[$style.action, $style.searchDesk]" type="button">
-              <span :class="$style.actionIcon">
-                <UIcon name="local:search" :class="$style.icon" aria-hidden="true" />
-              </span>
-              <span :class="$style.actionLabel">Поиск</span>
+              <UIcon name="local:menu" :class="$style.icon" aria-hidden="true" />
             </button>
           </div>
-          <button
-            ref="menuBtnRef"
-            :class="$style.iconBtn"
-            type="button"
-            aria-label="Меню"
-            aria-haspopup="dialog"
-            :aria-expanded="menuOpen"
-            @click="toggleMenu"
-          >
-            <UIcon name="local:menu" :class="$style.icon" aria-hidden="true" />
-          </button>
         </div>
+        <nav
+          :class="$style.nav"
+          aria-label="Разделы"
+          :aria-hidden="pinned ? true : undefined"
+          :inert="pinned"
+        >
+          <ul :class="$style.navList">
+            <li v-for="item in siteNavItems" :key="item.to">
+              <NuxtLink
+                :class="$style.navLink"
+                :to="item.to"
+                :active-class="$style.navLinkActive"
+              >
+                {{ item.label }}
+              </NuxtLink>
+            </li>
+          </ul>
+        </nav>
       </div>
-      <nav :class="$style.nav" aria-label="Разделы">
-        <ul :class="$style.navList">
-          <li v-for="item in siteNavItems" :key="item.to">
-            <NuxtLink
-              :class="$style.navLink"
-              :to="item.to"
-              :active-class="$style.navLinkActive"
-            >
-              {{ item.label }}
-            </NuxtLink>
-          </li>
-        </ul>
-      </nav>
-    </div>
-    <LayoutHoursModal
-      :open="hoursOpen"
-      :anchor="hoursBtnRef"
-      @close="closeHours"
-    />
-    <LayoutMenuModal
-      :open="menuOpen"
-      :anchor="menuBtnRef"
-      @close="closeMenu"
-    />
-  </header>
+      <LayoutHoursModal
+        :open="hoursOpen"
+        :anchor="hoursBtnRef"
+        @close="closeHours"
+      />
+      <LayoutMenuModal
+        :open="menuOpen"
+        :anchor="menuBtnRef"
+        @close="closeMenu"
+      />
+    </header>
+  </div>
 </template>
 
 <style module lang="scss">
@@ -153,9 +215,18 @@ function closeMenu(): void {
   }
 }
 
-.root {
+.shell {
   position: relative;
   z-index: z('header');
+}
+
+.spacer {
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.root {
+  position: relative;
   padding-top: rem(20);
   padding-inline: max(
     var(--fs-grid-margin),
@@ -163,12 +234,20 @@ function closeMenu(): void {
   );
   border-bottom: rem(2) solid currentColor;
   color: var(--fs-color-black);
+  transition:
+    transform 0.35s ease,
+    background-color 0.25s ease,
+    box-shadow 0.25s ease,
+    border-radius 0.25s ease,
+    padding 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
 
   &[data-variant='white'] {
     color: var(--fs-color-white);
   }
 
-  &[data-overlay] {
+  &[data-overlay]:not([data-pinned]) {
     position: absolute;
     top: 0;
     right: 0;
@@ -176,9 +255,39 @@ function closeMenu(): void {
     width: 100%;
   }
 
+  &[data-pinned] {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    padding-top: rem(24);
+    padding-bottom: rem(24);
+    border-bottom-color: transparent;
+    border-bottom-right-radius: rem(32);
+    border-bottom-left-radius: rem(32);
+    color: var(--fs-color-black);
+    background-color: var(--fs-color-white);
+    box-shadow: 0 #{rem(8)} #{rem(40)} rgb(172 172 172 / 25%);
+  }
+
+  &[data-hidden] {
+    pointer-events: none;
+    transform: translateY(-100%);
+  }
+
   @include from-desktop {
     padding-top: rem(40);
     border-bottom: 0;
+
+    &[data-pinned] {
+      padding-top: rem(24);
+      padding-bottom: rem(24);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
   }
 }
 
@@ -227,6 +336,10 @@ function closeMenu(): void {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     min-height: rem(46);
+    padding-bottom: 0;
+  }
+
+  .root[data-pinned] & {
     padding-bottom: 0;
   }
 }
@@ -413,8 +526,28 @@ function closeMenu(): void {
 
   @include from-desktop {
     display: block;
+    max-height: rem(72);
     padding-top: var(--fs-space-2);
+    overflow: hidden;
     border-top: rem(2) solid currentColor;
+    opacity: 1;
+    transition:
+      max-height 0.3s ease,
+      opacity 0.2s ease,
+      padding 0.3s ease,
+      border-color 0.25s ease;
+  }
+
+  .root[data-pinned] & {
+    max-height: 0;
+    padding-top: 0;
+    border-top-color: transparent;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
   }
 }
 
