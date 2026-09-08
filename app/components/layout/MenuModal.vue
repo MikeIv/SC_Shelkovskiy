@@ -93,98 +93,100 @@ onBeforeUnmount(() => {
 
 <template>
   <Teleport to="body">
-    <div
-      v-if="open"
-      ref="panelRef"
-      :class="$style.panel"
-      :style="panelStyle"
-      role="dialog"
-      aria-label="Меню"
-    >
-      <nav :class="$style.primary" aria-label="Разделы">
-        <ul :class="$style.linkList">
-          <li v-for="item in siteNavItems" :key="item.to">
-            <NuxtLink
-              :class="$style.link"
-              :to="item.to"
-              :active-class="$style.linkActive"
-              @click="close"
-            >
-              {{ item.label }}
-            </NuxtLink>
-          </li>
-        </ul>
-      </nav>
-
-      <div :class="$style.media" aria-hidden="true">
-        <img
-          :class="$style.mediaImg"
-          src="/images/layout/menu-mall.jpg"
-          alt=""
-          width="338"
-          height="338"
-          decoding="async"
-        >
-      </div>
-
-      <nav :class="$style.secondary" aria-label="О центре">
-        <ul :class="$style.linkList">
-          <li v-for="item in menuNavSecondary" :key="item.to">
-            <NuxtLink
-              :class="$style.link"
-              :to="item.to"
-              :active-class="$style.linkActive"
-              @click="close"
-            >
-              {{ item.label }}
-            </NuxtLink>
-          </li>
-        </ul>
-      </nav>
-
-      <section :class="$style.contacts" :aria-labelledby="contactsTitleId">
-        <NuxtLink
-          :id="contactsTitleId"
-          :class="[$style.link, $style.contactsTitle]"
-          to="/contacts"
-          :active-class="$style.linkActive"
-          @click="close"
-        >
-          Контакты
-        </NuxtLink>
-        <div :class="$style.contactsBody">
-          <p :class="$style.address">
-            Москва,<br>
-            Щёлковское шоссе, 75
-          </p>
-          <a :class="$style.contactLink" :href="footerContacts.phoneHref">
-            {{ footerContacts.phone }}
-          </a>
-          <a :class="$style.contactLink" :href="footerContacts.emailHref">
-            {{ footerContacts.email }}
-          </a>
-          <ul :class="$style.socialList">
-            <li v-for="item in footerSocialLinks" :key="item.label">
-              <a
-                :class="$style.socialLink"
-                :href="item.href"
-                :aria-label="item.label"
-                rel="noopener noreferrer"
-                target="_blank"
+    <template v-if="open">
+      <LayoutPopupBackdrop @close="close" />
+      <div
+        ref="panelRef"
+        :class="$style.panel"
+        :style="panelStyle"
+        role="dialog"
+        aria-label="Меню"
+      >
+        <nav :class="$style.primary" aria-label="Разделы">
+          <ul :class="$style.linkList">
+            <li v-for="item in siteNavItems" :key="item.to">
+              <NuxtLink
+                :class="$style.link"
+                :to="item.to"
+                :active-class="$style.linkActive"
+                @click="close"
               >
-                <img
-                  :class="$style.socialIcon"
-                  :src="item.icon"
-                  alt=""
-                  width="44"
-                  height="44"
-                >
-              </a>
+                {{ item.label }}
+              </NuxtLink>
             </li>
           </ul>
+        </nav>
+
+        <div :class="$style.media" aria-hidden="true">
+          <img
+            :class="$style.mediaImg"
+            src="/images/layout/menu-mall.jpg"
+            alt=""
+            width="338"
+            height="338"
+            decoding="async"
+          >
         </div>
-      </section>
-    </div>
+
+        <nav :class="$style.secondary" aria-label="О центре">
+          <ul :class="$style.linkList">
+            <li v-for="item in menuNavSecondary" :key="item.to">
+              <NuxtLink
+                :class="$style.link"
+                :to="item.to"
+                :active-class="$style.linkActive"
+                @click="close"
+              >
+                {{ item.label }}
+              </NuxtLink>
+            </li>
+          </ul>
+        </nav>
+
+        <section :class="$style.contacts" :aria-labelledby="contactsTitleId">
+          <NuxtLink
+            :id="contactsTitleId"
+            :class="[$style.link, $style.contactsTitle]"
+            to="/contacts"
+            :active-class="$style.linkActive"
+            @click="close"
+          >
+            Контакты
+          </NuxtLink>
+          <div :class="$style.contactsBody">
+            <p :class="$style.address">
+              Москва,<br>
+              Щёлковское шоссе, 75
+            </p>
+            <a :class="$style.contactLink" :href="footerContacts.phoneHref">
+              {{ footerContacts.phone }}
+            </a>
+            <a :class="$style.contactLink" :href="footerContacts.emailHref">
+              {{ footerContacts.email }}
+            </a>
+            <ul :class="$style.socialList">
+              <li v-for="item in footerSocialLinks" :key="item.label">
+                <a
+                  :class="$style.socialLink"
+                  :href="item.href"
+                  :aria-label="item.label"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <img
+                    :class="$style.socialIcon"
+                    :src="item.icon"
+                    alt=""
+                    width="44"
+                    height="44"
+                  >
+                </a>
+              </li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </template>
   </Teleport>
 </template>
 
@@ -201,7 +203,7 @@ onBeforeUnmount(() => {
     var(--fs-grid-margin),
     calc((100% - var(--fs-grid-content-max)) / 2)
   );
-  z-index: z('dropdown');
+  z-index: z('dropdown-panel');
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-4);

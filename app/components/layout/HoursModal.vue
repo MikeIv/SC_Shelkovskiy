@@ -140,72 +140,74 @@ onBeforeUnmount(() => {
 
 <template>
   <Teleport to="body">
-    <div
-      v-if="open"
-      ref="panelRef"
-      :class="$style.panel"
-      :style="panelStyle"
-      role="dialog"
-      :aria-labelledby="titleId"
-    >
-      <section :class="$style.card">
-        <div :class="$style.media">
-          <img
-            :class="$style.mediaImg"
-            src="/images/layout/hours-mall.png"
-            alt="ТРЦ Щёлковский"
-            width="902"
-            height="416"
-            decoding="async"
-          >
-        </div>
-        <div :class="$style.mallBlock">
-          <h2 :id="titleId" :class="$style.title">
-            Время работы ТРЦ
-          </h2>
-          <ul :class="$style.days" aria-label="Расписание по дням недели">
-            <li
-              v-for="(day, index) in mallDays"
-              :key="day.label"
-              :class="[$style.day, { [$style.dayActive]: index === todayIndex }]"
+    <template v-if="open">
+      <LayoutPopupBackdrop @close="close" />
+      <div
+        ref="panelRef"
+        :class="$style.panel"
+        :style="panelStyle"
+        role="dialog"
+        :aria-labelledby="titleId"
+      >
+        <section :class="$style.card">
+          <div :class="$style.media">
+            <img
+              :class="$style.mediaImg"
+              src="/images/layout/hours-mall.png"
+              alt="ТРЦ Щёлковский"
+              width="902"
+              height="416"
+              decoding="async"
             >
-              <span :class="$style.dayLabel">{{ day.label }}</span>
-              <span :class="$style.dayTimes">
-                <span>{{ day.open }}</span>
-                <span>{{ day.close }}</span>
-              </span>
+          </div>
+          <div :class="$style.mallBlock">
+            <h2 :id="titleId" :class="$style.title">
+              Время работы ТРЦ
+            </h2>
+            <ul :class="$style.days" aria-label="Расписание по дням недели">
+              <li
+                v-for="(day, index) in mallDays"
+                :key="day.label"
+                :class="[$style.day, { [$style.dayActive]: index === todayIndex }]"
+              >
+                <span :class="$style.dayLabel">{{ day.label }}</span>
+                <span :class="$style.dayTimes">
+                  <span>{{ day.open }}</span>
+                  <span>{{ day.close }}</span>
+                </span>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <section :class="$style.card" aria-label="Время работы арендаторов">
+          <ul :class="$style.tenants">
+            <li
+              v-for="tenant in tenants"
+              :key="tenant.name"
+              :class="$style.tenant"
+            >
+              <p :class="$style.tenantName">
+                {{ tenant.name }}
+              </p>
+              <div :class="$style.ranges">
+                <div
+                  v-for="range in tenant.ranges"
+                  :key="`${tenant.name}-${range.label}`"
+                  :class="$style.range"
+                >
+                  <span :class="$style.rangeLabel">{{ range.label }}</span>
+                  <span :class="$style.rangeTimes">
+                    <span>{{ range.open }}</span>
+                    <span>{{ range.close }}</span>
+                  </span>
+                </div>
+              </div>
             </li>
           </ul>
-        </div>
-      </section>
-
-      <section :class="$style.card" aria-label="Время работы арендаторов">
-        <ul :class="$style.tenants">
-          <li
-            v-for="tenant in tenants"
-            :key="tenant.name"
-            :class="$style.tenant"
-          >
-            <p :class="$style.tenantName">
-              {{ tenant.name }}
-            </p>
-            <div :class="$style.ranges">
-              <div
-                v-for="range in tenant.ranges"
-                :key="`${tenant.name}-${range.label}`"
-                :class="$style.range"
-              >
-                <span :class="$style.rangeLabel">{{ range.label }}</span>
-                <span :class="$style.rangeTimes">
-                  <span>{{ range.open }}</span>
-                  <span>{{ range.close }}</span>
-                </span>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </section>
-    </div>
+        </section>
+      </div>
+    </template>
   </Teleport>
 </template>
 
@@ -214,7 +216,7 @@ onBeforeUnmount(() => {
 
 .panel {
   position: fixed;
-  z-index: z('dropdown');
+  z-index: z('dropdown-panel');
   display: flex;
   flex-direction: column;
   width: min(100% - var(--fs-grid-margin) * 2, #{rem(515)});
