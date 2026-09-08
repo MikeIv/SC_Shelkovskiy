@@ -71,5 +71,7 @@ export type HomeGalleryAlbum = {
   imageSrc: string
   imageAlt: string
   photoCount: number
+  /** Фото альбома для lightbox; без `to` карточка открывает просмотр. */
+  photos?: string[]
   to?: string
 }

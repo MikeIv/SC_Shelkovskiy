@@ -1,27 +1,42 @@
 <script setup lang="ts">
 import { NuxtLink } from '#components'
 
-const props = withDefaults(
-  defineProps<{
-    id: string
-    title: string
-    date: string
-    imageSrc: string
-    imageAlt: string
-    photoCount: number
-    to?: string
-  }>(),
-  {
-    to: '/gallery',
-  },
+const props = defineProps<{
+  id: string
+  title: string
+  date: string
+  imageSrc: string
+  imageAlt: string
+  photoCount: number
+  /** Принимаем из альбома, чтобы не утекало в DOM через attrs. */
+  photos?: string[]
+  to?: string
+}>()
+
+const emit = defineEmits<{
+  select: []
+}>()
+
+const rootTag = computed(() => (props.to ? NuxtLink : 'button'))
+const rootBind = computed(() =>
+  props.to ? { to: props.to } : { type: 'button' as const },
 )
 
-const rootTag = computed(() => (props.to ? NuxtLink : 'article'))
-const rootBind = computed(() => (props.to ? { to: props.to } : {}))
+function onActivate(): void {
+  if (!props.to) {
+    emit('select')
+  }
+}
 </script>
 
 <template>
-  <component :is="rootTag" :id="id" :class="$style.root" v-bind="rootBind">
+  <component
+    :is="rootTag"
+    :id="id"
+    :class="$style.root"
+    v-bind="rootBind"
+    @click="onActivate"
+  >
     <div :class="$style.media">
       <img
         :class="$style.image"
@@ -53,9 +68,17 @@ const rootBind = computed(() => (props.to ? { to: props.to } : {}))
   flex-direction: column;
   gap: var(--fs-space-2);
   width: 100%;
+  margin: 0;
+  padding: 0;
   overflow: clip;
+  border: 0;
   color: inherit;
+  text-align: left;
   text-decoration: none;
+  background-color: transparent;
+  cursor: pointer;
+  appearance: none;
+  font: inherit;
 }
 
 .media {

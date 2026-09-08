@@ -13,8 +13,21 @@ const canScrollPrev = ref(false)
 const canScrollNext = ref(false)
 const showNav = ref(false)
 const isDesktop = ref(false)
+const activeAlbum = ref<HomeGalleryAlbum | null>(null)
 
 let desktopMedia: MediaQueryList | null = null
+
+function openAlbum(album: HomeGalleryAlbum): void {
+  if (!album.photos?.length) {
+    return
+  }
+
+  activeAlbum.value = album
+}
+
+function closeLightbox(): void {
+  activeAlbum.value = null
+}
 
 function updateNavState() {
   const viewport = viewportRef.value
@@ -102,13 +115,23 @@ onUnmounted(() => {
             :key="item.id"
             :class="$style.slide"
           >
-            <HomeGalleryCard v-bind="item" />
+            <HomeGalleryCard
+              v-bind="item"
+              @select="openAlbum(item)"
+            />
           </li>
         </ul>
       </div>
 
       <UiButton to="/gallery">Смотреть все</UiButton>
     </div>
+
+    <GalleryLightbox
+      :open="activeAlbum !== null"
+      :images="activeAlbum?.photos ?? []"
+      :alt="activeAlbum?.imageAlt ?? ''"
+      @close="closeLightbox"
+    />
   </section>
 </template>
 
