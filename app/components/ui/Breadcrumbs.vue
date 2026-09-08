@@ -6,15 +6,22 @@ export type UiBreadcrumbItem = {
   to?: string
 }
 
-const { items } = defineProps<{
+export type UiBreadcrumbsVariant = 'default' | 'light'
+
+const { items, variant = 'default' } = defineProps<{
   items: UiBreadcrumbItem[]
+  variant?: UiBreadcrumbsVariant
 }>()
 
 const lastIndex = computed(() => items.length - 1)
 </script>
 
 <template>
-  <nav aria-label="Хлебные крошки">
+  <nav
+    :class="$style.root"
+    aria-label="Хлебные крошки"
+    :data-variant="variant"
+  >
     <ol :class="$style.list">
       <li
         v-for="(item, index) in items"
@@ -57,6 +64,10 @@ const lastIndex = computed(() => items.length - 1)
 
 <style module lang="scss">
 @use 'tools' as *;
+
+.root {
+  min-width: 0;
+}
 
 .list {
   display: flex;
@@ -115,5 +126,32 @@ const lastIndex = computed(() => items.length - 1)
   width: rem(24);
   height: rem(24);
   color: var(--fs-color-gray);
+}
+
+.root[data-variant='light'] {
+  .muted,
+  .link {
+    color: var(--fs-color-light-hover);
+  }
+
+  .link {
+    @media (hover: hover) {
+      &:hover {
+        color: var(--fs-color-white);
+      }
+    }
+
+    &:focus-visible {
+      outline-color: var(--fs-color-white);
+    }
+  }
+
+  .current {
+    color: var(--fs-color-white);
+  }
+
+  .separator {
+    color: var(--fs-color-light-hover);
+  }
 }
 </style>

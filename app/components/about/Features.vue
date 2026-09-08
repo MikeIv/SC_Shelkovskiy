@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import type { HomeCinemaFilm } from '#shared/types/home'
+import type { AboutFeature } from '#shared/types/about'
 
-const { items } = defineProps<{
-  items: HomeCinemaFilm[]
+const { title, description, items } = defineProps<{
+  title: string
+  description: string
+  items: AboutFeature[]
 }>()
 
 const {
@@ -16,10 +18,13 @@ const {
 </script>
 
 <template>
-  <section :class="$style.root" aria-labelledby="home-cinema-title">
+  <section :class="$style.root" aria-labelledby="about-features-title">
     <div :class="$style.inner">
       <div :class="$style.head">
-        <h2 id="home-cinema-title" :class="$style.title">Кино</h2>
+        <div :class="$style.copy">
+          <h2 id="about-features-title" :class="$style.title">{{ title }}</h2>
+          <p :class="$style.desc">{{ description }}</p>
+        </div>
 
         <div v-if="showNav" :class="$style.nav">
           <UiButtonArrow
@@ -27,14 +32,14 @@ const {
             :disabled="!canScrollPrev"
             @click="scrollByCard(-1)"
           >
-            Предыдущие фильмы
+            Предыдущие направления
           </UiButtonArrow>
           <UiButtonArrow
             direction="right"
             :disabled="!canScrollNext"
             @click="scrollByCard(1)"
           >
-            Следующие фильмы
+            Следующие направления
           </UiButtonArrow>
         </div>
       </div>
@@ -43,7 +48,7 @@ const {
         ref="viewportRef"
         :class="$style.viewport"
         aria-roledescription="carousel"
-        aria-label="Кино"
+        aria-label="Направления торгового центра"
       >
         <ul ref="trackRef" :class="$style.track">
           <li
@@ -51,12 +56,10 @@ const {
             :key="item.id"
             :class="$style.slide"
           >
-            <HomeCinemaCard v-bind="item" />
+            <AboutFeatureCard :feature="item" />
           </li>
         </ul>
       </div>
-
-      <UiButton to="/entertainment">Смотреть все</UiButton>
     </div>
   </section>
 </template>
@@ -65,10 +68,10 @@ const {
 @use 'tools' as *;
 
 .root {
-  padding-block: rem(60) var(--fs-space-6);
+  padding-block: rem(60) 0;
 
   @include from-desktop {
-    padding-block: rem(80) var(--fs-space-6);
+    padding-block: rem(80) 0;
   }
 }
 
@@ -76,14 +79,9 @@ const {
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-3);
-  align-items: flex-start;
   max-width: var(--fs-grid-content-max);
   margin-inline: auto;
   padding-inline: var(--fs-grid-margin);
-
-  @include from-tablet {
-    align-items: center;
-  }
 
   @include from-desktop {
     gap: var(--fs-space-5);
@@ -93,15 +91,30 @@ const {
 .head {
   display: flex;
   gap: var(--fs-space-3);
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   width: 100%;
 }
 
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-2);
+  min-width: 0;
+  max-width: rem(1105);
+}
+
 .title {
-  margin: 0;
   @include fs-h1;
-  color: var(--fs-color-black);
+  margin: 0;
+  overflow-wrap: break-word;
+}
+
+.desc {
+  margin: 0;
+  @include fs-text-lg;
+  max-width: rem(564);
+  overflow-wrap: break-word;
 }
 
 .nav {
@@ -116,7 +129,9 @@ const {
 }
 
 .viewport {
-  width: 100%;
+  width: calc(100% + 2 * var(--fs-grid-margin));
+  margin-inline: calc(-1 * var(--fs-grid-margin));
+  padding-inline: var(--fs-grid-margin);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
@@ -141,11 +156,11 @@ const {
 }
 
 .slide {
-  flex: 0 0 rem(280);
+  flex: 0 0 min(100vw - 2 * var(--fs-grid-margin), rem(320));
   scroll-snap-align: start;
 
   @include from-desktop {
-    flex: 0 0 rem(372);
+    flex: 0 0 rem(900);
   }
 }
 </style>
