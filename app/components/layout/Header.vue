@@ -13,10 +13,24 @@ withDefaults(
 )
 
 const hoursLabel = 'Сегодня с 10:00 до 22:00'
+const hoursOpen = ref(false)
+const hoursBtnRef = ref<HTMLButtonElement | null>(null)
+
+function toggleHours(): void {
+  hoursOpen.value = !hoursOpen.value
+}
+
+function closeHours(): void {
+  hoursOpen.value = false
+}
 </script>
 
 <template>
-  <header :class="$style.root" :data-variant="variant" :data-overlay="overlay || undefined">
+  <header
+    :class="$style.root"
+    :data-variant="variant"
+    :data-overlay="overlay || undefined"
+  >
     <a :class="$style.skip" href="#content">К содержанию</a>
     <div :class="$style.inner">
       <div :class="$style.bar">
@@ -26,7 +40,14 @@ const hoursLabel = 'Сегодня с 10:00 до 22:00'
             <span :class="$style.srOnly">Поиск</span>
           </button>
           <div :class="$style.meta">
-            <button :class="$style.hours" type="button">
+            <button
+              ref="hoursBtnRef"
+              :class="$style.hours"
+              type="button"
+              aria-haspopup="dialog"
+              :aria-expanded="hoursOpen"
+              @click="toggleHours"
+            >
               <span>{{ hoursLabel }}</span>
               <UIcon name="local:arrow-down" :class="$style.icon" aria-hidden="true" />
             </button>
@@ -70,6 +91,11 @@ const hoursLabel = 'Сегодня с 10:00 до 22:00'
         </ul>
       </nav>
     </div>
+    <LayoutHoursModal
+      :open="hoursOpen"
+      :anchor="hoursBtnRef"
+      @close="closeHours"
+    />
   </header>
 </template>
 
@@ -126,7 +152,7 @@ const hoursLabel = 'Сегодня с 10:00 до 22:00'
   }
 
   @include from-desktop {
-    padding-top: 0;
+    padding-top: rem(40);
     border-bottom: 0;
   }
 }
@@ -268,6 +294,22 @@ const hoursLabel = 'Сегодня с 10:00 до 22:00'
   align-items: center;
   @include fs-text-lg;
   white-space: nowrap;
+}
+
+.hours {
+  .icon {
+    transition: transform 0.2s ease;
+  }
+
+  &[aria-expanded='true'] .icon {
+    transform: rotate(180deg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .icon {
+      transition: none;
+    }
+  }
 }
 
 .iconBtn {
