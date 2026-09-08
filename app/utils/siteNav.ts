@@ -12,6 +12,15 @@ export const siteNavItems = [
   { label: 'Мероприятия', to: '/events' },
 ] as const satisfies readonly SiteNavItem[]
 
+export const menuNavSecondary = [
+  { label: 'О нас', to: '/about' },
+  { label: 'Галерея', to: '/gallery' },
+  { label: 'Парковка', to: '/parking' },
+  { label: 'Программа лояльности', to: '/loyalty' },
+  { label: 'Подарочные карты', to: '/gift-cards' },
+  { label: 'Арендаторам', to: '/tenants' },
+] as const satisfies readonly SiteNavItem[]
+
 export type SiteNavPath = (typeof siteNavItems)[number]['to']
 
 export function getSiteNavItem(path: SiteNavPath) {

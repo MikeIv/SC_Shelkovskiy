@@ -15,13 +15,25 @@ withDefaults(
 const hoursLabel = 'Сегодня с 10:00 до 22:00'
 const hoursOpen = ref(false)
 const hoursBtnRef = ref<HTMLButtonElement | null>(null)
+const menuOpen = ref(false)
+const menuBtnRef = ref<HTMLButtonElement | null>(null)
 
 function toggleHours(): void {
+  menuOpen.value = false
   hoursOpen.value = !hoursOpen.value
 }
 
 function closeHours(): void {
   hoursOpen.value = false
+}
+
+function toggleMenu(): void {
+  hoursOpen.value = false
+  menuOpen.value = !menuOpen.value
+}
+
+function closeMenu(): void {
+  menuOpen.value = false
 }
 </script>
 
@@ -72,7 +84,15 @@ function closeHours(): void {
               <span :class="$style.actionLabel">Поиск</span>
             </button>
           </div>
-          <button :class="$style.iconBtn" type="button" aria-label="Меню">
+          <button
+            ref="menuBtnRef"
+            :class="$style.iconBtn"
+            type="button"
+            aria-label="Меню"
+            aria-haspopup="dialog"
+            :aria-expanded="menuOpen"
+            @click="toggleMenu"
+          >
             <UIcon name="local:menu" :class="$style.icon" aria-hidden="true" />
           </button>
         </div>
@@ -95,6 +115,11 @@ function closeHours(): void {
       :open="hoursOpen"
       :anchor="hoursBtnRef"
       @close="closeHours"
+    />
+    <LayoutMenuModal
+      :open="menuOpen"
+      :anchor="menuBtnRef"
+      @close="closeMenu"
     />
   </header>
 </template>
