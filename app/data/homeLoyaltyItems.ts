@@ -21,5 +21,6 @@ export const homeLoyaltyItems: HomeLoyaltyCard[] = [
     giftCardFrontSrc: '/images/home/loyalty/gift-card-front.png',
     giftCardBackSrc: '/images/home/loyalty/gift-card-back.png',
     buttonLabel: 'Купить',
+    to: '/gift-cards',
   },
 ]
