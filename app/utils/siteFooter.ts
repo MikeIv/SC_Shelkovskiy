@@ -28,7 +28,7 @@ export const footerNavPrimary: readonly FooterNavItem[] = [
 export const footerNavSecondary: readonly FooterNavItem[] = [
   { label: 'Парковка', to: '/parking' },
   { label: 'Автовокзал' },
-  { label: 'Вакансии' },
+  { label: 'Вакансии', to: '/vacancies' },
   { label: 'Контакты', to: '/contacts' },
   { label: 'Правила' },
 ]
