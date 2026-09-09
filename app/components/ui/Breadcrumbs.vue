@@ -118,7 +118,15 @@ const lastIndex = computed(() => items.length - 1)
 }
 
 .current {
+  max-width: 100%;
   color: var(--fs-color-black);
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.item:last-child {
+  flex: 1 1 rem(200);
+  max-width: 100%;
 }
 
 .separator {

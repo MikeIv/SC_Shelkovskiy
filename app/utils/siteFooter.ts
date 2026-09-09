@@ -20,7 +20,7 @@ export const footerNavPrimary: readonly FooterNavItem[] = [
   { label: 'О нас', to: '/about' },
   { label: 'Новости и акции', to: '/news' },
   { label: 'Галерея', to: '/gallery' },
-  { label: 'Социальная активность и награды' },
+  { label: 'Социальная активность и награды', to: '/awards' },
   { label: 'Партнерам' },
   { label: 'Кабинет арендатора' },
 ]

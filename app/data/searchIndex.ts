@@ -1,6 +1,8 @@
 import type { CatalogCardItem } from '#shared/types/catalog'
 import type { SearchHit, SearchResultGroup, SearchSectionId } from '#shared/types/search'
 import { getNewsDetailPath } from '#shared/utils/newsPath'
+import { getAwardsDetailPath } from '#shared/utils/awardsPath'
+import { awardsItems } from '~/data/awardsPage'
 import { cafesCatalogItems } from '~/data/cafesCatalogItems'
 import { entertainmentCatalogItems } from '~/data/entertainmentCatalogItems'
 import { eventsAfishaItems } from '~/data/eventsItems'
@@ -75,20 +77,13 @@ const searchIndex: SearchHit[] = [
     meta: `${item.dateStart.day} ${item.dateStart.month}`,
     to: item.to ?? '/events',
   })),
-  {
-    id: 'awards-best-mall-2024',
-    sectionId: 'awards',
-    title: 'Лучший торгово-развлекательный центр Москвы 2024',
-    meta: 'Награда',
-    to: '/about',
-  },
-  {
-    id: 'awards-social-impact',
-    sectionId: 'awards',
-    title: 'Премия за социальную активность',
-    meta: 'Награда',
-    to: '/about',
-  },
+  ...awardsItems.map((item) => ({
+    id: `awards-${item.id}`,
+    sectionId: 'awards' as const,
+    title: item.title,
+    meta: item.date,
+    to: getAwardsDetailPath(item.id),
+  })),
 ]
 
 export const searchEmptyMessage = 'По вашему запросу ничего не найдено'
