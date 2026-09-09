@@ -8,7 +8,6 @@ export const tenantsHero = {
   imageSrc: '/images/tenants/hero.jpg',
   imageAlt: 'Ночной фасад торгово-развлекательного центра «Щёлковский»',
   ctaLabel: 'Войти в личный кабинет',
-  ctaTo: '/tenant',
 } as const
 
 export const tenantsStats = {
@@ -89,7 +88,8 @@ export const tenantsAdvantageItems: TenantsAdvantage[] = [
 
 export const tenantsApply = {
   title: 'Присоединяйтесь к Щёлковскому',
-  privacyHref: '/privacy',
+  /** Страница политики ещё не сверстана. */
+  privacyHref: '',
   presentationLabel: 'Скачать презентацию',
   presentationHref: '#',
   presentationNote: 'Вы можете скачать нашу презентацию и ознакомиться с нашим ТЦ подробнее',

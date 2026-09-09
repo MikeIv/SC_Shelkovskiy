@@ -1,6 +1,13 @@
 <script setup lang="ts">
+import { NuxtLink } from '#components'
+import type { FooterNavItem } from '~/utils/siteFooter'
+
 const email = ref('')
 const consent = ref(false)
+
+function navBind(to: FooterNavItem['to']) {
+  return to ? { to } : {}
+}
 </script>
 
 <template>
@@ -18,20 +25,28 @@ const consent = ref(false)
 
         <nav :class="[$style.nav, $style.navPrimary]" aria-label="О центре">
           <ul :class="$style.navList">
-            <li v-for="item in footerNavPrimary" :key="item.to">
-              <NuxtLink :class="$style.navLink" :to="item.to">
+            <li v-for="item in footerNavPrimary" :key="item.label">
+              <component
+                :is="item.to ? NuxtLink : 'span'"
+                :class="$style.navLink"
+                v-bind="navBind(item.to)"
+              >
                 {{ item.label }}
-              </NuxtLink>
+              </component>
             </li>
           </ul>
         </nav>
 
         <nav :class="[$style.nav, $style.navSecondary]" aria-label="Сервисы">
           <ul :class="$style.navList">
-            <li v-for="item in footerNavSecondary" :key="item.to">
-              <NuxtLink :class="$style.navLink" :to="item.to">
+            <li v-for="item in footerNavSecondary" :key="item.label">
+              <component
+                :is="item.to ? NuxtLink : 'span'"
+                :class="$style.navLink"
+                v-bind="navBind(item.to)"
+              >
                 {{ item.label }}
-              </NuxtLink>
+              </component>
             </li>
           </ul>
         </nav>
@@ -55,13 +70,21 @@ const consent = ref(false)
               <UiCheckbox v-model="consent" :class="$style.consentCheck" />
               <p :class="$style.consentText">
                 Соглашаюсь с
-                <NuxtLink :class="$style.consentLink" :to="footerContacts.privacyHref">
+                <component
+                  :is="footerContacts.privacyHref ? NuxtLink : 'span'"
+                  :class="$style.consentLink"
+                  v-bind="navBind(footerContacts.privacyHref)"
+                >
                   политикой конфиденциальности
-                </NuxtLink>
+                </component>
                 и
-                <NuxtLink :class="$style.consentLink" :to="footerContacts.privacyHref">
+                <component
+                  :is="footerContacts.privacyHref ? NuxtLink : 'span'"
+                  :class="$style.consentLink"
+                  v-bind="navBind(footerContacts.privacyHref)"
+                >
                   обработки персональных данных
-                </NuxtLink>
+                </component>
               </p>
             </div>
             <UiButton :class="$style.newsletterBtn" type="submit">
@@ -105,9 +128,13 @@ const consent = ref(false)
         <p :class="$style.copyright">
           {{ footerContacts.copyright }}
         </p>
-        <NuxtLink :class="$style.privacyLink" :to="footerContacts.privacyHref">
+        <component
+          :is="footerContacts.privacyHref ? NuxtLink : 'span'"
+          :class="$style.privacyLink"
+          v-bind="navBind(footerContacts.privacyHref)"
+        >
           {{ footerContacts.privacyLabel }}
-        </NuxtLink>
+        </component>
       </div>
     </div>
   </footer>

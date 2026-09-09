@@ -119,7 +119,9 @@ onBeforeUnmount(() => {
                 <span>{{ hoursLabel }}</span>
                 <UIcon name="local:arrow-down" :class="$style.icon" aria-hidden="true" />
               </button>
-              <a :class="$style.textLink" href="#" @click.prevent>Как добраться</a>
+              <NuxtLink :class="$style.textLink" to="/directions">
+                Как добраться
+              </NuxtLink>
             </div>
           </div>
           <NuxtLink :class="$style.brand" to="/" aria-label="Щёлковский">

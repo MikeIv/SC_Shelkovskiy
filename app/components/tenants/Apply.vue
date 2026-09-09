@@ -335,9 +335,17 @@ function onSubmit() {
             <UiCheckbox v-model="consent" />
             <span :class="$style.consentText">
               Даю согласие на
-              <NuxtLink :class="$style.consentLink" :to="privacyHref">
+              <NuxtLink
+                v-if="privacyHref"
+                :class="$style.consentLink"
+                :to="privacyHref"
+              >
                 обработку персональных данных
               </NuxtLink>
+              <span
+                v-else
+                :class="$style.consentLink"
+              >обработку персональных данных</span>
             </span>
           </label>
 

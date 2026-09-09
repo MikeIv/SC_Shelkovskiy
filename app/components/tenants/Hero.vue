@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import type { UiBreadcrumbItem } from '~/components/ui/Breadcrumbs.vue'
 
-const { title, description, imageSrc, imageAlt, ctaLabel, ctaTo, breadcrumbs } =
-  defineProps<{
-    title: string
-    description: string
-    imageSrc: string
-    imageAlt: string
-    ctaLabel: string
-    ctaTo: string
-    breadcrumbs: UiBreadcrumbItem[]
-  }>()
+defineProps<{
+  title: string
+  description: string
+  imageSrc: string
+  imageAlt: string
+  ctaLabel: string
+  ctaTo?: string
+  breadcrumbs: UiBreadcrumbItem[]
+}>()
 </script>
 
 <template>

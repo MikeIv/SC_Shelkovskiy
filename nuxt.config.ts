@@ -1,6 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 const isDev = process.env.NODE_ENV === 'development'
 
+/** Без ключа модуль vue-yandex-maps падает в плагине (`createYmapsOptions`). */
+const yandexMapsApikey = process.env.NUXT_PUBLIC_YANDEX_MAPS_APIKEY?.trim() ?? ''
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
 
@@ -9,7 +12,21 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/ui.css', '~/assets/styles/main.scss'],
 
-  modules: ['@nuxt/eslint', '@nuxt/ui', '@nuxt/icon'],
+  modules: [
+    '@nuxt/eslint',
+    '@nuxt/ui',
+    '@nuxt/icon',
+    ...(yandexMapsApikey ? (['vue-yandex-maps/nuxt'] as const) : []),
+  ],
+
+  ...(yandexMapsApikey
+    ? {
+        yandexMaps: {
+          apikey: yandexMapsApikey,
+          lang: 'ru_RU' as const,
+        },
+      }
+    : {}),
 
   ui: {
     fonts: false,

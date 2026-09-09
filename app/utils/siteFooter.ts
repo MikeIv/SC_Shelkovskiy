@@ -6,7 +6,8 @@ import socialVk from '~/assets/icons/social/social-vk.svg'
 
 export interface FooterNavItem {
   readonly label: string
-  readonly to: string
+  /** Внутренний маршрут. Без страницы — не задавать (пункт без навигации). */
+  readonly to?: string
 }
 
 export interface FooterSocialLink {
@@ -15,22 +16,22 @@ export interface FooterSocialLink {
   readonly icon: string
 }
 
-export const footerNavPrimary = [
+export const footerNavPrimary: readonly FooterNavItem[] = [
   { label: 'О нас', to: '/about' },
   { label: 'Новости и акции', to: '/news' },
   { label: 'Галерея', to: '/gallery' },
-  { label: 'Социальная активность и награды', to: '/social' },
-  { label: 'Партнерам', to: '/partners' },
-  { label: 'Кабинет арендатора', to: '/tenant' },
-] as const satisfies readonly FooterNavItem[]
+  { label: 'Социальная активность и награды' },
+  { label: 'Партнерам' },
+  { label: 'Кабинет арендатора' },
+]
 
-export const footerNavSecondary = [
+export const footerNavSecondary: readonly FooterNavItem[] = [
   { label: 'Парковка', to: '/parking' },
-  { label: 'Автовокзал', to: '/bus-station' },
-  { label: 'Вакансии', to: '/vacancies' },
+  { label: 'Автовокзал' },
+  { label: 'Вакансии' },
   { label: 'Контакты', to: '/contacts' },
-  { label: 'Правила', to: '/rules' },
-] as const satisfies readonly FooterNavItem[]
+  { label: 'Правила' },
+]
 
 export const footerSocialLinks = [
   { label: 'Сайт', href: 'https://schelkovsky-trc.ru', icon: socialGlobe },
@@ -40,7 +41,16 @@ export const footerSocialLinks = [
   { label: 'Чат', href: '#', icon: socialMessage },
 ] as const satisfies readonly FooterSocialLink[]
 
-export const footerContacts = {
+export const footerContacts: {
+  readonly phone: string
+  readonly phoneHref: string
+  readonly email: string
+  readonly emailHref: string
+  readonly address: string
+  readonly copyright: string
+  readonly privacyLabel: string
+  readonly privacyHref?: string
+} = {
   phone: '+7 (499) 677-44-44',
   phoneHref: 'tel:+74996774444',
   email: 'info@schelkovsky-trc.ru',
@@ -48,5 +58,4 @@ export const footerContacts = {
   address: '107207 Москва, Щёлковское шоссе, 75',
   copyright: 'ТРЦ «Щёлковский» © 2026',
   privacyLabel: 'Политика обработки персональных данных',
-  privacyHref: '/privacy',
-} as const
+}
