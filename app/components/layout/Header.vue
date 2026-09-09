@@ -17,8 +17,11 @@ const hoursOpen = ref(false)
 const hoursBtnRef = ref<HTMLButtonElement | null>(null)
 const menuOpen = ref(false)
 const menuBtnRef = ref<HTMLButtonElement | null>(null)
+const searchOpen = ref(false)
 
-const popupOpen = computed(() => hoursOpen.value || menuOpen.value)
+const popupOpen = computed(
+  () => hoursOpen.value || menuOpen.value || searchOpen.value,
+)
 const { pinned, hidden } = useHeaderScroll({
   pauseHide: popupOpen,
 })
@@ -54,6 +57,7 @@ function scheduleMeasureSpacer(): void {
 
 function toggleHours(): void {
   menuOpen.value = false
+  searchOpen.value = false
   hoursOpen.value = !hoursOpen.value
 }
 
@@ -63,11 +67,22 @@ function closeHours(): void {
 
 function toggleMenu(): void {
   hoursOpen.value = false
+  searchOpen.value = false
   menuOpen.value = !menuOpen.value
 }
 
 function closeMenu(): void {
   menuOpen.value = false
+}
+
+function toggleSearch(): void {
+  hoursOpen.value = false
+  menuOpen.value = false
+  searchOpen.value = !searchOpen.value
+}
+
+function closeSearch(): void {
+  searchOpen.value = false
 }
 
 watch(pinned, scheduleMeasureSpacer)
@@ -103,7 +118,13 @@ onBeforeUnmount(() => {
       <div :class="$style.inner">
         <div :class="$style.bar">
           <div :class="$style.start">
-            <button :class="[$style.iconBtn, $style.searchMobile]" type="button">
+            <button
+              :class="[$style.iconBtn, $style.searchMobile]"
+              type="button"
+              aria-haspopup="dialog"
+              :aria-expanded="searchOpen"
+              @click="toggleSearch"
+            >
               <UIcon name="local:search" :class="$style.icon" aria-hidden="true" />
               <span :class="$style.srOnly">Поиск</span>
             </button>
@@ -135,7 +156,13 @@ onBeforeUnmount(() => {
                 </span>
                 <span :class="$style.actionLabel">Схема</span>
               </NuxtLink>
-              <button :class="[$style.action, $style.searchDesk]" type="button">
+              <button
+                :class="[$style.action, $style.searchDesk]"
+                type="button"
+                aria-haspopup="dialog"
+                :aria-expanded="searchOpen"
+                @click="toggleSearch"
+              >
                 <span :class="$style.actionIcon">
                   <UIcon name="local:search" :class="$style.icon" aria-hidden="true" />
                 </span>
@@ -183,6 +210,10 @@ onBeforeUnmount(() => {
         :open="menuOpen"
         :anchor="menuBtnRef"
         @close="closeMenu"
+      />
+      <LayoutSearchModal
+        :open="searchOpen"
+        @close="closeSearch"
       />
     </header>
   </div>
