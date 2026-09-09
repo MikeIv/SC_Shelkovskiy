@@ -10,6 +10,7 @@ export const homeLoyaltyItems: HomeLoyaltyCard[] = [
     illustrationAlt: 'Мобильное приложение программы лояльности на смартфонах',
     shadowBackSrc: '/images/home/loyalty/shadow-back.png',
     buttonLabel: 'Подробнее',
+    to: '/loyalty',
   },
   {
     id: 'gift-cards',
