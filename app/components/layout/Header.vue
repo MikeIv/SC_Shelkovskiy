@@ -129,12 +129,12 @@ onBeforeUnmount(() => {
           </NuxtLink>
           <div :class="$style.end">
             <div :class="$style.endMain">
-              <a :class="$style.action" href="#" @click.prevent>
+              <NuxtLink :class="$style.action" to="/map">
                 <span :class="$style.actionIcon">
                   <UIcon name="local:map" :class="$style.icon" aria-hidden="true" />
                 </span>
                 <span :class="$style.actionLabel">Схема</span>
-              </a>
+              </NuxtLink>
               <button :class="[$style.action, $style.searchDesk]" type="button">
                 <span :class="$style.actionIcon">
                   <UIcon name="local:search" :class="$style.icon" aria-hidden="true" />

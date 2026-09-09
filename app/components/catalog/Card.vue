@@ -11,14 +11,14 @@
  *
  * Поведение:
  * - клик по основной области карточки (`to`) → страница описания бренда;
- * - клик по иконке схемы → `mapUrl` или заглушка `/map` (арендатор подсветится позже).
+ * - клик по иконке схемы → `mapUrl` или `/map` (арендатор подсветится по `tenantId`).
  *
  * Вариант `list` — текстовое представление для спискового режима каталога.
  */
 import { NuxtLink } from '#components'
 import type { CatalogCardLayout, CatalogCardTag } from '#shared/types/catalog'
 
-const SCHEME_STUB_PATH = '/map'
+const SCHEME_PATH = '/map'
 
 const tagIconMap: Record<CatalogCardTag, string> = {
   loyalty: 'local:gift',
@@ -68,10 +68,10 @@ const schemeTarget = computed(() => {
   }
 
   if (props.tenantId) {
-    return `${SCHEME_STUB_PATH}?tenant=${encodeURIComponent(props.tenantId)}`
+    return `${SCHEME_PATH}?tenant=${encodeURIComponent(props.tenantId)}`
   }
 
-  return SCHEME_STUB_PATH
+  return SCHEME_PATH
 })
 
 async function onMapClick(event: MouseEvent) {
