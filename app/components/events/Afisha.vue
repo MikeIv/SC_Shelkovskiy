@@ -1,19 +1,18 @@
 <script setup lang="ts">
 import type { EventAfishaItem } from '#shared/types/events'
-import { NuxtLink } from '#components'
+import { getEventDetailPath } from '#shared/utils/eventsPath'
 
 const props = defineProps<{
   item: EventAfishaItem
 }>()
 
-const rootIs = computed(() => (props.item.to ? NuxtLink : 'article'))
+const linkTarget = computed(() => props.item.to ?? getEventDetailPath(props.item.id))
 </script>
 
 <template>
-  <component
-    :is="rootIs"
+  <NuxtLink
+    :to="linkTarget"
     :class="$style.root"
-    v-bind="item.to ? { to: item.to } : {}"
   >
     <div :class="$style.dates">
       <p :class="$style.date">
@@ -53,7 +52,7 @@ const rootIs = computed(() => (props.item.to ? NuxtLink : 'article'))
         <p :class="$style.description">{{ item.description }}</p>
       </div>
     </div>
-  </component>
+  </NuxtLink>
 </template>
 
 <style module lang="scss">

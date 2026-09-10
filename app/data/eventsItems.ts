@@ -43,3 +43,7 @@ export const eventsAfishaItems: EventAfishaItem[] = [
     description: 'Июль в самом разгаре — впереди самые яркие выходные этого лета!',
   },
 ]
+
+export function getEventItemById(id: string): EventAfishaItem | undefined {
+  return eventsAfishaItems.find((item) => item.id === id)
+}

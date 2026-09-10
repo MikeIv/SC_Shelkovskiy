@@ -2,6 +2,7 @@ import type { CatalogCardItem } from '#shared/types/catalog'
 import type { SearchHit, SearchResultGroup, SearchSectionId } from '#shared/types/search'
 import { getNewsDetailPath } from '#shared/utils/newsPath'
 import { getAwardsDetailPath } from '#shared/utils/awardsPath'
+import { getEventDetailPath } from '#shared/utils/eventsPath'
 import { awardsItems } from '~/data/awardsPage'
 import { cafesCatalogItems } from '~/data/cafesCatalogItems'
 import { entertainmentCatalogItems } from '~/data/entertainmentCatalogItems'
@@ -75,7 +76,7 @@ const searchIndex: SearchHit[] = [
     sectionId: 'events' as const,
     title: item.title,
     meta: `${item.dateStart.day} ${item.dateStart.month}`,
-    to: item.to ?? '/events',
+    to: item.to ?? getEventDetailPath(item.id),
   })),
   ...awardsItems.map((item) => ({
     id: `awards-${item.id}`,

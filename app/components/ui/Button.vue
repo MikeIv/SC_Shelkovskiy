@@ -10,17 +10,32 @@ const props = withDefaults(
     variant?: UiButtonVariant
     size?: UiButtonSize
     to?: string
+    href?: string
   }>(),
   {
     type: 'button',
     variant: 'primary',
     size: 'chrome',
     to: undefined,
+    href: undefined,
   },
 )
 
-const rootTag = computed(() => (props.to ? NuxtLink : 'button'))
-const rootBind = computed(() => (props.to ? { to: props.to } : { type: props.type }))
+const rootTag = computed(() => {
+  if (props.href) {
+    return 'a'
+  }
+
+  return props.to ? NuxtLink : 'button'
+})
+
+const rootBind = computed(() => {
+  if (props.href) {
+    return { href: props.href, target: '_blank', rel: 'noopener noreferrer' }
+  }
+
+  return props.to ? { to: props.to } : { type: props.type }
+})
 </script>
 
 <template>
