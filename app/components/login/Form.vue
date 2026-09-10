@@ -10,8 +10,23 @@ const form = reactive({
   password: '',
 })
 
+const errors = reactive({
+  login: '',
+  password: '',
+})
+
+for (const field of ['login', 'password'] as const) {
+  watch(
+    () => form[field],
+    () => {
+      errors[field] = ''
+    },
+  )
+}
+
 function onSubmit(): void {
-  // Отправка появится после контракта API.
+  // Ошибки по макету до контракта API: любой submit показывает оба сообщения.
+  Object.assign(errors, loginPage.fieldErrors)
 }
 </script>
 
@@ -33,6 +48,7 @@ function onSubmit(): void {
         autocomplete="username"
         :placeholder="loginPage.loginPlaceholder"
         :label="loginPage.loginPlaceholder"
+        :error="errors.login"
         required
       />
       <UiInput
@@ -43,6 +59,7 @@ function onSubmit(): void {
         autocomplete="current-password"
         :placeholder="loginPage.passwordPlaceholder"
         :label="loginPage.passwordPlaceholder"
+        :error="errors.password"
         required
       />
     </template>

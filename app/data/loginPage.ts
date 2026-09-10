@@ -7,6 +7,10 @@ export const loginPage = {
   passwordPlaceholder: 'Пароль',
   forgotLabel: 'Забыли пароль?',
   submitLabel: 'Войти',
+  fieldErrors: {
+    login: 'Такой логин не найден',
+    password: 'Пароль неверный',
+  },
   watermarkSrc: '/images/login/watermark.svg',
 } as const
 
