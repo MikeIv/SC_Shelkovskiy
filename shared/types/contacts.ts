@@ -28,5 +28,16 @@ export type ContactsPageContent = {
   helpTitle: string
   helpText: string
   helpCtaLabel: string
-  helpCtaHref: string
+}
+
+export type ContactsFeedbackTopic = {
+  value: string
+  label: string
+}
+
+export type ContactsFeedbackContent = {
+  title: string
+  description: string
+  topics: readonly ContactsFeedbackTopic[]
+  patternSrc: string
 }

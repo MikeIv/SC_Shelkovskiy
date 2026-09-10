@@ -1,5 +1,6 @@
 import type {
   ContactsDepartment,
+  ContactsFeedbackContent,
   ContactsHoursRange,
   ContactsPageContent,
 } from '#shared/types/contacts'
@@ -20,8 +21,19 @@ export const contactsPage = {
   helpTitle: 'Нужна помощь?',
   helpText: 'Обратитесь к нам',
   helpCtaLabel: 'Написать нам',
-  helpCtaHref: footerContacts.emailHref,
 } as const satisfies ContactsPageContent
+
+export const contactsFeedback = {
+  title: 'Остались вопросы?',
+  description: 'Заполните форму и наши менеджеры свяжутся с Вами в ближайшее время',
+  topics: [
+    { value: 'general', label: 'Общий вопрос' },
+    { value: 'lease', label: 'Аренда' },
+    { value: 'ads', label: 'Реклама' },
+    { value: 'press', label: 'Для СМИ' },
+  ],
+  patternSrc: '/images/contacts/feedback-pattern.svg',
+} as const satisfies ContactsFeedbackContent
 
 export const contactsHours: ContactsHoursRange[] = [
   {

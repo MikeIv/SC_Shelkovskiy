@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import type {
   ContactsDepartment,
+  ContactsFeedbackContent,
   ContactsHoursRange,
   ContactsPageContent,
 } from '#shared/types/contacts'
 import { footerSocialLinks } from '~/utils/siteFooter'
 
-const { content, hours, departments } = defineProps<{
+const { content, hours, departments, feedback } = defineProps<{
   content: ContactsPageContent
   hours: ContactsHoursRange[]
   departments: ContactsDepartment[]
+  feedback: ContactsFeedbackContent
 }>()
+
+const isFeedbackOpen = ref(false)
 
 const labels = {
   phone: 'Телефон',
@@ -155,12 +159,18 @@ const labels = {
           <p :class="$style.helpTitle">{{ content.helpTitle }}</p>
           <p :class="$style.helpText">{{ content.helpText }}</p>
         </div>
-        <UiButton :to="content.helpCtaHref">
+        <UiButton type="button" @click="isFeedbackOpen = true">
           {{ content.helpCtaLabel }}
         </UiButton>
       </div>
     </aside>
   </section>
+
+  <ContactsFeedbackModal
+    :open="isFeedbackOpen"
+    :content="feedback"
+    @close="isFeedbackOpen = false"
+  />
 </template>
 
 <style module lang="scss">

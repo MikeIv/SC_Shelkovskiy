@@ -14,7 +14,7 @@ const props = withDefaults(
     error?: string
     label?: string
     placeholder?: string
-    options?: UiDropdownOption[]
+    options?: readonly UiDropdownOption[]
   }>(),
   {
     variant: 'light',

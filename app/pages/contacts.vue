@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   contactsDepartments,
+  contactsFeedback,
   contactsHours,
   contactsPage,
 } from '~/data/contactsPage'
@@ -25,6 +26,7 @@ useSeoMeta({
       :content="contactsPage"
       :hours="contactsHours"
       :departments="contactsDepartments"
+      :feedback="contactsFeedback"
     />
   </div>
 </template>
