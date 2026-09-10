@@ -107,6 +107,30 @@ const newsCatalogBaseItems = [
   },
 ] as const satisfies readonly NewsCardItem[]
 
+/** Акции страницы арендатора (Figma 528:12233); в ленту новостей не дублируем. */
+const tenantPageNewsItems = [
+  {
+    id: 'befree-sale',
+    imageSrc: '/images/news/befree-sale.jpg',
+    imageAlt: 'Распродажа в Befree до -70%',
+    date: '07 июля — 03 августа',
+    category: 'Befree',
+    title: 'Распродажа в Befree до -70%',
+    tagLabel: 'Акция',
+    tagVariant: 'action',
+  },
+  {
+    id: 'befree-selected',
+    imageSrc: '/images/news/befree-selected.jpg',
+    imageAlt: 'Befree −40% на избранные модели',
+    date: '26 мая — 31 мая',
+    category: 'Befree',
+    title: 'Befree −40% на избранные модели',
+    tagLabel: 'Акция',
+    tagVariant: 'action',
+  },
+] as const satisfies readonly NewsCardItem[]
+
 export { newsCatalogBaseItems }
 
 const newsItemsBySlug = new Map<string, NewsCardItem>([
@@ -114,6 +138,7 @@ const newsItemsBySlug = new Map<string, NewsCardItem>([
   ...homeNewsItems
     .filter((item) => !newsCatalogBaseItems.some((catalogItem) => catalogItem.id === item.id))
     .map((item) => [item.id, item] as const),
+  ...tenantPageNewsItems.map((item) => [item.id, item] as const),
 ])
 
 export const newsCatalogItems: NewsCardItem[] = [

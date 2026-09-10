@@ -1,4 +1,5 @@
 import type { CatalogCardItem } from '#shared/types/catalog'
+import { withTenantDetailLinks } from '#shared/utils/tenantPath'
 
 /** Временные данные каталога магазинов до контракта API. */
 const shopsCatalogBaseItems = [
@@ -81,10 +82,10 @@ const shopsCatalogBaseItems = [
   },
 ] as const satisfies readonly CatalogCardItem[]
 
-export const shopsCatalogItems: CatalogCardItem[] = [
+export const shopsCatalogItems: CatalogCardItem[] = withTenantDetailLinks('shops', [
   ...shopsCatalogBaseItems,
   ...shopsCatalogBaseItems.map((item, index) => ({
     ...item,
     id: `${item.id}-dup-${index}`,
   })),
-]
+])
