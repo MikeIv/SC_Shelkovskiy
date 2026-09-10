@@ -30,7 +30,7 @@ export const footerNavSecondary: readonly FooterNavItem[] = [
   { label: 'Автовокзал' },
   { label: 'Вакансии', to: '/vacancies' },
   { label: 'Контакты', to: '/contacts' },
-  { label: 'Правила' },
+  { label: 'Правила', to: '/rules' },
 ]
 
 export const footerSocialLinks = [
