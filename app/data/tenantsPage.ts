@@ -8,6 +8,7 @@ export const tenantsHero = {
   imageSrc: '/images/tenants/hero.jpg',
   imageAlt: 'Ночной фасад торгово-развлекательного центра «Щёлковский»',
   ctaLabel: 'Войти в личный кабинет',
+  ctaTo: '/login',
 } as const
 
 export const tenantsStats = {
