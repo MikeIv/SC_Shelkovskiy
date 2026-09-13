@@ -84,11 +84,12 @@ function onActivate(): void {
 .media {
   position: relative;
   width: 100%;
-  aspect-ratio: 768 / 500;
+  aspect-ratio: 343 / 240;
   overflow: clip;
   border-radius: rem(24);
 
   @include from-desktop {
+    aspect-ratio: 768 / 500;
     border-radius: rem(32);
   }
 }

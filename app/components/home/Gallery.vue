@@ -11,7 +11,8 @@ const viewportRef = ref<HTMLElement | null>(null)
 const trackRef = ref<HTMLElement | null>(null)
 const canScrollPrev = ref(false)
 const canScrollNext = ref(false)
-const showNav = ref(false)
+const showHeadNav = ref(false)
+const showFootNav = ref(false)
 const isDesktop = ref(false)
 const activeAlbum = ref<HomeGalleryAlbum | null>(null)
 
@@ -37,7 +38,8 @@ function updateNavState() {
   }
 
   const hasOverflow = viewport.scrollWidth > viewport.clientWidth + 1
-  showNav.value = isDesktop.value && hasOverflow
+  showHeadNav.value = isDesktop.value && hasOverflow
+  showFootNav.value = !isDesktop.value && hasOverflow
   canScrollPrev.value = viewport.scrollLeft > 1
   canScrollNext.value = viewport.scrollLeft + viewport.clientWidth < viewport.scrollWidth - 1
 }
@@ -85,7 +87,7 @@ onUnmounted(() => {
       <div :class="$style.head">
         <h2 id="home-gallery-title" :class="$style.title">Галерея</h2>
 
-        <div v-if="showNav" :class="$style.nav">
+        <div v-if="showHeadNav" :class="$style.nav">
           <UiButtonArrow
             direction="left"
             :disabled="!canScrollPrev"
@@ -123,7 +125,24 @@ onUnmounted(() => {
         </ul>
       </div>
 
-      <UiButton to="/gallery">Смотреть все</UiButton>
+      <div v-if="showFootNav" :class="$style.footNav">
+        <UiButtonArrow
+          direction="left"
+          :disabled="!canScrollPrev"
+          @click="scrollByCard(-1)"
+        >
+          Предыдущие альбомы
+        </UiButtonArrow>
+        <UiButtonArrow
+          direction="right"
+          :disabled="!canScrollNext"
+          @click="scrollByCard(1)"
+        >
+          Следующие альбомы
+        </UiButtonArrow>
+      </div>
+
+      <UiButton :class="$style.allBtn" to="/gallery">Смотреть все</UiButton>
     </div>
 
     <GalleryLightbox
@@ -190,7 +209,9 @@ onUnmounted(() => {
 }
 
 .viewport {
-  width: 100%;
+  width: calc(100% + 2 * var(--fs-grid-margin));
+  margin-inline: calc(-1 * var(--fs-grid-margin));
+  padding-inline: var(--fs-grid-margin);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
@@ -203,23 +224,38 @@ onUnmounted(() => {
 
 .track {
   display: flex;
-  gap: var(--fs-space-2);
+  gap: var(--fs-space-3);
   width: max-content;
   margin: 0;
   padding: 0;
   list-style: none;
-
-  @include from-desktop {
-    gap: var(--fs-space-3);
-  }
 }
 
 .slide {
-  flex: 0 0 rem(320);
+  flex: 0 0 calc(100vw - 2 * var(--fs-grid-margin));
   scroll-snap-align: start;
 
   @include from-desktop {
     flex: 0 0 rem(768);
+  }
+}
+
+.footNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+
+  @include from-desktop {
+    display: none;
+  }
+}
+
+.allBtn {
+  display: none;
+
+  @include from-desktop {
+    display: inline-flex;
   }
 }
 </style>

@@ -15,6 +15,7 @@ const props = withDefaults(
 const hoursLabel = 'Сегодня с 10:00 до 22:00'
 const hoursOpen = ref(false)
 const hoursBtnRef = ref<HTMLButtonElement | null>(null)
+const menuHoursBtnRef = ref<HTMLElement | null>(null)
 const menuOpen = ref(false)
 const menuBtnRef = ref<HTMLButtonElement | null>(null)
 const searchOpen = ref(false)
@@ -29,6 +30,14 @@ const { pinned, hidden } = useHeaderScroll({
 const visualVariant = computed<LayoutHeaderVariant>(() =>
   pinned.value ? 'black' : props.variant,
 )
+
+const hoursAnchor = computed(() => {
+  if (menuOpen.value && menuHoursBtnRef.value) {
+    return menuHoursBtnRef.value
+  }
+
+  return hoursBtnRef.value
+})
 
 const headerRef = ref<HTMLElement | null>(null)
 const spacerHeight = ref(0)
@@ -61,8 +70,17 @@ function toggleHours(): void {
   hoursOpen.value = !hoursOpen.value
 }
 
+function toggleHoursFromMenu(): void {
+  searchOpen.value = false
+  hoursOpen.value = !hoursOpen.value
+}
+
 function closeHours(): void {
   hoursOpen.value = false
+}
+
+function onMenuHoursAnchor(el: HTMLElement | null): void {
+  menuHoursBtnRef.value = el
 }
 
 function toggleMenu(): void {
@@ -201,15 +219,20 @@ onBeforeUnmount(() => {
           </ul>
         </nav>
       </div>
-      <LayoutHoursModal
-        :open="hoursOpen"
-        :anchor="hoursBtnRef"
-        @close="closeHours"
-      />
       <LayoutMenuModal
         :open="menuOpen"
         :anchor="menuBtnRef"
+        :hours-open="hoursOpen"
+        :hours-label="hoursLabel"
         @close="closeMenu"
+        @toggle-hours="toggleHoursFromMenu"
+        @hours-anchor="onMenuHoursAnchor"
+        @search="toggleSearch"
+      />
+      <LayoutHoursModal
+        :open="hoursOpen"
+        :anchor="hoursAnchor"
+        @close="closeHours"
       />
       <LayoutSearchModal
         :open="searchOpen"

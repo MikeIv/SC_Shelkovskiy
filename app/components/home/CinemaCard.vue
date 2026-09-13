@@ -42,13 +42,15 @@ function onBuyTicket() {
       </UiTag>
     </div>
 
-    <UiButton :class="$style.ticketButton" type="button" @click="onBuyTicket">
-      Купить билет
-    </UiButton>
+    <div :class="$style.body">
+      <UiButton :class="$style.ticketButton" type="button" @click="onBuyTicket">
+        Купить билет
+      </UiButton>
 
-    <div :class="$style.copy">
-      <h3 :class="$style.title">{{ title }}</h3>
-      <p :class="$style.genres">{{ genres }}</p>
+      <div :class="$style.copy">
+        <h3 :class="$style.title">{{ title }}</h3>
+        <p :class="$style.genres">{{ genres }}</p>
+      </div>
     </div>
   </article>
 </template>
@@ -59,7 +61,7 @@ function onBuyTicket() {
 .root {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-2);
+  gap: rem(12);
   width: 100%;
 }
 
@@ -86,6 +88,13 @@ function onBuyTicket() {
   position: absolute;
   top: var(--fs-space-2);
   left: var(--fs-space-2);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-2);
+  width: 100%;
 }
 
 .ticketButton {

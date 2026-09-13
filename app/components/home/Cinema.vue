@@ -116,7 +116,9 @@ const {
 }
 
 .viewport {
-  width: 100%;
+  width: calc(100% + 2 * var(--fs-grid-margin));
+  margin-inline: calc(-1 * var(--fs-grid-margin));
+  padding-inline: var(--fs-grid-margin);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
@@ -129,19 +131,15 @@ const {
 
 .track {
   display: flex;
-  gap: var(--fs-space-2);
+  gap: var(--fs-space-3);
   width: max-content;
   margin: 0;
   padding: 0;
   list-style: none;
-
-  @include from-desktop {
-    gap: var(--fs-space-3);
-  }
 }
 
 .slide {
-  flex: 0 0 rem(280);
+  flex: 0 0 rem(320);
   scroll-snap-align: start;
 
   @include from-desktop {

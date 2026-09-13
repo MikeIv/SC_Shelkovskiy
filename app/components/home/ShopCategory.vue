@@ -31,6 +31,16 @@ function resetActive() {
     :class="$style.root"
     @mouseleave="resetActive"
   >
+    <img
+      :class="$style.pattern"
+      src="/images/home/categories/pattern.svg"
+      alt=""
+      width="374"
+      height="373"
+      aria-hidden="true"
+      decoding="async"
+    >
+
     <div :class="$style.images" aria-hidden="true">
       <div :class="[$style.frame, $style.frameLeft]">
         <img
@@ -113,8 +123,10 @@ $shop-category-duration: 0.55s;
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-3);
   align-items: center;
+  min-height: rem(720);
+  padding-top: rem(203);
+  overflow: clip;
 
   @include from-desktop {
     display: grid;
@@ -122,39 +134,55 @@ $shop-category-duration: 0.55s;
     gap: var(--fs-space-3);
     align-items: center;
     min-height: rem(618);
+    padding-top: 0;
+    overflow: visible;
+  }
+}
+
+.pattern {
+  position: absolute;
+  right: rem(-100);
+  bottom: rem(-95);
+  width: rem(374);
+  height: rem(373);
+  pointer-events: none;
+  opacity: 0.08;
+
+  @include from-desktop {
+    display: none;
   }
 }
 
 .images {
-  display: flex;
-  gap: var(--fs-space-2);
-  align-items: center;
-  justify-content: center;
-  width: 100%;
+  position: absolute;
+  inset: 0;
+  z-index: z('default');
+  pointer-events: none;
 
   @include from-desktop {
+    position: static;
     display: contents;
+    pointer-events: auto;
   }
 }
 
 .frame {
   position: relative;
-  flex-shrink: 0;
   overflow: hidden;
 }
 
 .frameLeft {
-  width: rem(160);
-  height: rem(192);
-  border-radius: rem(20);
-
-  @include from-tablet {
-    width: rem(220);
-    height: rem(264);
-    border-radius: rem(24);
-  }
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: rem(138);
+  height: rem(166);
+  border-radius: rem(24);
 
   @include from-desktop {
+    position: relative;
+    top: auto;
+    left: auto;
     grid-row: 1;
     grid-column: 1;
     justify-self: end;
@@ -167,16 +195,17 @@ $shop-category-duration: 0.55s;
 }
 
 .frameRight {
-  width: rem(140);
-  height: rem(150);
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: rem(175);
+  height: rem(187);
   border-radius: 50%;
 
-  @include from-tablet {
-    width: rem(200);
-    height: rem(214);
-  }
-
   @include from-desktop {
+    position: relative;
+    right: auto;
+    bottom: auto;
     grid-row: 1;
     grid-column: 3;
     justify-self: start;
@@ -218,7 +247,7 @@ $shop-category-duration: 0.55s;
   z-index: z('default');
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-3);
+  gap: rem(28);
   align-items: center;
   width: 100%;
 
@@ -233,7 +262,7 @@ $shop-category-duration: 0.55s;
 .list {
   display: flex;
   flex-direction: column;
-  gap: rem(12);
+  gap: rem(28);
   align-items: center;
   margin: 0;
   padding: 0;

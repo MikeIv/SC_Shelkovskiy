@@ -18,11 +18,10 @@ const { items } = defineProps<{
 .root {
   max-width: var(--fs-grid-content-max);
   margin-inline: auto;
-  padding-block: rem(60) rem(100);
-  padding-inline: var(--fs-grid-margin);
 
   @include from-desktop {
     padding-block: rem(80) rem(140);
+    padding-inline: var(--fs-grid-margin);
   }
 }
 </style>

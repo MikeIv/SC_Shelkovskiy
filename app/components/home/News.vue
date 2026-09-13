@@ -167,7 +167,9 @@ onUnmounted(() => {
 }
 
 .viewport {
-  width: 100%;
+  width: calc(100% + 2 * var(--fs-grid-margin));
+  margin-inline: calc(-1 * var(--fs-grid-margin));
+  padding-inline: var(--fs-grid-margin);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
