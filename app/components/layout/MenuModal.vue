@@ -16,7 +16,14 @@ const emit = defineEmits<{
 
 const contactsTitleId = useId()
 const panelRef = ref<HTMLElement | null>(null)
+const closeBtnRef = ref<HTMLButtonElement | null>(null)
 const panelStyle = ref<Record<string, string>>({})
+
+useDialogFocus({
+  open: () => props.open,
+  container: panelRef,
+  initialFocus: closeBtnRef,
+})
 
 const mobileSecondary = [
   ...menuNavSecondary,
@@ -180,6 +187,7 @@ onBeforeUnmount(() => {
                 <UIcon name="local:map" :class="$style.barIcon" aria-hidden="true" />
               </NuxtLink>
               <button
+                ref="closeBtnRef"
                 :class="$style.iconBtn"
                 type="button"
                 aria-label="Закрыть меню"

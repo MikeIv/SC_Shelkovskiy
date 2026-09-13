@@ -8,8 +8,10 @@ const { slides } = defineProps<{
 }>()
 
 const index = ref(0)
-const paused = ref(false)
+const userPaused = ref(false)
+const hiddenPaused = ref(false)
 
+const paused = computed(() => userPaused.value || hiddenPaused.value)
 const current = computed(() => slides[index.value])
 const total = computed(() => slides.length)
 const canCycle = computed(() => total.value > 1)
@@ -32,6 +34,10 @@ function next() {
   goTo(index.value + 1)
 }
 
+function togglePause() {
+  userPaused.value = !userPaused.value
+}
+
 function onProgressEnd() {
   if (!canCycle.value || paused.value) {
     return
@@ -41,7 +47,7 @@ function onProgressEnd() {
 }
 
 function onVisibilityChange() {
-  paused.value = document.hidden
+  hiddenPaused.value = document.hidden
 }
 
 onMounted(() => {
@@ -111,6 +117,14 @@ onUnmounted(() => {
           <span>{{ index + 1 }}</span>
           <span :class="$style.total">/{{ total }}</span>
         </p>
+        <button
+          :class="$style.pause"
+          type="button"
+          :aria-pressed="userPaused"
+          @click="togglePause"
+        >
+          {{ userPaused ? 'Запустить слайдер' : 'Пауза слайдера' }}
+        </button>
         <UiButtonArrow variant="light" direction="right" @click="next">
           Следующий слайд
         </UiButtonArrow>
@@ -274,6 +288,34 @@ onUnmounted(() => {
     gap: var(--fs-space-4);
     justify-content: flex-end;
     align-self: end;
+  }
+}
+
+.pause {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+  color: var(--fs-color-white);
+  background: transparent;
+  appearance: none;
+
+  &:focus-visible {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: rem(8) rem(12);
+    overflow: visible;
+    clip-path: none;
+    @include fs-text-sm;
+    white-space: nowrap;
+    border: rem(2) solid var(--fs-color-white);
+    border-radius: rem(4);
+    cursor: pointer;
   }
 }
 

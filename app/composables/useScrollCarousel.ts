@@ -1,15 +1,17 @@
 const DESKTOP_QUERY = '(min-width: 1280px)'
 
 /**
- * Горизонтальная карусель: refs viewport/track, стрелки только на desktop при overflow.
+ * Горизонтальная карусель: refs viewport/track, стрелки при overflow.
+ * `showNav` — только desktop; для мобильного футера смотрите `hasOverflow` + `isDesktop`.
  */
 export function useScrollCarousel() {
   const viewportRef = ref<HTMLElement | null>(null)
   const trackRef = ref<HTMLElement | null>(null)
   const canScrollPrev = ref(false)
   const canScrollNext = ref(false)
-  const showNav = ref(false)
+  const hasOverflow = ref(false)
   const isDesktop = ref(false)
+  const showNav = computed(() => isDesktop.value && hasOverflow.value)
 
   let desktopMedia: MediaQueryList | null = null
 
@@ -20,8 +22,7 @@ export function useScrollCarousel() {
       return
     }
 
-    const hasOverflow = viewport.scrollWidth > viewport.clientWidth + 1
-    showNav.value = isDesktop.value && hasOverflow
+    hasOverflow.value = viewport.scrollWidth > viewport.clientWidth + 1
     canScrollPrev.value = viewport.scrollLeft > 1
     canScrollNext.value = viewport.scrollLeft + viewport.clientWidth < viewport.scrollWidth - 1
   }
@@ -46,7 +47,6 @@ export function useScrollCarousel() {
 
   function onDesktopChange(event: MediaQueryListEvent) {
     isDesktop.value = event.matches
-    updateNavState()
   }
 
   onMounted(() => {
@@ -72,6 +72,8 @@ export function useScrollCarousel() {
     trackRef,
     canScrollPrev,
     canScrollNext,
+    hasOverflow,
+    isDesktop,
     showNav,
     scrollByCard,
   }

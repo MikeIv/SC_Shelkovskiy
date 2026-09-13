@@ -11,12 +11,19 @@ const emit = defineEmits<{
 
 const titleId = useId()
 const inputRef = ref<HTMLInputElement | null>(null)
+const rootRef = ref<HTMLElement | null>(null)
 const query = ref('')
 
 const groups = computed(() => searchSite(query.value))
 const isEmpty = computed(
   () => query.value.trim().length > 0 && groups.value.length === 0,
 )
+
+useDialogFocus({
+  open: () => props.open,
+  container: rootRef,
+  initialFocus: inputRef,
+})
 
 function close(): void {
   emit('close')
@@ -57,7 +64,7 @@ function bindListeners(bind: boolean): void {
 
 watch(
   () => props.open,
-  async (isOpen) => {
+  (isOpen) => {
     if (!import.meta.client) {
       return
     }
@@ -72,8 +79,6 @@ watch(
 
     lockScroll(true)
     bindListeners(true)
-    await nextTick()
-    inputRef.value?.focus()
   },
 )
 
@@ -87,6 +92,7 @@ onBeforeUnmount(() => {
   <Teleport to="body">
     <div
       v-if="open"
+      ref="rootRef"
       :class="$style.root"
       role="dialog"
       aria-modal="true"

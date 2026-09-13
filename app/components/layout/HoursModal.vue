@@ -11,6 +11,11 @@ const emit = defineEmits<{
 const panelRef = ref<HTMLElement | null>(null)
 const panelStyle = ref<Record<string, string>>({})
 
+useDialogFocus({
+  open: () => props.open,
+  container: panelRef,
+})
+
 function close(): void {
   emit('close')
 }

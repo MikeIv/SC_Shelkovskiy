@@ -4,10 +4,27 @@ import type { HomeBrandRow } from '#shared/types/home'
 const { rows } = defineProps<{
   rows: HomeBrandRow[]
 }>()
+
+const paused = ref(false)
+
+function togglePause() {
+  paused.value = !paused.value
+}
 </script>
 
 <template>
   <section :class="$style.root" aria-label="Бренды торгового центра">
+    <div :class="$style.toolbar">
+      <button
+        :class="$style.pause"
+        type="button"
+        :aria-pressed="paused"
+        @click="togglePause"
+      >
+        {{ paused ? 'Запустить прокрутку брендов' : 'Пауза прокрутки брендов' }}
+      </button>
+    </div>
+
     <div
       v-for="row in rows"
       :key="row.id"
@@ -18,6 +35,7 @@ const { rows } = defineProps<{
           $style.track,
           row.direction === 'rtl' ? $style.trackRtl : $style.trackLtr,
         ]"
+        :data-paused="paused || undefined"
       >
         <ul
           v-for="copy in 2"
@@ -64,6 +82,7 @@ const { rows } = defineProps<{
 .root {
   --marquee-duration: 80s;
 
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-2);
@@ -77,6 +96,48 @@ const { rows } = defineProps<{
   }
 }
 
+.toolbar {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+
+  &:focus-within {
+    position: relative;
+    z-index: z('default');
+    display: flex;
+    width: auto;
+    height: auto;
+    max-width: rem(1440);
+    margin-inline: auto;
+    padding-inline: var(--fs-space-3);
+    overflow: visible;
+    clip-path: none;
+    justify-content: flex-end;
+  }
+}
+
+.pause {
+  margin: 0;
+  padding: rem(6) rem(12);
+  border: rem(1) solid var(--fs-color-gray);
+  border-radius: rem(4);
+  @include fs-text-sm;
+  color: var(--fs-color-black);
+  background-color: var(--fs-color-white);
+  cursor: pointer;
+  appearance: none;
+
+  &:focus-visible {
+    outline: rem(2) solid var(--fs-color-black);
+    outline-offset: rem(2);
+  }
+}
+
 .row {
   overflow: hidden;
 }
@@ -87,11 +148,13 @@ const { rows } = defineProps<{
   animation-duration: var(--marquee-duration);
   animation-timing-function: linear;
   animation-iteration-count: infinite;
-  will-change: transform;
+
+  &[data-paused] {
+    animation-play-state: paused;
+  }
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;
-    will-change: auto;
   }
 }
 

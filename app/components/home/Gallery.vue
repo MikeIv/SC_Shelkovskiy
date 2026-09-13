@@ -1,22 +1,23 @@
 <script setup lang="ts">
 import type { HomeGalleryAlbum } from '#shared/types/home'
 
-const DESKTOP_QUERY = '(min-width: 1280px)'
-
 const { items } = defineProps<{
   items: HomeGalleryAlbum[]
 }>()
 
-const viewportRef = ref<HTMLElement | null>(null)
-const trackRef = ref<HTMLElement | null>(null)
-const canScrollPrev = ref(false)
-const canScrollNext = ref(false)
-const showHeadNav = ref(false)
-const showFootNav = ref(false)
-const isDesktop = ref(false)
-const activeAlbum = ref<HomeGalleryAlbum | null>(null)
+const {
+  viewportRef,
+  trackRef,
+  canScrollPrev,
+  canScrollNext,
+  hasOverflow,
+  isDesktop,
+  showNav: showHeadNav,
+  scrollByCard,
+} = useScrollCarousel()
 
-let desktopMedia: MediaQueryList | null = null
+const showFootNav = computed(() => !isDesktop.value && hasOverflow.value)
+const activeAlbum = ref<HomeGalleryAlbum | null>(null)
 
 function openAlbum(album: HomeGalleryAlbum): void {
   if (!album.photos?.length) {
@@ -29,56 +30,6 @@ function openAlbum(album: HomeGalleryAlbum): void {
 function closeLightbox(): void {
   activeAlbum.value = null
 }
-
-function updateNavState() {
-  const viewport = viewportRef.value
-
-  if (!viewport) {
-    return
-  }
-
-  const hasOverflow = viewport.scrollWidth > viewport.clientWidth + 1
-  showHeadNav.value = isDesktop.value && hasOverflow
-  showFootNav.value = !isDesktop.value && hasOverflow
-  canScrollPrev.value = viewport.scrollLeft > 1
-  canScrollNext.value = viewport.scrollLeft + viewport.clientWidth < viewport.scrollWidth - 1
-}
-
-function scrollByCard(direction: -1 | 1) {
-  const viewport = viewportRef.value
-  const track = trackRef.value
-  const card = track?.firstElementChild as HTMLElement | null
-
-  if (!viewport || !track || !card) {
-    return
-  }
-
-  const styles = getComputedStyle(track)
-  const gap = Number.parseFloat(styles.gap || styles.columnGap || '0')
-
-  viewport.scrollBy({ left: direction * (card.offsetWidth + gap), behavior: 'smooth' })
-}
-
-function onDesktopChange(event: MediaQueryListEvent) {
-  isDesktop.value = event.matches
-  updateNavState()
-}
-
-onMounted(() => {
-  desktopMedia = window.matchMedia(DESKTOP_QUERY)
-  isDesktop.value = desktopMedia.matches
-  desktopMedia.addEventListener('change', onDesktopChange)
-
-  viewportRef.value?.addEventListener('scroll', updateNavState, { passive: true })
-  window.addEventListener('resize', updateNavState)
-  updateNavState()
-})
-
-onUnmounted(() => {
-  desktopMedia?.removeEventListener('change', onDesktopChange)
-  viewportRef.value?.removeEventListener('scroll', updateNavState)
-  window.removeEventListener('resize', updateNavState)
-})
 </script>
 
 <template>
