@@ -203,10 +203,6 @@ function closeLightbox(): void {
 }
 
 .allBtn {
-  display: none;
-
-  @include from-desktop {
-    display: inline-flex;
-  }
+  display: inline-flex;
 }
 </style>

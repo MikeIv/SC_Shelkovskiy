@@ -4,7 +4,7 @@ import type { NewsCardItem } from '#shared/types/news'
 export const homeNewsItems: NewsCardItem[] = [
   {
     id: 'ekonika-autumn',
-    imageSrc: '/images/home/news/ekonika.png',
+    imageSrc: '/images/home/news/ekonika.jpg',
     imageAlt: 'Осенняя коллекция EKONIKA PREMIUM',
     date: '14 июля',
     category: 'EKONIKA PREMIUM',
@@ -14,7 +14,7 @@ export const homeNewsItems: NewsCardItem[] = [
   },
   {
     id: 'colins-sale',
-    imageSrc: '/images/home/news/colins.png',
+    imageSrc: '/images/home/news/colins.jpg',
     imageAlt: 'Летняя распродажа в магазине COLIN’S',
     date: '14 июля',
     category: 'COLIN’S',
@@ -24,7 +24,7 @@ export const homeNewsItems: NewsCardItem[] = [
   },
   {
     id: 'joki-joya-birthday',
-    imageSrc: '/images/home/news/joki-joya.png',
+    imageSrc: '/images/home/news/joki-joya.jpg',
     imageAlt: 'День Рождения в Joki Joya',
     date: '14 июля',
     category: 'Joki Joya',
@@ -34,7 +34,7 @@ export const homeNewsItems: NewsCardItem[] = [
   },
   {
     id: 'befree-summer',
-    imageSrc: '/images/home/news/befree.png',
+    imageSrc: '/images/home/news/befree.jpg',
     imageAlt: 'Лето 2026 в Befree',
     date: '14 июля',
     category: 'Befree',

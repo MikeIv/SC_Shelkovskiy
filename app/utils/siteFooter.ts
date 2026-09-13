@@ -1,5 +1,4 @@
 import socialGlobe from '~/assets/icons/social/social-globe.svg'
-import socialMessage from '~/assets/icons/social/social-message.svg'
 import socialRutube from '~/assets/icons/social/social-rutube.svg'
 import socialTelegram from '~/assets/icons/social/social-telegram.svg'
 import socialVk from '~/assets/icons/social/social-vk.svg'
@@ -35,10 +34,9 @@ export const footerNavSecondary: readonly FooterNavItem[] = [
 
 export const footerSocialLinks = [
   { label: 'Сайт', href: 'https://schelkovsky-trc.ru', icon: socialGlobe },
-  { label: 'ВКонтакте', href: 'https://vk.com', icon: socialVk },
-  { label: 'Telegram', href: 'https://t.me', icon: socialTelegram },
+  { label: 'ВКонтакте', href: 'https://vk.com/trc.schelkovsky', icon: socialVk },
+  { label: 'Telegram', href: 'https://t.me/schelkovsky', icon: socialTelegram },
   { label: 'Rutube', href: 'https://rutube.ru', icon: socialRutube },
-  { label: 'Чат', href: '#', icon: socialMessage },
 ] as const satisfies readonly FooterSocialLink[]
 
 export const footerContacts: {

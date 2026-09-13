@@ -26,6 +26,45 @@ useSeoMeta({
 
 useHead({
   link: [{ rel: 'canonical', href: '/' }],
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'ShoppingCenter',
+        name: pageTitle,
+        description: pageDescription,
+        url: 'https://schelkovsky-trc.ru',
+        telephone: '+7-499-677-44-44',
+        email: 'info@schelkovsky-trc.ru',
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: 'Щёлковское шоссе, 75',
+          addressLocality: 'Москва',
+          postalCode: '107207',
+          addressCountry: 'RU',
+        },
+        openingHoursSpecification: [
+          {
+            '@type': 'OpeningHoursSpecification',
+            dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Sunday'],
+            opens: '10:00',
+            closes: '22:00',
+          },
+          {
+            '@type': 'OpeningHoursSpecification',
+            dayOfWeek: ['Friday', 'Saturday'],
+            opens: '10:00',
+            closes: '23:00',
+          },
+        ],
+        sameAs: [
+          'https://vk.com/trc.schelkovsky',
+          'https://t.me/schelkovsky',
+        ],
+      }),
+    },
+  ],
 })
 </script>
 

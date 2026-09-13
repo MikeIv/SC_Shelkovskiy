@@ -14,11 +14,19 @@ const props = withDefaults(
 )
 
 const activeIndex = ref(0)
+const revealed = ref<number[]>([0])
 
 const activeItem = computed(() => props.items[activeIndex.value])
 
+function isRevealed(index: number) {
+  return revealed.value.includes(index)
+}
+
 function setActive(index: number) {
   activeIndex.value = index
+  if (!revealed.value.includes(index)) {
+    revealed.value = [...revealed.value, index]
+  }
 }
 
 function resetActive() {
@@ -43,43 +51,45 @@ function resetActive() {
 
     <div :class="$style.images" aria-hidden="true">
       <div :class="[$style.frame, $style.frameLeft]">
-        <img
-          v-for="(item, index) in items"
-          :key="`${item.id}-left`"
-          :src="item.leftImageSrc"
-          alt=""
-          :class="[
-            $style.image,
-            item.leftImageCrop === 'wide' && $style.imageWide,
-            activeIndex === index && $style.imageVisible,
-          ]"
-          width="350"
-          height="420"
-          loading="lazy"
-          decoding="async"
-        >
+        <template v-for="(item, index) in items" :key="`${item.id}-left`">
+          <img
+            v-if="isRevealed(index)"
+            :src="item.leftImageSrc"
+            alt=""
+            :class="[
+              $style.image,
+              item.leftImageCrop === 'wide' && $style.imageWide,
+              activeIndex === index && $style.imageVisible,
+            ]"
+            width="350"
+            height="420"
+            loading="lazy"
+            decoding="async"
+          >
+        </template>
       </div>
 
       <div :class="[$style.frame, $style.frameRight]">
-        <img
-          v-for="(item, index) in items"
-          :key="`${item.id}-right`"
-          :src="item.rightImageSrc"
-          alt=""
-          :class="[
-            $style.image,
-            activeIndex === index && $style.imageVisible,
-          ]"
-          width="440"
-          height="470"
-          loading="lazy"
-          decoding="async"
-        >
+        <template v-for="(item, index) in items" :key="`${item.id}-right`">
+          <img
+            v-if="isRevealed(index)"
+            :src="item.rightImageSrc"
+            alt=""
+            :class="[
+              $style.image,
+              activeIndex === index && $style.imageVisible,
+            ]"
+            width="440"
+            height="470"
+            loading="lazy"
+            decoding="async"
+          >
+        </template>
       </div>
     </div>
 
     <div :class="$style.nav">
-      <ul :class="$style.list">
+      <ul :class="$style.list" role="list">
         <li
           v-for="(item, index) in items"
           :key="item.id"
@@ -91,7 +101,7 @@ function resetActive() {
               $style.category,
               activeIndex === index && $style.categoryActive,
             ]"
-            :aria-current="activeIndex === index ? 'true' : undefined"
+            :aria-pressed="activeIndex === index"
             @mouseenter="setActive(index)"
             @focus="setActive(index)"
             @click="setActive(index)"
@@ -107,8 +117,7 @@ function resetActive() {
     </div>
 
     <span :class="$style.srOnly" aria-live="polite">
-      {{ activeItem?.leftImageAlt }}
-      {{ activeItem?.rightImageAlt }}
+      {{ activeItem?.title }}
     </span>
   </div>
 </template>

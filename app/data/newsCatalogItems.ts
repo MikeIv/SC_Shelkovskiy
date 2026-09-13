@@ -26,7 +26,7 @@ const newsCatalogBaseItems = [
   },
   {
     id: 'ekonika-autumn',
-    imageSrc: '/images/home/news/ekonika.png',
+    imageSrc: '/images/home/news/ekonika.jpg',
     imageAlt: 'Осенняя коллекция EKONIKA PREMIUM',
     date: '14 июля',
     category: 'EKONIKA PREMIUM',
@@ -67,7 +67,7 @@ const newsCatalogBaseItems = [
   },
   {
     id: 'colins-sale',
-    imageSrc: '/images/home/news/colins.png',
+    imageSrc: '/images/home/news/colins.jpg',
     imageAlt: 'Летняя распродажа в магазине COLIN’S',
     date: '14 июля',
     category: 'COLIN’S',
@@ -97,7 +97,7 @@ const newsCatalogBaseItems = [
   },
   {
     id: 'joki-joya-birthday',
-    imageSrc: '/images/home/news/joki-joya.png',
+    imageSrc: '/images/home/news/joki-joya.jpg',
     imageAlt: 'День Рождения в Joki Joya',
     date: '14 июля',
     category: 'Joki Joya',

@@ -80,6 +80,11 @@ export function useDialogFocus(options: {
     bindTrap(true)
     await nextTick()
 
+    // Teleport + v-if: контейнер появляется на следующем тике.
+    if (!options.container.value) {
+      await nextTick()
+    }
+
     const preferred = options.initialFocus?.value
     if (preferred) {
       preferred.focus()

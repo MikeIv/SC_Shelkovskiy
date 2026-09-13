@@ -2,14 +2,15 @@
 :root {
   --fs-color-black: #010101;
   --fs-color-beige: #d3c59f;
-  --fs-color-gray: #999999;
+  /* #767676 ≈ 4.54:1 на белом (AA для текста); на тёмном фоне остаётся >4.5 */
+  --fs-color-gray: #767676;
   --fs-color-light-hover: #e9e8e3;
   --fs-color-light: #f3f2ed;
   --fs-color-white: #ffffff;
   --fs-color-error: #e9363a;
 
-  /* Цвета тегов (260:7930) */
-  --fs-color-red: #fe3f43;
+  /* Цвета тегов (260:7930); red затемнён для AA белого текста (~4.6:1) */
+  --fs-color-red: #d92b30;
   --fs-color-blue: #5e9bdc;
   --fs-color-green: #00b576;
   --fs-color-sand: #e7d9b2;

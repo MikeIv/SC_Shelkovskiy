@@ -14,16 +14,14 @@ function togglePause() {
 
 <template>
   <section :class="$style.root" aria-label="Бренды торгового центра">
-    <div :class="$style.toolbar">
-      <button
-        :class="$style.pause"
-        type="button"
-        :aria-pressed="paused"
-        @click="togglePause"
-      >
-        {{ paused ? 'Запустить прокрутку брендов' : 'Пауза прокрутки брендов' }}
-      </button>
-    </div>
+    <button
+      :class="$style.pause"
+      type="button"
+      :aria-pressed="paused"
+      @click="togglePause"
+    >
+      {{ paused ? 'Запустить прокрутку брендов' : 'Пауза прокрутки брендов' }}
+    </button>
 
     <div
       v-for="row in rows"
@@ -96,8 +94,11 @@ function togglePause() {
   }
 }
 
-.toolbar {
+.pause {
   position: absolute;
+  z-index: z('default');
+  top: var(--fs-space-3);
+  right: var(--fs-space-3);
   width: 1px;
   height: 1px;
   padding: 0;
@@ -105,34 +106,20 @@ function togglePause() {
   clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
-
-  &:focus-within {
-    position: relative;
-    z-index: z('default');
-    display: flex;
-    width: auto;
-    height: auto;
-    max-width: rem(1440);
-    margin-inline: auto;
-    padding-inline: var(--fs-space-3);
-    overflow: visible;
-    clip-path: none;
-    justify-content: flex-end;
-  }
-}
-
-.pause {
-  margin: 0;
-  padding: rem(6) rem(12);
-  border: rem(1) solid var(--fs-color-gray);
-  border-radius: rem(4);
-  @include fs-text-sm;
   color: var(--fs-color-black);
   background-color: var(--fs-color-white);
-  cursor: pointer;
   appearance: none;
 
   &:focus-visible {
+    width: auto;
+    height: auto;
+    padding: rem(6) rem(12);
+    overflow: visible;
+    clip-path: none;
+    border: rem(1) solid var(--fs-color-gray);
+    border-radius: rem(4);
+    @include fs-text-sm;
+    cursor: pointer;
     outline: rem(2) solid var(--fs-color-black);
     outline-offset: rem(2);
   }
