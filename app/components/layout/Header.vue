@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { mallHoursTodayLabel } from '~/data/mallHours'
+
 export type LayoutHeaderVariant = 'white' | 'black'
 
 const props = withDefaults(
@@ -12,7 +14,7 @@ const props = withDefaults(
   },
 )
 
-const hoursLabel = 'Сегодня с 10:00 до 22:00'
+const hoursLabel = computed(() => mallHoursTodayLabel())
 const hoursOpen = ref(false)
 const hoursBtnRef = ref<HTMLButtonElement | null>(null)
 const menuOpen = ref(false)
@@ -158,6 +160,8 @@ onBeforeUnmount(() => {
       :data-pinned="pinned || undefined"
       :data-menu-open="menuOpen || undefined"
       :data-hidden="hidden || undefined"
+      :aria-hidden="hidden && !menuOpen ? true : undefined"
+      :inert="hidden && !menuOpen"
     >
       <a :class="$style.skip" href="#content">К содержанию</a>
       <div :class="$style.inner">

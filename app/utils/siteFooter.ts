@@ -21,8 +21,8 @@ export const footerNavPrimary: readonly FooterNavItem[] = [
   { label: 'Новости и акции', to: '/news' },
   { label: 'Галерея', to: '/gallery' },
   { label: 'Социальная активность и награды', to: '/awards' },
-  { label: 'Партнерам' },
-  { label: 'Кабинет арендатора' },
+  { label: 'Партнерам', to: '/tenants' },
+  { label: 'Кабинет арендатора', to: '/login' },
 ]
 
 export const footerNavSecondary: readonly FooterNavItem[] = [
@@ -58,4 +58,5 @@ export const footerContacts: {
   address: '107207 Москва, Щёлковское шоссе, 75',
   copyright: 'ТРЦ «Щёлковский» © 2026',
   privacyLabel: 'Политика обработки персональных данных',
+  privacyHref: '/rules',
 }

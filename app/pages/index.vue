@@ -11,8 +11,21 @@ definePageMeta({
   headerOverlay: true,
 })
 
+const pageTitle = 'ТРЦ «Щёлковский»'
+const pageDescription =
+  'Торгово-развлекательный центр «Щёлковский» в Москве: магазины, кинотеатр, рестораны, новости и акции.'
+
 useSeoMeta({
-  title: 'ТРЦ «Щёлковский»',
+  title: pageTitle,
+  description: pageDescription,
+  ogTitle: pageTitle,
+  ogDescription: pageDescription,
+  ogType: 'website',
+  twitterCard: 'summary_large_image',
+})
+
+useHead({
+  link: [{ rel: 'canonical', href: '/' }],
 })
 </script>
 

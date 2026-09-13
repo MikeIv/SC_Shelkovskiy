@@ -72,6 +72,11 @@ onUnmounted(() => {
           :class="$style.image"
           :src="slide.imageSrc"
           :alt="i === index ? slide.imageAlt : ''"
+          :loading="i === 0 ? 'eager' : 'lazy'"
+          :fetchpriority="i === 0 ? 'high' : 'low'"
+          decoding="async"
+          width="1230"
+          height="440"
         />
       </div>
       <div :class="$style.dim" aria-hidden="true" />

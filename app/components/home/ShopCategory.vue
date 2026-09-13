@@ -55,7 +55,7 @@ function resetActive() {
           ]"
           width="350"
           height="420"
-          :loading="index === 0 ? 'eager' : 'lazy'"
+          loading="lazy"
           decoding="async"
         >
       </div>
@@ -72,7 +72,7 @@ function resetActive() {
           ]"
           width="440"
           height="470"
-          :loading="index === 0 ? 'eager' : 'lazy'"
+          loading="lazy"
           decoding="async"
         >
       </div>

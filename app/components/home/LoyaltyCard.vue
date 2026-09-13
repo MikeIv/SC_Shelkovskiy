@@ -36,7 +36,7 @@ withDefaults(
       </UiButton>
     </div>
 
-    <div :class="$style.illustration" aria-hidden="true">
+    <div :class="$style.illustration">
       <template v-if="variant === 'loyalty'">
         <img
           v-if="shadowBackSrc"
@@ -104,6 +104,7 @@ $loyalty-hover-duration: 0.65s;
     height: rem(488);
   }
 
+  /* Раскрытие CTA только на устройствах с hover; на touch кнопка всегда видна. */
   @media (hover: hover) {
     &:hover,
     &:focus-within {
@@ -170,12 +171,17 @@ $loyalty-hover-duration: 0.65s;
 }
 
 .action {
-  opacity: 0;
-  visibility: hidden;
+  opacity: 1;
+  visibility: visible;
   margin-top: var(--fs-space-2);
   transition:
     opacity 0.45s ease,
     visibility 0.45s ease;
+
+  @media (hover: hover) {
+    opacity: 0;
+    visibility: hidden;
+  }
 
   @media (prefers-reduced-motion: reduce) {
     opacity: 1;

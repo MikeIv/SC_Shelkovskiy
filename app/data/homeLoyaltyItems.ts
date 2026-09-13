@@ -15,7 +15,7 @@ export const homeLoyaltyItems: HomeLoyaltyCard[] = [
   {
     id: 'gift-cards',
     title: 'Подарочные карты',
-    description: 'Станьте участником и получайте новые привилегии во время шопинга',
+    description: 'Подарите близким свободу выбора — карта действует во всех магазинах центра',
     variant: 'gift',
     illustrationAlt: 'Подарочные карты торгового центра «Щёлковский»',
     giftCardFrontSrc: '/images/home/loyalty/gift-card-front.png',

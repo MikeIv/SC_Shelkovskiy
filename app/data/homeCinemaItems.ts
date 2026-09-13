@@ -32,7 +32,7 @@ export const homeCinemaItems: HomeCinemaFilm[] = [
     genres: 'Мультфильм, Приключение, Комедия',
     posterSrc: '/images/home/cinema/tri-bogatyrya.png',
     posterAlt: 'Постер мультфильма «Три богатыря. Ни дня без подвига 3»',
-    ageRating: '18+',
+    ageRating: '6+',
   },
   {
     id: 'holop-3',

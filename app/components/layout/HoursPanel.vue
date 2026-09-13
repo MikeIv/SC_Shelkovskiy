@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { mallHoursTodayIndex, mallOpenHours } from '~/data/mallHours'
+
 interface HoursInterval {
   label: string
   open: string
@@ -25,15 +27,7 @@ const titleId = useId()
 /** Обход Nuxt `virtual:public` + Vite HMR (`?t=&path` → `/&/images/...`). */
 const hoursMallSrc = ['', 'images', 'layout', 'hours-mall.png'].join('/')
 
-const mallDays: HoursInterval[] = [
-  { label: 'Пн', open: '10:00', close: '22:00' },
-  { label: 'Вт', open: '10:00', close: '22:00' },
-  { label: 'Ср', open: '10:00', close: '22:00' },
-  { label: 'Чт', open: '10:00', close: '22:00' },
-  { label: 'Пт', open: '10:00', close: '23:00' },
-  { label: 'Сб', open: '10:00', close: '23:00' },
-  { label: 'Вс', open: '10:00', close: '22:00' },
-]
+const mallDays: HoursInterval[] = [...mallOpenHours]
 
 const tenants: HoursTenant[] = [
   {
@@ -57,8 +51,7 @@ const tenants: HoursTenant[] = [
   },
 ]
 
-/** Пн = 0 … Вс = 6 */
-const todayIndex = computed(() => (new Date().getDay() + 6) % 7)
+const todayIndex = computed(() => mallHoursTodayIndex())
 </script>
 
 <template>

@@ -147,6 +147,7 @@ onBeforeUnmount(() => {
         :class="[$style.panel, hoursOpen && $style.panelHoursOpen]"
         :style="panelStyle"
         role="dialog"
+        aria-modal="true"
         aria-label="Меню"
       >
         <div :class="$style.chrome">

@@ -72,6 +72,10 @@ withDefaults(
     }
   }
 
+  &[data-variant='light']:not(:disabled):focus-visible {
+    outline-color: var(--fs-color-white);
+  }
+
   &:disabled {
     color: var(--fs-color-gray);
     cursor: not-allowed;

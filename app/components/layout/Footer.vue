@@ -4,9 +4,21 @@ import type { FooterNavItem } from '~/utils/siteFooter'
 
 const email = ref('')
 const consent = ref(false)
+const newsletterStatus = ref<'idle' | 'need-consent' | 'sent'>('idle')
+const consentId = useId()
 
 function navBind(to: FooterNavItem['to']) {
   return to ? { to } : {}
+}
+
+function onNewsletterSubmit() {
+  if (!consent.value) {
+    newsletterStatus.value = 'need-consent'
+    return
+  }
+
+  // API подписки ещё нет — даём обратную связь без очистки согласия.
+  newsletterStatus.value = 'sent'
 }
 </script>
 
@@ -55,7 +67,7 @@ function navBind(to: FooterNavItem['to']) {
           <h2 id="footer-newsletter-title" :class="$style.newsletterTitle">
             Подписаться на рассылку
           </h2>
-          <form :class="$style.newsletterForm" @submit.prevent>
+          <form :class="$style.newsletterForm" @submit.prevent="onNewsletterSubmit">
             <UiInput
               v-model="email"
               :class="$style.newsletterInput"
@@ -65,11 +77,17 @@ function navBind(to: FooterNavItem['to']) {
               autocomplete="email"
               placeholder="Почта"
               label="Почта"
+              required
             />
             <div :class="$style.consent">
-              <UiCheckbox v-model="consent" :class="$style.consentCheck" />
+              <UiCheckbox
+                :id="consentId"
+                v-model="consent"
+                :class="$style.consentCheck"
+              />
               <p :class="$style.consentText">
-                Соглашаюсь с
+                <label :for="consentId">Соглашаюсь с</label>
+                {{ ' ' }}
                 <component
                   :is="footerContacts.privacyHref ? NuxtLink : 'span'"
                   :class="$style.consentLink"
@@ -87,6 +105,19 @@ function navBind(to: FooterNavItem['to']) {
                 </component>
               </p>
             </div>
+            <p
+              v-if="newsletterStatus !== 'idle'"
+              :class="$style.newsletterStatus"
+              role="status"
+              aria-live="polite"
+            >
+              <template v-if="newsletterStatus === 'need-consent'">
+                Нужно согласие на обработку персональных данных
+              </template>
+              <template v-else>
+                Спасибо! Мы сохранили ваш адрес для подключения рассылки
+              </template>
+            </p>
             <UiButton :class="$style.newsletterBtn" type="submit">
               Подписаться
             </UiButton>
@@ -354,13 +385,15 @@ function navBind(to: FooterNavItem['to']) {
   grid-template-areas:
     'input'
     'consent'
+    'status'
     'btn';
   gap: var(--fs-space-2);
 
   @include from-tablet {
     grid-template-areas:
       'input btn'
-      'consent consent';
+      'consent consent'
+      'status status';
     grid-template-columns: minmax(0, 1fr) auto;
   }
 }
@@ -380,6 +413,13 @@ function navBind(to: FooterNavItem['to']) {
   }
 }
 
+.newsletterStatus {
+  grid-area: status;
+  margin: 0;
+  @include fs-text-sm;
+  color: var(--fs-color-black);
+}
+
 .consent {
   display: flex;
   grid-area: consent;
@@ -394,6 +434,11 @@ function navBind(to: FooterNavItem['to']) {
 .consentText {
   margin: 0;
   @include fs-text-lg;
+  color: var(--fs-color-gray);
+
+  label {
+    cursor: pointer;
+  }
 }
 
 .consentLink {

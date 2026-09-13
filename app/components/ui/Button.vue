@@ -11,6 +11,7 @@ const props = withDefaults(
     size?: UiButtonSize
     to?: string
     href?: string
+    disabled?: boolean
   }>(),
   {
     type: 'button',
@@ -18,6 +19,7 @@ const props = withDefaults(
     size: 'chrome',
     to: undefined,
     href: undefined,
+    disabled: false,
   },
 )
 
@@ -34,7 +36,11 @@ const rootBind = computed(() => {
     return { href: props.href, target: '_blank', rel: 'noopener noreferrer' }
   }
 
-  return props.to ? { to: props.to } : { type: props.type }
+  if (props.to) {
+    return { to: props.to }
+  }
+
+  return { type: props.type, disabled: props.disabled }
 })
 </script>
 

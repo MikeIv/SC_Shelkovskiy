@@ -100,6 +100,7 @@ onBeforeUnmount(() => {
         :class="$style.panel"
         :style="panelStyle"
         role="dialog"
+        aria-modal="true"
         aria-label="Время работы"
       >
         <LayoutHoursPanel />

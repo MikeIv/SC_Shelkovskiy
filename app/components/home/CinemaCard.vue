@@ -11,16 +11,21 @@ const props = withDefaults(
   }>(),
   {
     ageRating: undefined,
-    ticketUrl: '#',
+    ticketUrl: undefined,
   },
 )
 
+const canBuyTicket = computed(
+  () => Boolean(props.ticketUrl && props.ticketUrl !== '#'),
+)
+
 function onBuyTicket() {
-  if (!props.ticketUrl || props.ticketUrl === '#') {
+  const url = props.ticketUrl
+  if (!url || url === '#') {
     return
   }
 
-  window.open(props.ticketUrl, '_blank', 'noopener,noreferrer')
+  window.open(url, '_blank', 'noopener,noreferrer')
 }
 </script>
 
@@ -43,7 +48,12 @@ function onBuyTicket() {
     </div>
 
     <div :class="$style.body">
-      <UiButton :class="$style.ticketButton" type="button" @click="onBuyTicket">
+      <UiButton
+        :class="$style.ticketButton"
+        type="button"
+        :disabled="!canBuyTicket"
+        @click="onBuyTicket"
+      >
         Купить билет
       </UiButton>
 

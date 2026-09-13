@@ -17,13 +17,26 @@ const emit = defineEmits<{
   select: []
 }>()
 
-const rootTag = computed(() => (props.to ? NuxtLink : 'button'))
+const rootTag = computed(() => (props.to ? NuxtLink : 'div'))
 const rootBind = computed(() =>
-  props.to ? { to: props.to } : { type: 'button' as const },
+  props.to
+    ? { to: props.to }
+    : { role: 'button' as const, tabindex: 0 },
 )
 
 function onActivate(): void {
   if (!props.to) {
+    emit('select')
+  }
+}
+
+function onKeydown(event: KeyboardEvent): void {
+  if (props.to) {
+    return
+  }
+
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault()
     emit('select')
   }
 }
@@ -36,6 +49,7 @@ function onActivate(): void {
     :class="$style.root"
     v-bind="rootBind"
     @click="onActivate"
+    @keydown="onKeydown"
   >
     <div :class="$style.media">
       <img
