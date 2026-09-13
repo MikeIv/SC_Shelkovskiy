@@ -4,8 +4,9 @@ import type { FooterNavItem } from '~/utils/siteFooter'
 
 const email = ref('')
 const consent = ref(false)
-const newsletterStatus = ref<'idle' | 'need-consent' | 'sent'>('idle')
+const newsletterStatus = ref<'idle' | 'need-consent' | 'soon'>('idle')
 const consentId = useId()
+const consentLabelId = useId()
 
 function navBind(to: FooterNavItem['to']) {
   return to ? { to } : {}
@@ -17,8 +18,8 @@ function onNewsletterSubmit() {
     return
   }
 
-  // API подписки ещё нет — даём обратную связь без очистки согласия.
-  newsletterStatus.value = 'sent'
+  // API подписки нет — честный статус, без ложного «сохранили».
+  newsletterStatus.value = 'soon'
 }
 </script>
 
@@ -84,8 +85,9 @@ function onNewsletterSubmit() {
                 :id="consentId"
                 v-model="consent"
                 :class="$style.consentCheck"
+                :aria-labelledby="consentLabelId"
               />
-              <p :class="$style.consentText">
+              <p :id="consentLabelId" :class="$style.consentText">
                 <label :for="consentId">Соглашаюсь с</label>
                 {{ ' ' }}
                 <component
@@ -115,7 +117,7 @@ function onNewsletterSubmit() {
                 Нужно согласие на обработку персональных данных
               </template>
               <template v-else>
-                Спасибо! Мы сохранили ваш адрес для подключения рассылки
+                Подписка скоро появится — адрес пока не сохраняем
               </template>
             </p>
             <UiButton :class="$style.newsletterBtn" type="submit">

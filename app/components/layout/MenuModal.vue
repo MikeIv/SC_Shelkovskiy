@@ -18,11 +18,14 @@ const contactsTitleId = useId()
 const panelRef = ref<HTMLElement | null>(null)
 const closeBtnRef = ref<HTMLButtonElement | null>(null)
 const panelStyle = ref<Record<string, string>>({})
+/** Desktop — dropdown, не модалка: без aria-modal и без focus trap. */
+const isDesktopMenu = ref(false)
 
 useDialogFocus({
   open: () => props.open,
   container: panelRef,
   initialFocus: closeBtnRef,
+  trap: () => !isDesktopMenu.value,
 })
 
 const mobileSecondary = [
@@ -36,6 +39,14 @@ function isDesktopViewport(): boolean {
   return window.matchMedia(DESKTOP_MQ).matches
 }
 
+function syncDesktopMenu(): void {
+  if (!import.meta.client) {
+    return
+  }
+
+  isDesktopMenu.value = isDesktopViewport()
+}
+
 function close(): void {
   emit('close')
 }
@@ -45,7 +56,9 @@ function updatePosition(): void {
     return
   }
 
-  if (!isDesktopViewport()) {
+  syncDesktopMenu()
+
+  if (!isDesktopMenu.value) {
     panelStyle.value = {}
     return
   }
@@ -67,7 +80,7 @@ function onDocumentPointerDown(event: Event): void {
   }
 
   // На mobile меню на весь экран — закрытие только крестиком / Esc.
-  if (!isDesktopViewport()) {
+  if (!isDesktopMenu.value) {
     return
   }
 
@@ -131,13 +144,18 @@ watch(
       return
     }
 
+    // updatePosition → syncDesktopMenu (desktop dropdown vs mobile modal).
     updatePosition()
     bindListeners(true)
-    setScrollLock(!isDesktopViewport())
+    setScrollLock(!isDesktopMenu.value)
     await nextTick()
     updatePosition()
   },
 )
+
+onMounted(() => {
+  syncDesktopMenu()
+})
 
 onBeforeUnmount(() => {
   bindListeners(false)
@@ -154,7 +172,7 @@ onBeforeUnmount(() => {
         :class="[$style.panel, hoursOpen && $style.panelHoursOpen]"
         :style="panelStyle"
         role="dialog"
-        aria-modal="true"
+        :aria-modal="isDesktopMenu ? 'false' : 'true'"
         aria-label="Меню"
       >
         <div :class="$style.chrome">

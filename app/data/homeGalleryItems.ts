@@ -36,7 +36,7 @@ export const homeGalleryItems: HomeGalleryAlbum[] = [
     id: 'beauty-show-2026',
     title: 'Дни красоты в ТРЦ «Щёлковский»',
     date: '12.04.2026',
-    imageSrc: '/images/home/gallery/beauty-show.png',
+    imageSrc: '/images/gallery/beauty-days.jpg',
     imageAlt: 'Дни красоты в ТРЦ «Щёлковский»',
     photoCount: 10,
     lightboxCover: '/images/gallery/beauty-days.jpg',

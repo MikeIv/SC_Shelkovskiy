@@ -17,12 +17,15 @@ function getFocusable(container: HTMLElement): HTMLElement[] {
 
 /**
  * Возврат фокуса на триггер + цикл Tab внутри контейнера (паттерн Lightbox/FeedbackModal).
+ * `trap: false` — десктопный dropdown: фокус при открытии, без ловушки Tab.
  */
 export function useDialogFocus(options: {
   open: Ref<boolean> | (() => boolean)
   container: Ref<HTMLElement | null>
   /** Куда поставить фокус при открытии; иначе — первый focusable в контейнере. */
   initialFocus?: Ref<HTMLElement | null>
+  /** По умолчанию true. false — не перехватывать Tab (немодальная панель). */
+  trap?: Ref<boolean> | (() => boolean)
 }) {
   let previousFocus: HTMLElement | null = null
 
@@ -30,8 +33,16 @@ export function useDialogFocus(options: {
     return typeof options.open === 'function' ? options.open() : options.open.value
   }
 
+  function shouldTrap(): boolean {
+    if (options.trap === undefined) {
+      return true
+    }
+
+    return typeof options.trap === 'function' ? options.trap() : options.trap.value
+  }
+
   function onKeydown(event: KeyboardEvent) {
-    if (event.key !== 'Tab' || !options.container.value) {
+    if (event.key !== 'Tab' || !options.container.value || !shouldTrap()) {
       return
     }
 
@@ -67,6 +78,7 @@ export function useDialogFocus(options: {
     document.removeEventListener('keydown', onKeydown, true)
 
     if (bind) {
+      // Слушатель всегда; shouldTrap() проверяется на каждый Tab (desktop dropdown ↔ mobile modal).
       document.addEventListener('keydown', onKeydown, true)
     }
   }

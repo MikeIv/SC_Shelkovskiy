@@ -5,3 +5,6 @@ export const siteName = 'ТРЦ «Щёлковский»'
 
 export const siteDescription =
   'Торгово-развлекательный центр «Щёлковский» в Москве: магазины, кинотеатр, рестораны, новости и акции.'
+
+/** OG / Twitter: summary_large_image требует абсолютный URL картинки. */
+export const siteOgImage = `${siteUrl}/images/home/intro-1.png`

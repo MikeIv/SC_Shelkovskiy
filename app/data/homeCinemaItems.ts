@@ -40,6 +40,6 @@ export const homeCinemaItems: HomeCinemaFilm[] = [
     genres: 'Фильмы, Приключение, Комедия',
     posterSrc: '/images/home/cinema/holop-3.png',
     posterAlt: 'Постер фильма «Холоп 3»',
-    ageRating: '18+',
+    ageRating: '16+',
   },
 ]

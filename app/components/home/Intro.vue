@@ -292,9 +292,14 @@ onUnmounted(() => {
 }
 
 .pause {
+  /* Absolute и при фокусе — иначе прыгает flex .nav (space-between). */
   position: absolute;
+  z-index: z('default');
+  inset-block: 0;
+  left: 50%;
   width: 1px;
   height: 1px;
+  margin-block: auto;
   padding: 0;
   overflow: hidden;
   clip-path: inset(50%);
@@ -303,9 +308,9 @@ onUnmounted(() => {
   color: var(--fs-color-white);
   background: transparent;
   appearance: none;
+  transform: translateX(-50%);
 
   &:focus-visible {
-    position: static;
     width: auto;
     height: auto;
     padding: rem(8) rem(12);
@@ -313,9 +318,10 @@ onUnmounted(() => {
     clip-path: none;
     @include fs-text-sm;
     white-space: nowrap;
-    border: rem(2) solid var(--fs-color-white);
     border-radius: var(--fs-radius-sm);
     cursor: pointer;
+    outline: rem(2) solid var(--fs-color-white);
+    outline-offset: rem(2);
   }
 }
 

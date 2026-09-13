@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { mallOpenHours } from '~/data/mallHours'
-import { siteDescription, siteName, siteUrl } from '~/data/siteMeta'
+import { siteDescription, siteName, siteOgImage, siteUrl } from '~/data/siteMeta'
 import { homeBrandRows } from '~/data/homeBrandItems'
 import { homeCinemaItems } from '~/data/homeCinemaItems'
 import { homeGalleryItems } from '~/data/homeGalleryItems'
@@ -13,6 +13,17 @@ import { footerContacts, footerSocialLinks } from '~/utils/siteFooter'
 definePageMeta({
   headerOverlay: true,
 })
+
+/** Корневой URL площадки (rutube.ru/) — не профиль центра, в sameAs не публикуем. */
+function hasSocialProfilePath(href: string): boolean {
+  try {
+    const { pathname } = new URL(href)
+    return pathname !== '/' && pathname !== ''
+  }
+  catch {
+    return false
+  }
+}
 
 const schemaDayByLabel: Record<(typeof mallOpenHours)[number]['label'], string> = {
   Пн: 'Monday',
@@ -46,7 +57,7 @@ const jsonLd = {
     closes: day.close,
   })),
   sameAs: footerSocialLinks
-    .filter((link) => link.label !== 'Сайт')
+    .filter((link) => link.label !== 'Сайт' && hasSocialProfilePath(link.href))
     .map((link) => link.href),
 }
 
@@ -57,7 +68,9 @@ useSeoMeta({
   ogDescription: siteDescription,
   ogType: 'website',
   ogUrl: siteUrl,
+  ogImage: siteOgImage,
   twitterCard: 'summary_large_image',
+  twitterImage: siteOgImage,
 })
 
 useHead({

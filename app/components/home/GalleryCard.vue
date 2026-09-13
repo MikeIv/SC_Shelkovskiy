@@ -17,40 +17,26 @@ const emit = defineEmits<{
   select: []
 }>()
 
-const rootTag = computed(() => (props.to ? NuxtLink : 'div'))
-const rootBind = computed(() =>
-  props.to
-    ? { to: props.to }
-    : { role: 'button' as const, tabindex: 0 },
-)
+const titleId = useId()
+const isLink = computed(() => Boolean(props.to))
 
 function onActivate(): void {
   if (!props.to) {
     emit('select')
   }
 }
-
-function onKeydown(event: KeyboardEvent): void {
-  if (props.to) {
-    return
-  }
-
-  if (event.key === 'Enter' || event.key === ' ') {
-    event.preventDefault()
-    emit('select')
-  }
-}
 </script>
 
 <template>
-  <component
-    :is="rootTag"
-    :id="id"
-    :class="$style.root"
-    v-bind="rootBind"
-    @click="onActivate"
-    @keydown="onKeydown"
-  >
+  <article :id="id" :class="$style.root">
+    <component
+      :is="isLink ? NuxtLink : 'button'"
+      :class="$style.hit"
+      v-bind="isLink ? { to: props.to } : { type: 'button' }"
+      :aria-labelledby="titleId"
+      @click="onActivate"
+    />
+
     <div :class="$style.media">
       <img
         :class="$style.image"
@@ -69,30 +55,44 @@ function onKeydown(event: KeyboardEvent): void {
 
     <div :class="$style.copy">
       <p :class="$style.date">{{ date }}</p>
-      <h3 :class="$style.title">{{ title }}</h3>
+      <h3 :id="titleId" :class="$style.title">{{ title }}</h3>
     </div>
-  </component>
+  </article>
 </template>
 
 <style module lang="scss">
 @use 'tools' as *;
 
 .root {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-2);
   width: 100%;
+  min-width: 0;
+}
+
+.hit {
+  position: absolute;
+  inset: 0;
+  z-index: z('default');
   margin: 0;
   padding: 0;
-  overflow: clip;
   border: 0;
-  color: inherit;
-  text-align: left;
-  text-decoration: none;
-  background-color: transparent;
+  border-radius: var(--fs-radius-2xl);
+  background: transparent;
   cursor: pointer;
   appearance: none;
-  font: inherit;
+  text-decoration: none;
+
+  @include from-desktop {
+    border-radius: var(--fs-radius-3xl);
+  }
+
+  &:focus-visible {
+    outline: rem(2) solid var(--fs-color-black);
+    outline-offset: rem(2);
+  }
 }
 
 .media {
@@ -101,6 +101,7 @@ function onKeydown(event: KeyboardEvent): void {
   aspect-ratio: 343 / 240;
   overflow: clip;
   border-radius: var(--fs-radius-2xl);
+  pointer-events: none;
 
   @include from-desktop {
     aspect-ratio: 768 / 500;
@@ -125,6 +126,7 @@ function onKeydown(event: KeyboardEvent): void {
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-1);
+  pointer-events: none;
 }
 
 .date {

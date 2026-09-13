@@ -52,9 +52,10 @@ function onBuyTicket() {
         :class="$style.ticketButton"
         type="button"
         :disabled="!canBuyTicket"
+        :title="canBuyTicket ? undefined : 'Продажа билетов пока недоступна'"
         @click="onBuyTicket"
       >
-        Купить билет
+        {{ canBuyTicket ? 'Купить билет' : 'Билеты скоро' }}
       </UiButton>
 
       <div :class="$style.copy">

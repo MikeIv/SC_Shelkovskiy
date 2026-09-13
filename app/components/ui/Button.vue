@@ -24,6 +24,10 @@ const props = withDefaults(
 )
 
 const rootTag = computed(() => {
+  if (props.disabled) {
+    return 'button'
+  }
+
   if (props.href) {
     return 'a'
   }
@@ -32,6 +36,10 @@ const rootTag = computed(() => {
 })
 
 const rootBind = computed(() => {
+  if (props.disabled) {
+    return { type: props.type, disabled: true }
+  }
+
   if (props.href) {
     return { href: props.href, target: '_blank', rel: 'noopener noreferrer' }
   }
@@ -40,7 +48,7 @@ const rootBind = computed(() => {
     return { to: props.to }
   }
 
-  return { type: props.type, disabled: props.disabled }
+  return { type: props.type, disabled: false }
 })
 </script>
 
