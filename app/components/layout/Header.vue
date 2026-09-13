@@ -254,7 +254,7 @@ onBeforeUnmount(() => {
           </ul>
         </nav>
       </div>
-      <LayoutMenuModal
+      <LazyLayoutMenuModal
         :open="menuOpen"
         :anchor="menuBtnRef"
         :hours-open="hoursOpen"
@@ -263,12 +263,12 @@ onBeforeUnmount(() => {
         @toggle-hours="toggleHoursFromMenu"
         @search="toggleSearch"
       />
-      <LayoutHoursModal
+      <LazyLayoutHoursModal
         :open="hoursOpen && !menuOpen"
         :anchor="hoursBtnRef"
         @close="closeHours"
       />
-      <LayoutSearchModal
+      <LazyLayoutSearchModal
         :open="searchOpen"
         @close="closeSearch"
       />

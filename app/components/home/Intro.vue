@@ -144,13 +144,13 @@ onUnmounted(() => {
   overflow: clip;
   color: var(--fs-color-white);
   background-color: var(--fs-color-black);
-  border-end-start-radius: rem(32);
-  border-end-end-radius: rem(32);
+  border-end-start-radius: var(--fs-radius-3xl);
+  border-end-end-radius: var(--fs-radius-3xl);
 
   @include from-desktop {
     height: rem(900);
-    border-end-start-radius: rem(60);
-    border-end-end-radius: rem(60);
+    border-end-start-radius: var(--fs-radius-4xl);
+    border-end-end-radius: var(--fs-radius-4xl);
   }
 }
 
@@ -314,7 +314,7 @@ onUnmounted(() => {
     @include fs-text-sm;
     white-space: nowrap;
     border: rem(2) solid var(--fs-color-white);
-    border-radius: rem(4);
+    border-radius: var(--fs-radius-sm);
     cursor: pointer;
   }
 }

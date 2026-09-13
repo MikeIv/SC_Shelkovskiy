@@ -117,7 +117,7 @@ function togglePause() {
     overflow: visible;
     clip-path: none;
     border: rem(1) solid var(--fs-color-gray);
-    border-radius: rem(4);
+    border-radius: var(--fs-radius-sm);
     @include fs-text-sm;
     cursor: pointer;
     outline: rem(2) solid var(--fs-color-black);
@@ -184,7 +184,7 @@ function togglePause() {
 .logoSquircle {
   width: rem(110);
   height: rem(132);
-  border-radius: rem(32);
+  border-radius: var(--fs-radius-3xl);
 
   @include from-desktop {
     width: rem(122);

@@ -141,13 +141,7 @@ const newsItemsBySlug = new Map<string, NewsCardItem>([
   ...tenantPageNewsItems.map((item) => [item.id, item] as const),
 ])
 
-export const newsCatalogItems: NewsCardItem[] = [
-  ...newsCatalogBaseItems,
-  ...newsCatalogBaseItems.map((item, index) => ({
-    ...item,
-    id: `${item.id}-dup-${index}`,
-  })),
-]
+export const newsCatalogItems: NewsCardItem[] = [...newsCatalogBaseItems]
 
 export function getNewsItemBySlug(slug: string): NewsCardItem | undefined {
   return newsItemsBySlug.get(normalizeNewsSlug(slug))

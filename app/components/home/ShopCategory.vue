@@ -89,7 +89,7 @@ function resetActive() {
     </div>
 
     <div :class="$style.nav">
-      <ul :class="$style.list" role="list">
+      <ul :class="$style.list">
         <li
           v-for="(item, index) in items"
           :key="item.id"
@@ -186,7 +186,7 @@ $shop-category-duration: 0.55s;
   left: 0;
   width: rem(138);
   height: rem(166);
-  border-radius: rem(24);
+  border-radius: var(--fs-radius-2xl);
 
   @include from-desktop {
     position: relative;
@@ -199,7 +199,7 @@ $shop-category-duration: 0.55s;
     width: min(100%, rem(350));
     height: rem(420);
     margin-top: rem(50);
-    border-radius: rem(32);
+    border-radius: var(--fs-radius-3xl);
   }
 }
 

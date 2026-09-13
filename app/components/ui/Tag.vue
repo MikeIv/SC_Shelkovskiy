@@ -49,7 +49,8 @@ withDefaults(
   background-color: var(--fs-tag-bg);
 
   &[data-variant='afisha'] {
-    --fs-tag-bg: var(--fs-color-blue);
+    /* Белый текст: затемнение синего для AA */
+    --fs-tag-bg: color-mix(in srgb, var(--fs-color-blue) 72%, var(--fs-color-black));
   }
 
   &[data-variant='other'] {

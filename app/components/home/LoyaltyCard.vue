@@ -95,7 +95,7 @@ $loyalty-hover-duration: 0.65s;
 .root {
   position: relative;
   height: rem(400);
-  border-radius: rem(32);
+  border-radius: var(--fs-radius-3xl);
   background-color: var(--fs-color-light);
   overflow: hidden;
   transition: border-radius $loyalty-hover-duration $loyalty-hover-ease;
@@ -108,7 +108,7 @@ $loyalty-hover-duration: 0.65s;
   @media (hover: hover) {
     &:hover,
     &:focus-within {
-      border-radius: rem(9999);
+      border-radius: var(--fs-radius-pill);
 
       .content {
         top: 50%;

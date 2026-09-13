@@ -100,11 +100,11 @@ function onKeydown(event: KeyboardEvent): void {
   width: 100%;
   aspect-ratio: 343 / 240;
   overflow: clip;
-  border-radius: rem(24);
+  border-radius: var(--fs-radius-2xl);
 
   @include from-desktop {
     aspect-ratio: 768 / 500;
-    border-radius: rem(32);
+    border-radius: var(--fs-radius-3xl);
   }
 }
 
