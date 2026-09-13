@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { HomeGalleryAlbum } from '#shared/types/home'
 
-const DESKTOP_QUERY = '(min-width: 1024px)'
+const DESKTOP_QUERY = '(min-width: 1280px)'
 
 const { items } = defineProps<{
   items: HomeGalleryAlbum[]

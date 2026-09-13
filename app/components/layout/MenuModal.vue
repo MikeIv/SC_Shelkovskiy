@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const DESKTOP_MQ = '(min-width: 1024px)'
+const DESKTOP_MQ = '(min-width: 1280px)'
 
 const props = defineProps<{
   open: boolean
@@ -11,13 +11,11 @@ const props = defineProps<{
 const emit = defineEmits<{
   close: []
   'toggle-hours': []
-  'hours-anchor': [el: HTMLElement | null]
   search: []
 }>()
 
 const contactsTitleId = useId()
 const panelRef = ref<HTMLElement | null>(null)
-const hoursBtnRef = ref<HTMLButtonElement | null>(null)
 const panelStyle = ref<Record<string, string>>({})
 
 const mobileSecondary = [
@@ -70,10 +68,19 @@ function onDocumentPointerDown(event: Event): void {
 }
 
 function onKeydown(event: KeyboardEvent): void {
-  if (event.key === 'Escape') {
-    event.preventDefault()
-    close()
+  if (event.key !== 'Escape') {
+    return
   }
+
+  event.preventDefault()
+
+  // Сначала закрываем часы, затем меню.
+  if (props.hoursOpen) {
+    emit('toggle-hours')
+    return
+  }
+
+  close()
 }
 
 function setScrollLock(lock: boolean): void {
@@ -103,10 +110,6 @@ function bindListeners(bind: boolean): void {
   window.removeEventListener('scroll', updatePosition, true)
 }
 
-watch(hoursBtnRef, (el) => {
-  emit('hours-anchor', el)
-})
-
 watch(
   () => [props.open, props.anchor] as const,
   async ([isOpen]) => {
@@ -118,7 +121,6 @@ watch(
     setScrollLock(false)
 
     if (!isOpen) {
-      emit('hours-anchor', null)
       return
     }
 
@@ -127,14 +129,12 @@ watch(
     setScrollLock(!isDesktopViewport())
     await nextTick()
     updatePosition()
-    emit('hours-anchor', hoursBtnRef.value)
   },
 )
 
 onBeforeUnmount(() => {
   bindListeners(false)
   setScrollLock(false)
-  emit('hours-anchor', null)
 })
 </script>
 
@@ -144,7 +144,7 @@ onBeforeUnmount(() => {
       <LayoutPopupBackdrop :class="$style.backdrop" @close="close" />
       <div
         ref="panelRef"
-        :class="$style.panel"
+        :class="[$style.panel, hoursOpen && $style.panelHoursOpen]"
         :style="panelStyle"
         role="dialog"
         aria-label="Меню"
@@ -202,7 +202,6 @@ onBeforeUnmount(() => {
             </div>
 
             <button
-              ref="hoursBtnRef"
               :class="$style.hours"
               type="button"
               aria-haspopup="dialog"
@@ -212,8 +211,21 @@ onBeforeUnmount(() => {
               <span>{{ hoursLabel }}</span>
               <UIcon name="local:arrow-down" :class="$style.hoursIcon" aria-hidden="true" />
             </button>
+
+            <LayoutHoursPanel
+              v-if="hoursOpen"
+              :class="$style.hoursPanel"
+              variant="embedded"
+            />
           </div>
         </div>
+
+        <div
+          v-if="hoursOpen"
+          :class="$style.hoursOverlay"
+          aria-hidden="true"
+          @click="emit('toggle-hours')"
+        />
 
         <nav :class="$style.primary" aria-label="Разделы">
           <ul :class="$style.linkList">
@@ -320,8 +332,15 @@ onBeforeUnmount(() => {
 .backdrop {
   display: none;
 
-  @include from-desktop {
+  @include from-tablet {
     display: block;
+    /* Строго ниже header — не перекрываем схему/крестик. */
+    top: var(--fs-menu-header-offset, #{rem(80)});
+    background-color: color-mix(in srgb, var(--fs-color-black) 55%, transparent);
+  }
+
+  @include from-desktop {
+    top: 0;
   }
 }
 
@@ -338,13 +357,28 @@ onBeforeUnmount(() => {
   border-radius: 0;
   color: var(--fs-color-black);
   background-color: var(--fs-color-white);
+  box-shadow: none;
+
+  /*
+   * Tablet: drawer справа НИЖЕ header (не top:0).
+   * Иначе панель перекрывает «Схему» и крестик независимо от z-index.
+   */
+  @include from-tablet {
+    inset: auto;
+    top: var(--fs-menu-header-offset, #{rem(80)});
+    right: 0;
+    bottom: 0;
+    width: rem(375);
+  }
 
   @include from-desktop {
     inset: auto;
+    top: auto;
     right: max(
       var(--fs-grid-margin),
       calc((100% - var(--fs-grid-content-max)) / 2)
     );
+    bottom: auto;
     left: max(
       var(--fs-grid-margin),
       calc((100% - var(--fs-grid-content-max)) / 2)
@@ -353,13 +387,37 @@ onBeforeUnmount(() => {
     grid-template-columns: auto rem(338) auto minmax(#{rem(260)}, 1fr);
     gap: var(--fs-space-5) rem(70);
     align-items: start;
+    width: auto;
     max-height: calc(100vh - #{rem(24)});
     padding: var(--fs-space-5) rem(80);
     border-radius: rem(60);
   }
 }
 
+.panelHoursOpen {
+  /* Не скроллим всё меню: beige chrome по контенту, низ затемнён overlay. */
+  overflow: hidden;
+
+  .chrome {
+    /* Иначе flex сжимает chrome под nav → внутренний скролл и «обрезанный» popup. */
+    flex-shrink: 0;
+    max-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .primary,
+  .secondary,
+  .contacts,
+  .divider {
+    pointer-events: none;
+  }
+}
+
 .chrome {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-2);
@@ -368,6 +426,23 @@ onBeforeUnmount(() => {
   background-color: var(--fs-color-light);
   border-end-start-radius: rem(32);
   border-end-end-radius: rem(32);
+
+  /* Без внутреннего хедера — он в LayoutHeader (tablet). */
+  @include from-tablet {
+    padding-top: var(--fs-space-4);
+  }
+
+  @include from-desktop {
+    display: none;
+  }
+}
+
+.hoursOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-color: color-mix(in srgb, var(--fs-color-black) 55%, transparent);
+  cursor: pointer;
 
   @include from-desktop {
     display: none;
@@ -380,6 +455,10 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   padding-inline: var(--fs-grid-margin);
   padding-bottom: var(--fs-space-2);
+
+  @include from-tablet {
+    display: none;
+  }
 }
 
 .barEnd {
@@ -497,6 +576,10 @@ onBeforeUnmount(() => {
   @media (prefers-reduced-motion: reduce) {
     transition: none;
   }
+}
+
+.hoursPanel {
+  width: 100%;
 }
 
 .primary,

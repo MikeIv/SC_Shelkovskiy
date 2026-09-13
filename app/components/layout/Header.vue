@@ -15,7 +15,6 @@ const props = withDefaults(
 const hoursLabel = 'Сегодня с 10:00 до 22:00'
 const hoursOpen = ref(false)
 const hoursBtnRef = ref<HTMLButtonElement | null>(null)
-const menuHoursBtnRef = ref<HTMLElement | null>(null)
 const menuOpen = ref(false)
 const menuBtnRef = ref<HTMLButtonElement | null>(null)
 const searchOpen = ref(false)
@@ -28,28 +27,54 @@ const { pinned, hidden } = useHeaderScroll({
 })
 
 const visualVariant = computed<LayoutHeaderVariant>(() =>
-  pinned.value ? 'black' : props.variant,
+  pinned.value || menuOpen.value ? 'black' : props.variant,
 )
-
-const hoursAnchor = computed(() => {
-  if (menuOpen.value && menuHoursBtnRef.value) {
-    return menuHoursBtnRef.value
-  }
-
-  return hoursBtnRef.value
-})
 
 const headerRef = ref<HTMLElement | null>(null)
 const spacerHeight = ref(0)
+const MENU_HEADER_OFFSET_VAR = '--fs-menu-header-offset'
 let measureTimer = 0
 
-function measureSpacer(): void {
-  if (!import.meta.client || !headerRef.value || props.overlay || !pinned.value) {
-    spacerHeight.value = 0
+function measureHeaderHeight(): number {
+  if (!headerRef.value) {
+    return 80
+  }
+
+  return Math.round(headerRef.value.getBoundingClientRect().height) || 80
+}
+
+function syncMenuHeaderOffset(): void {
+  if (!import.meta.client) {
     return
   }
 
-  spacerHeight.value = Math.round(headerRef.value.getBoundingClientRect().height)
+  if (!menuOpen.value) {
+    document.documentElement.style.removeProperty(MENU_HEADER_OFFSET_VAR)
+    return
+  }
+
+  document.documentElement.style.setProperty(
+    MENU_HEADER_OFFSET_VAR,
+    `${measureHeaderHeight()}px`,
+  )
+}
+
+function measureSpacer(): void {
+  if (!import.meta.client || !headerRef.value || props.overlay) {
+    spacerHeight.value = 0
+    syncMenuHeaderOffset()
+    return
+  }
+
+  // fixed: pinned scroll или tablet-меню — нужен spacer в потоке.
+  if (!pinned.value && !menuOpen.value) {
+    spacerHeight.value = 0
+    syncMenuHeaderOffset()
+    return
+  }
+
+  spacerHeight.value = measureHeaderHeight()
+  syncMenuHeaderOffset()
 }
 
 function scheduleMeasureSpacer(): void {
@@ -79,10 +104,6 @@ function closeHours(): void {
   hoursOpen.value = false
 }
 
-function onMenuHoursAnchor(el: HTMLElement | null): void {
-  menuHoursBtnRef.value = el
-}
-
 function toggleMenu(): void {
   hoursOpen.value = false
   searchOpen.value = false
@@ -90,6 +111,7 @@ function toggleMenu(): void {
 }
 
 function closeMenu(): void {
+  hoursOpen.value = false
   menuOpen.value = false
 }
 
@@ -104,6 +126,7 @@ function closeSearch(): void {
 }
 
 watch(pinned, scheduleMeasureSpacer)
+watch(menuOpen, scheduleMeasureSpacer)
 
 onMounted(() => {
   scheduleMeasureSpacer()
@@ -113,13 +136,16 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('resize', measureSpacer)
   window.clearTimeout(measureTimer)
+  if (import.meta.client) {
+    document.documentElement.style.removeProperty(MENU_HEADER_OFFSET_VAR)
+  }
 })
 </script>
 
 <template>
-  <div :class="$style.shell">
+  <div :class="$style.shell" :data-menu-open="menuOpen || undefined">
     <div
-      v-show="pinned && !overlay"
+      v-show="!overlay && (pinned || menuOpen)"
       :class="$style.spacer"
       :style="{ height: `${spacerHeight}px` }"
       aria-hidden="true"
@@ -130,6 +156,7 @@ onBeforeUnmount(() => {
       :data-variant="visualVariant"
       :data-overlay="overlay || undefined"
       :data-pinned="pinned || undefined"
+      :data-menu-open="menuOpen || undefined"
       :data-hidden="hidden || undefined"
     >
       <a :class="$style.skip" href="#content">К содержанию</a>
@@ -191,12 +218,16 @@ onBeforeUnmount(() => {
               ref="menuBtnRef"
               :class="$style.iconBtn"
               type="button"
-              aria-label="Меню"
+              :aria-label="menuOpen ? 'Закрыть меню' : 'Меню'"
               aria-haspopup="dialog"
               :aria-expanded="menuOpen"
               @click="toggleMenu"
             >
-              <UIcon name="local:menu" :class="$style.icon" aria-hidden="true" />
+              <UIcon
+                :name="menuOpen ? 'local:cross' : 'local:menu'"
+                :class="$style.icon"
+                aria-hidden="true"
+              />
             </button>
           </div>
         </div>
@@ -226,12 +257,11 @@ onBeforeUnmount(() => {
         :hours-label="hoursLabel"
         @close="closeMenu"
         @toggle-hours="toggleHoursFromMenu"
-        @hours-anchor="onMenuHoursAnchor"
         @search="toggleSearch"
       />
       <LayoutHoursModal
-        :open="hoursOpen"
-        :anchor="hoursAnchor"
+        :open="hoursOpen && !menuOpen"
+        :anchor="hoursBtnRef"
         @close="closeHours"
       />
       <LayoutSearchModal
@@ -274,6 +304,22 @@ onBeforeUnmount(() => {
 .shell {
   position: relative;
   z-index: z('header');
+
+  /*
+   * Важно: Teleport (меню/overlay) — sibling на body.
+   * z-index на .root внутри shell не конкурирует с панелью —
+   * поднимаем весь shell, иначе hoursOverlay/drawer перекрывают
+   * «Схему» и крестик.
+   */
+  &[data-menu-open] {
+    @include from-tablet {
+      z-index: z('header-elevated');
+    }
+
+    @include from-desktop {
+      z-index: z('header');
+    }
+  }
 }
 
 .spacer {
@@ -303,7 +349,7 @@ onBeforeUnmount(() => {
     color: var(--fs-color-white);
   }
 
-  &[data-overlay]:not([data-pinned]) {
+  &[data-overlay]:not([data-pinned]):not([data-menu-open]) {
     position: absolute;
     top: 0;
     right: 0;
@@ -327,9 +373,25 @@ onBeforeUnmount(() => {
     box-shadow: 0 #{rem(8)} #{rem(40)} rgb(172 172 172 / 25%);
   }
 
-  &[data-hidden] {
+  &[data-hidden]:not([data-menu-open]) {
     pointer-events: none;
     transform: translateY(-100%);
+  }
+
+  /* Tablet menu: fixed бар без полосы, единый блок с drawer. */
+  &[data-menu-open] {
+    @include from-tablet {
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      width: 100%;
+      border-bottom-color: transparent;
+      border-radius: 0;
+      color: var(--fs-color-black);
+      background-color: var(--fs-color-white);
+      box-shadow: none;
+    }
   }
 
   @include from-desktop {
@@ -339,6 +401,21 @@ onBeforeUnmount(() => {
     &[data-pinned] {
       padding-top: rem(24);
       padding-bottom: rem(24);
+    }
+
+    &[data-menu-open] {
+      border-radius: inherit;
+      color: inherit;
+      background-color: transparent;
+      box-shadow: inherit;
+    }
+
+    &[data-menu-open]:not([data-pinned]):not([data-overlay]) {
+      position: relative;
+    }
+
+    &[data-menu-open][data-overlay]:not([data-pinned]) {
+      position: absolute;
     }
   }
 

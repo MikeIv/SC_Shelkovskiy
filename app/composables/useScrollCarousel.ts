@@ -1,4 +1,4 @@
-const DESKTOP_QUERY = '(min-width: 1024px)'
+const DESKTOP_QUERY = '(min-width: 1280px)'
 
 /**
  * Горизонтальная карусель: refs viewport/track, стрелки только на desktop при overflow.

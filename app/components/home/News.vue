@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { NewsCardItem } from '#shared/types/news'
 
-const DESKTOP_QUERY = '(min-width: 1024px)'
+const DESKTOP_QUERY = '(min-width: 1280px)'
 
 const { items } = defineProps<{
   items: NewsCardItem[]

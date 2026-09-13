@@ -1,11 +1,17 @@
 @use 'sass:map';
 
+/*
+ * Слои (снизу вверх).
+ * Teleport to body (меню/backdrop) сравнивается на уровне viewport —
+ * header при открытом tablet-меню должен быть выше panel (fixed + header-elevated).
+ */
 $z-layers: (
-  'modal': 1000,
-  'dropdown-panel': 101,
-  'dropdown': 100,
-  'header': 50,
   'default': 1,
+  'header': 100,
+  'dropdown': 200,
+  'dropdown-panel': 300,
+  'header-elevated': 400,
+  'modal': 1000,
 );
 
 @function z($name) {
