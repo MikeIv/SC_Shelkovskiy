@@ -21,28 +21,46 @@ const panelStyle = ref<Record<string, string>>({})
 /** Desktop — dropdown, не модалка: без aria-modal и без focus trap. */
 const isDesktopMenu = ref(false)
 
-/** Индекс пункта левой колонки для смены круга; `null` — дефолтный кадр. */
+/** Запрошенный пункт vs показанный кадр (`load` + `naturalWidth`). */
 const activePrimaryIndex = ref<number | null>(null)
-const revealedPrimary = ref<number[]>([])
+const visiblePrimaryIndex = ref<number | null>(null)
+const loadedPrimary = ref<boolean[]>(siteNavItems.map(() => false))
 
-const activePrimaryItem = computed(() => {
-  const index = activePrimaryIndex.value
-  return index === null ? undefined : siteNavItems[index]
-})
+function markPrimaryMediaReady(index: number) {
+  if (loadedPrimary.value[index]) {
+    return
+  }
 
-function isPrimaryRevealed(index: number) {
-  return revealedPrimary.value.includes(index)
+  loadedPrimary.value[index] = true
+
+  if (activePrimaryIndex.value === index) {
+    visiblePrimaryIndex.value = index
+  }
+}
+
+function tryMarkPrimaryMedia(index: number, el: unknown) {
+  if (!(el instanceof HTMLImageElement) || !el.complete || el.naturalWidth === 0) {
+    return
+  }
+
+  markPrimaryMediaReady(index)
 }
 
 function setActivePrimary(index: number) {
   activePrimaryIndex.value = index
-  if (!revealedPrimary.value.includes(index)) {
-    revealedPrimary.value = [...revealedPrimary.value, index]
+  if (loadedPrimary.value[index]) {
+    visiblePrimaryIndex.value = index
   }
 }
 
 function resetActivePrimary() {
   activePrimaryIndex.value = null
+  visiblePrimaryIndex.value = null
+}
+
+function resetPrimaryMedia() {
+  resetActivePrimary()
+  loadedPrimary.value.fill(false)
 }
 
 useDialogFocus({
@@ -76,20 +94,22 @@ function close(): void {
 }
 
 function updatePosition(): void {
-  if (!import.meta.client || !props.anchor) {
+  if (!import.meta.client) {
     return
   }
 
   syncDesktopMenu()
 
-  if (!isDesktopMenu.value) {
+  if (!props.anchor || !isDesktopMenu.value) {
     panelStyle.value = {}
     return
   }
 
   const rect = props.anchor.getBoundingClientRect()
+  const top = Math.round(rect.bottom + 16)
   panelStyle.value = {
-    top: `${Math.round(rect.bottom + 16)}px`,
+    top: `${top}px`,
+    '--fs-menu-panel-top': `${top}px`,
   }
 }
 
@@ -165,8 +185,7 @@ watch(
     setScrollLock(false)
 
     if (!isOpen) {
-      resetActivePrimary()
-      revealedPrimary.value = []
+      resetPrimaryMedia()
       return
     }
 
@@ -178,6 +197,12 @@ watch(
     updatePosition()
   },
 )
+
+watch(isDesktopMenu, (desktop) => {
+  if (!desktop) {
+    resetPrimaryMedia()
+  }
+})
 
 onMounted(() => {
   syncDesktopMenu()
@@ -304,36 +329,35 @@ onBeforeUnmount(() => {
 
           <div :class="$style.divider" aria-hidden="true" />
 
-          <div :class="$style.media" aria-hidden="true">
+          <div
+            v-if="isDesktopMenu"
+            :class="$style.media"
+            aria-hidden="true"
+          >
             <img
-              :class="[
-                $style.mediaImg,
-                activePrimaryIndex === null && $style.mediaImgVisible,
-              ]"
+              :class="[$style.mediaImg, $style.mediaImgBase]"
               :src="menuMediaDefaultSrc"
               alt=""
               width="338"
               height="350"
               decoding="async"
             >
-            <template
+            <img
               v-for="(item, index) in siteNavItems"
               :key="`${item.to}-media`"
+              :ref="(el) => tryMarkPrimaryMedia(index, el)"
+              :class="[
+                $style.mediaImg,
+                visiblePrimaryIndex === index && $style.mediaImgVisible,
+              ]"
+              :src="item.imageSrc"
+              alt=""
+              width="338"
+              height="350"
+              loading="eager"
+              decoding="async"
+              @load="tryMarkPrimaryMedia(index, $event.target)"
             >
-              <img
-                v-if="isPrimaryRevealed(index)"
-                :class="[
-                  $style.mediaImg,
-                  activePrimaryIndex === index && $style.mediaImgVisible,
-                ]"
-                :src="item.imageSrc"
-                alt=""
-                width="338"
-                height="350"
-                loading="lazy"
-                decoding="async"
-              >
-            </template>
           </div>
         </div>
 
@@ -403,9 +427,6 @@ onBeforeUnmount(() => {
               </li>
             </ul>
           </div>
-          <span :class="$style.srOnly" aria-live="polite">
-            {{ activePrimaryItem?.label }}
-          </span>
         </section>
       </div>
     </template>
@@ -478,12 +499,15 @@ $menu-media-duration: 0.55s;
     flex-wrap: nowrap;
     align-items: flex-start;
     justify-content: space-between;
+    gap: rem(24);
     width: auto;
     max-width: 100%;
-    max-height: calc(100vh - #{rem(24)});
-    padding: rem(80) rem(48);
-    overflow-x: hidden;
-    overflow-y: auto;
+    max-height: calc(
+      100vh - var(--fs-menu-panel-top, var(--fs-menu-header-offset, #{rem(80)})) -
+        #{rem(24)}
+    );
+    padding: rem(80) clamp(#{rem(24)}, 2.5vw, #{rem(48)});
+    overflow: auto;
     border-radius: rem(60);
   }
 }
@@ -681,9 +705,10 @@ $menu-media-duration: 0.55s;
 .lead {
   @include from-desktop {
     display: flex;
-    flex-shrink: 0;
-    gap: rem(70);
+    flex-shrink: 1;
+    gap: clamp(#{rem(24)}, 4.5vw, #{rem(70)});
     align-items: flex-start;
+    min-width: 0;
   }
 }
 
@@ -697,7 +722,8 @@ $menu-media-duration: 0.55s;
   padding: var(--fs-space-4) var(--fs-grid-margin) 0;
 
   @include from-desktop {
-    flex-shrink: 0;
+    flex-shrink: 1;
+    min-width: 0;
     padding: 0;
   }
 }
@@ -706,7 +732,8 @@ $menu-media-duration: 0.55s;
   padding: var(--fs-space-4) var(--fs-grid-margin) 0;
 
   @include from-desktop {
-    flex-shrink: 0;
+    flex-shrink: 1;
+    min-width: 0;
     padding: 0;
   }
 }
@@ -772,9 +799,14 @@ $menu-media-duration: 0.55s;
 .linkUnderline {
   border-bottom: rem(2) solid transparent;
 
-  &:hover,
   &:focus-visible {
     border-bottom-color: var(--fs-color-black);
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      border-bottom-color: var(--fs-color-black);
+    }
   }
 }
 
@@ -784,7 +816,6 @@ $menu-media-duration: 0.55s;
 
   @include from-desktop {
     padding-block: rem(16) rem(4);
-    white-space: nowrap;
   }
 }
 
@@ -794,7 +825,6 @@ $menu-media-duration: 0.55s;
   @include from-desktop {
     padding-block: rem(16) rem(4);
     @include fs-h3;
-    white-space: nowrap;
   }
 }
 
@@ -803,26 +833,19 @@ $menu-media-duration: 0.55s;
 }
 
 .media {
-  display: none;
+  position: relative;
   flex-shrink: 0;
-  width: rem(220);
+  width: clamp(#{rem(200)}, 22vw, #{rem(338)});
   aspect-ratio: 338 / 350;
   overflow: hidden;
   border-radius: 50%;
-
-  @include from-desktop {
-    position: relative;
-    display: block;
-    width: rem(338);
-    height: rem(350);
-    aspect-ratio: auto;
-    align-self: start;
-  }
+  align-self: start;
 }
 
 .mediaImg {
   position: absolute;
   inset: 0;
+  z-index: 1;
   display: block;
   width: 100%;
   height: 100%;
@@ -836,6 +859,11 @@ $menu-media-duration: 0.55s;
   }
 }
 
+.mediaImgBase {
+  z-index: 0;
+  opacity: 1;
+}
+
 .mediaImgVisible {
   opacity: 1;
 }
@@ -847,7 +875,8 @@ $menu-media-duration: 0.55s;
   padding: var(--fs-space-4) var(--fs-grid-margin) var(--fs-space-5);
 
   @include from-desktop {
-    flex-shrink: 0;
+    flex-shrink: 1;
+    min-width: 0;
     width: rem(306);
     max-width: rem(306);
     padding: 0;
@@ -862,7 +891,6 @@ $menu-media-duration: 0.55s;
   @include from-desktop {
     display: inline-flex;
     padding-block: rem(16) rem(4);
-    white-space: nowrap;
   }
 }
 
@@ -914,15 +942,17 @@ $menu-media-duration: 0.55s;
     transition: none;
   }
 
-  &:hover {
-    border-bottom-color: var(--fs-color-black);
-    text-decoration: none;
-  }
-
   &:focus-visible {
     border-bottom-color: var(--fs-color-black);
     outline: rem(2) solid var(--fs-color-black);
     outline-offset: rem(2);
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      border-bottom-color: var(--fs-color-black);
+      text-decoration: none;
+    }
   }
 }
 
@@ -935,7 +965,6 @@ $menu-media-duration: 0.55s;
   list-style: none;
 
   @include from-desktop {
-    flex-wrap: nowrap;
     margin-top: 0;
   }
 }
@@ -951,14 +980,16 @@ $menu-media-duration: 0.55s;
     transition: none;
   }
 
-  &:hover {
-    color: var(--social-hover, var(--fs-color-beige));
-  }
-
   &:focus-visible {
     color: var(--social-hover, var(--fs-color-beige));
     outline: rem(2) solid var(--fs-color-black);
     outline-offset: rem(2);
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--social-hover, var(--fs-color-beige));
+    }
   }
 }
 
@@ -967,17 +998,5 @@ $menu-media-duration: 0.55s;
   width: rem(44);
   height: rem(44);
   color: inherit;
-}
-
-.srOnly {
-  position: absolute;
-  width: rem(1);
-  height: rem(1);
-  margin: rem(-1);
-  padding: 0;
-  border: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  clip: rect(0, 0, 0, 0);
 }
 </style>
