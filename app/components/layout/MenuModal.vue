@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { menuMediaDefaultSrc } from '~/utils/siteNav'
+
 const DESKTOP_MQ = '(min-width: 1280px)'
 
 const props = defineProps<{

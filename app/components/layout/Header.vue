@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { mallHoursTodayLabel } from '~/data/mallHours'
+import { siteNavItems, siteNavUnderline } from '~/utils/siteNav'
 
 export type LayoutHeaderVariant = 'white' | 'black'
 
