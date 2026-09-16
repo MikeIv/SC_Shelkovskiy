@@ -63,6 +63,8 @@ function onActivate(): void {
 <style module lang="scss">
 @use 'tools' as *;
 
+$gallery-title-lines: 2;
+
 .root {
   position: relative;
   display: flex;
@@ -143,10 +145,10 @@ function onActivate(): void {
   @include fs-h4;
   display: -webkit-box;
   overflow: hidden;
-  min-height: 2lh;
+  min-height: #{$gallery-title-lines}lh;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+  -webkit-line-clamp: $gallery-title-lines;
+  line-clamp: $gallery-title-lines;
   color: var(--fs-color-black);
 }
 </style>

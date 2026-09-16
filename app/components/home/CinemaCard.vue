@@ -69,15 +69,20 @@ function onBuyTicket() {
 <style module lang="scss">
 @use 'tools' as *;
 
+$cinema-title-lines: 2;
+$cinema-genres-lines: 2;
+
 .root {
   display: flex;
   flex-direction: column;
   gap: rem(12);
   width: 100%;
+  height: 100%;
 }
 
 .poster {
   position: relative;
+  flex-shrink: 0;
   width: 100%;
   aspect-ratio: 372 / 560;
   overflow: clip;
@@ -89,7 +94,8 @@ function onBuyTicket() {
 }
 
 .posterImage {
-  display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -103,9 +109,11 @@ function onBuyTicket() {
 
 .body {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: var(--fs-space-2);
   width: 100%;
+  min-width: 0;
 }
 
 .ticketButton {
@@ -121,12 +129,24 @@ function onBuyTicket() {
 .title {
   margin: 0;
   @include fs-h4;
+  display: -webkit-box;
+  overflow: hidden;
+  min-height: #{$cinema-title-lines}lh;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $cinema-title-lines;
+  line-clamp: $cinema-title-lines;
   color: var(--fs-color-black);
 }
 
 .genres {
   margin: 0;
   @include fs-text-lg;
+  display: -webkit-box;
+  overflow: hidden;
+  min-height: #{$cinema-genres-lines}lh;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $cinema-genres-lines;
+  line-clamp: $cinema-genres-lines;
   color: var(--fs-color-black);
 }
 </style>

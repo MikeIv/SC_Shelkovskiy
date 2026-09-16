@@ -6,7 +6,7 @@ import { homeNewsItems } from '~/data/homeNewsItems'
 const newsCatalogBaseItems = [
   {
     id: 'gift-card',
-    imageSrc: '/images/news/gift-card.png',
+    imageSrc: '/images/news/gift-card.jpg',
     imageAlt: 'Подарочная карта ТРЦ «Щёлковский»',
     date: '14 июля',
     category: 'ТРЦ «ЩЁЛКОВСКИЙ»',
@@ -77,7 +77,7 @@ const newsCatalogBaseItems = [
   },
   {
     id: 'zarina-tea-club',
-    imageSrc: '/images/news/zarina.png',
+    imageSrc: '/images/news/zarina.jpg',
     imageAlt: 'Лимитированная коллекция «Чайный клуб» в ZARINA',
     date: '14 июля',
     category: 'ZARINA',

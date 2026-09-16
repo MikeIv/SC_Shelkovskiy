@@ -34,14 +34,16 @@
 
 /**
  * Горизонтальная карусель: левый край карточек совпадает с сеткой,
- * правый упирается во вьюпорт. Горизонтальный скролл страницы
- * гасится `overflow-x: clip` на секции-родителе.
+ * правый упирается во вьюпорт. `padding-inline-end` держит последнюю
+ * карточку на грид-марже в конце прокрутки и не клипает peek.
+ * Скролл страницы гасится `overflow-x: clip` на секции-родителе.
  */
 @mixin fs-carousel-viewport {
   align-self: flex-start;
   width: calc(100% + (50vw - 50%));
   min-width: 0;
   margin-right: calc(50% - 50vw);
+  padding-inline-end: var(--fs-grid-margin);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;

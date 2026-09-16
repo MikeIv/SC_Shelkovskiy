@@ -147,6 +147,7 @@ const {
 }
 
 .slide {
+  display: flex;
   flex: 0 0 min(100vw - 2 * var(--fs-grid-margin), rem(320));
   scroll-snap-align: start;
 

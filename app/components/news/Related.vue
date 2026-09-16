@@ -168,6 +168,7 @@ onUnmounted(() => {
 }
 
 .slide {
+  display: flex;
   flex: 0 0 rem(320);
   scroll-snap-align: start;
 

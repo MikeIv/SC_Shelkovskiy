@@ -3,11 +3,11 @@ import { getNewsItemBySlug, newsCatalogBaseItems } from '~/data/newsCatalogItems
 import { normalizeNewsSlug } from '#shared/utils/newsPath'
 
 const GIFT_CARD_GALLERY = [
-  '/images/news/gift-card/gallery-1.png',
-  '/images/news/gift-card.png',
-  '/images/news/gift-card/gallery-1.png',
-  '/images/news/gift-card.png',
-  '/images/news/gift-card/gallery-1.png',
+  '/images/news/gift-card/gallery-1.jpg',
+  '/images/news/gift-card.jpg',
+  '/images/news/gift-card/gallery-1.jpg',
+  '/images/news/gift-card.jpg',
+  '/images/news/gift-card/gallery-1.jpg',
 ]
 
 const CHITAI_GOROD_COVER = '/images/news/chitai-gorod/cover.png'
