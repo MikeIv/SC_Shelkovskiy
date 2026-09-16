@@ -2,13 +2,8 @@ import type { NewsCardItem, NewsDetailItem } from '#shared/types/news'
 import { getNewsItemBySlug, newsCatalogBaseItems } from '~/data/newsCatalogItems'
 import { normalizeNewsSlug } from '#shared/utils/newsPath'
 
-const GIFT_CARD_GALLERY = [
-  '/images/news/gift-card/gallery-1.jpg',
-  '/images/news/gift-card.jpg',
-  '/images/news/gift-card/gallery-1.jpg',
-  '/images/news/gift-card.jpg',
-  '/images/news/gift-card/gallery-1.jpg',
-]
+const GIFT_CARD_COVER = '/images/news/gift-card.jpg'
+const GIFT_CARD_GALLERY = Array.from({ length: 5 }, () => GIFT_CARD_COVER)
 
 const CHITAI_GOROD_COVER = '/images/news/chitai-gorod/cover.png'
 const CHITAI_GOROD_GALLERY = Array.from({ length: 5 }, () => CHITAI_GOROD_COVER)

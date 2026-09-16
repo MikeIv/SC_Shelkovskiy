@@ -54,6 +54,15 @@
   }
 }
 
+@mixin fs-line-clamp($lines) {
+  display: -webkit-box;
+  overflow: hidden;
+  min-height: #{$lines}lh;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $lines;
+  line-clamp: $lines;
+}
+
 /** Хит-зона 24×24 для чекбокса и радио. */
 @mixin fs-choice-control {
   position: relative;

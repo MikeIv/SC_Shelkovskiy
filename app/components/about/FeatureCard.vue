@@ -43,9 +43,6 @@ const { feature } = defineProps<{
 <style module lang="scss">
 @use 'tools' as *;
 
-$feature-title-lines: 2;
-$feature-desc-lines: 3;
-
 .root {
   display: flex;
   flex-direction: column;
@@ -111,24 +108,14 @@ $feature-desc-lines: 3;
 
 .title {
   @include fs-h2;
-  display: -webkit-box;
   margin: 0;
-  overflow: hidden;
-  min-height: #{$feature-title-lines}lh;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: $feature-title-lines;
-  line-clamp: $feature-title-lines;
+  @include fs-line-clamp(2);
 }
 
 .desc {
   margin: 0;
   @include fs-text-lg;
-  display: -webkit-box;
-  overflow: hidden;
-  min-height: #{$feature-desc-lines}lh;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: $feature-desc-lines;
-  line-clamp: $feature-desc-lines;
+  @include fs-line-clamp(3);
 }
 
 .stats {

@@ -69,9 +69,6 @@ function onBuyTicket() {
 <style module lang="scss">
 @use 'tools' as *;
 
-$cinema-title-lines: 2;
-$cinema-genres-lines: 2;
-
 .root {
   display: flex;
   flex-direction: column;
@@ -129,24 +126,14 @@ $cinema-genres-lines: 2;
 .title {
   margin: 0;
   @include fs-h4;
-  display: -webkit-box;
-  overflow: hidden;
-  min-height: #{$cinema-title-lines}lh;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: $cinema-title-lines;
-  line-clamp: $cinema-title-lines;
+  @include fs-line-clamp(2);
   color: var(--fs-color-black);
 }
 
 .genres {
   margin: 0;
   @include fs-text-lg;
-  display: -webkit-box;
-  overflow: hidden;
-  min-height: #{$cinema-genres-lines}lh;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: $cinema-genres-lines;
-  line-clamp: $cinema-genres-lines;
+  @include fs-line-clamp(2);
   color: var(--fs-color-black);
 }
 </style>

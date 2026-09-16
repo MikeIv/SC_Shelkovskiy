@@ -52,8 +52,6 @@ const linkTarget = computed(() => props.item.to ?? getNewsDetailPath(props.item.
 <style module lang="scss">
 @use 'tools' as *;
 
-$news-title-lines: 3;
-
 .root {
   display: flex;
   flex-direction: column;
@@ -136,12 +134,7 @@ $news-title-lines: 3;
 .title {
   margin: 0;
   @include fs-h4;
-  display: -webkit-box;
-  overflow: hidden;
-  min-height: #{$news-title-lines}lh;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: $news-title-lines;
-  line-clamp: $news-title-lines;
+  @include fs-line-clamp(3);
   color: var(--fs-color-black);
 }
 
