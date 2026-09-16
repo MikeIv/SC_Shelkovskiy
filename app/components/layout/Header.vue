@@ -245,6 +245,7 @@ onBeforeUnmount(() => {
             <li v-for="item in siteNavItems" :key="item.to">
               <NuxtLink
                 :class="$style.navLink"
+                :style="{ '--fs-nav-underline': siteNavUnderline[item.to] }"
                 :to="item.to"
                 :active-class="$style.navLinkActive"
               >
@@ -296,7 +297,7 @@ onBeforeUnmount(() => {
 
   @media (hover: hover) {
     &:hover {
-      border-bottom-color: var(--fs-color-beige);
+      border-bottom-color: var(--fs-nav-underline, var(--fs-color-beige));
     }
   }
 
@@ -698,6 +699,8 @@ onBeforeUnmount(() => {
 }
 
 .navLink {
+  --fs-nav-underline: var(--fs-color-beige);
+
   display: inline-flex;
   align-items: center;
   padding-block: rem(4);
@@ -712,7 +715,7 @@ onBeforeUnmount(() => {
 }
 
 .navLinkActive {
-  border-bottom-color: var(--fs-color-beige);
+  border-bottom-color: var(--fs-nav-underline, var(--fs-color-beige));
 }
 
 .srOnly {
