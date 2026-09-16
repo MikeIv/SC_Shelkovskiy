@@ -1,8 +1,3 @@
-import socialGlobe from '~/assets/icons/social/social-globe.svg'
-import socialRutube from '~/assets/icons/social/social-rutube.svg'
-import socialTelegram from '~/assets/icons/social/social-telegram.svg'
-import socialVk from '~/assets/icons/social/social-vk.svg'
-
 export interface FooterNavItem {
   readonly label: string
   /** Внутренний маршрут. Без страницы — не задавать (пункт без навигации). */
@@ -12,7 +7,10 @@ export interface FooterNavItem {
 export interface FooterSocialLink {
   readonly label: string
   readonly href: string
-  readonly icon: string
+  /** Имя в коллекции `local` (`UIcon`). */
+  readonly icon: `local:${string}`
+  /** CSS-цвет глифа по hover. */
+  readonly hoverColor?: string
 }
 
 export const footerNavPrimary: readonly FooterNavItem[] = [
@@ -33,10 +31,30 @@ export const footerNavSecondary: readonly FooterNavItem[] = [
 ]
 
 export const footerSocialLinks = [
-  { label: 'Сайт', href: 'https://schelkovsky-trc.ru', icon: socialGlobe },
-  { label: 'ВКонтакте', href: 'https://vk.com/trc.schelkovsky', icon: socialVk },
-  { label: 'Telegram', href: 'https://t.me/schelkovsky', icon: socialTelegram },
-  { label: 'Rutube', href: 'https://rutube.ru', icon: socialRutube },
+  {
+    label: 'Сайт',
+    href: 'https://schelkovsky-trc.ru',
+    icon: 'local:social-globe',
+    hoverColor: 'var(--fs-color-beige)',
+  },
+  {
+    label: 'ВКонтакте',
+    href: 'https://vk.com/trc.schelkovsky',
+    icon: 'local:social-vk',
+    hoverColor: '#0077ff',
+  },
+  {
+    label: 'Telegram',
+    href: 'https://t.me/schelkovsky',
+    icon: 'local:social-telegram',
+    hoverColor: '#2aabee',
+  },
+  {
+    label: 'Rutube',
+    href: 'https://rutube.ru',
+    icon: 'local:social-rutube',
+    hoverColor: 'var(--fs-color-coral)',
+  },
 ] as const satisfies readonly FooterSocialLink[]
 
 export const footerContacts: {

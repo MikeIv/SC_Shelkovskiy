@@ -21,6 +21,30 @@ const panelStyle = ref<Record<string, string>>({})
 /** Desktop — dropdown, не модалка: без aria-modal и без focus trap. */
 const isDesktopMenu = ref(false)
 
+/** Индекс пункта левой колонки для смены круга; `null` — дефолтный кадр. */
+const activePrimaryIndex = ref<number | null>(null)
+const revealedPrimary = ref<number[]>([])
+
+const activePrimaryItem = computed(() => {
+  const index = activePrimaryIndex.value
+  return index === null ? undefined : siteNavItems[index]
+})
+
+function isPrimaryRevealed(index: number) {
+  return revealedPrimary.value.includes(index)
+}
+
+function setActivePrimary(index: number) {
+  activePrimaryIndex.value = index
+  if (!revealedPrimary.value.includes(index)) {
+    revealedPrimary.value = [...revealedPrimary.value, index]
+  }
+}
+
+function resetActivePrimary() {
+  activePrimaryIndex.value = null
+}
+
 useDialogFocus({
   open: () => props.open,
   container: panelRef,
@@ -141,6 +165,8 @@ watch(
     setScrollLock(false)
 
     if (!isOpen) {
+      resetActivePrimary()
+      revealedPrimary.value = []
       return
     }
 
@@ -174,6 +200,7 @@ onBeforeUnmount(() => {
         role="dialog"
         :aria-modal="isDesktopMenu ? 'false' : 'true'"
         aria-label="Меню"
+        @mouseleave="resetActivePrimary"
       >
         <div :class="$style.chrome">
           <div :class="$style.bar">
@@ -254,32 +281,60 @@ onBeforeUnmount(() => {
           @click="emit('toggle-hours')"
         />
 
-        <nav :class="$style.primary" aria-label="Разделы">
-          <ul :class="$style.linkList">
-            <li v-for="item in siteNavItems" :key="item.to">
-              <NuxtLink
-                :class="[$style.link, $style.linkPrimary]"
-                :to="item.to"
-                :active-class="$style.linkActive"
-                @click="close"
+        <div :class="$style.lead">
+          <nav :class="$style.primary" aria-label="Разделы">
+            <ul :class="$style.linkList">
+              <li
+                v-for="(item, index) in siteNavItems"
+                :key="item.to"
               >
-                {{ item.label }}
-              </NuxtLink>
-            </li>
-          </ul>
-        </nav>
+                <NuxtLink
+                  :class="[$style.link, $style.linkPrimary, $style.linkUnderline]"
+                  :to="item.to"
+                  :active-class="$style.linkActive"
+                  @mouseenter="setActivePrimary(index)"
+                  @focus="setActivePrimary(index)"
+                  @click="close"
+                >
+                  {{ item.label }}
+                </NuxtLink>
+              </li>
+            </ul>
+          </nav>
 
-        <div :class="$style.divider" aria-hidden="true" />
+          <div :class="$style.divider" aria-hidden="true" />
 
-        <div :class="$style.media" aria-hidden="true">
-          <img
-            :class="$style.mediaImg"
-            src="/images/layout/menu-mall.jpg"
-            alt=""
-            width="338"
-            height="338"
-            decoding="async"
-          >
+          <div :class="$style.media" aria-hidden="true">
+            <img
+              :class="[
+                $style.mediaImg,
+                activePrimaryIndex === null && $style.mediaImgVisible,
+              ]"
+              :src="menuMediaDefaultSrc"
+              alt=""
+              width="338"
+              height="350"
+              decoding="async"
+            >
+            <template
+              v-for="(item, index) in siteNavItems"
+              :key="`${item.to}-media`"
+            >
+              <img
+                v-if="isPrimaryRevealed(index)"
+                :class="[
+                  $style.mediaImg,
+                  activePrimaryIndex === index && $style.mediaImgVisible,
+                ]"
+                :src="item.imageSrc"
+                alt=""
+                width="338"
+                height="350"
+                loading="lazy"
+                decoding="async"
+              >
+            </template>
+          </div>
         </div>
 
         <nav :class="$style.secondary" aria-label="О центре">
@@ -290,7 +345,7 @@ onBeforeUnmount(() => {
               :class="$style.secondaryItem"
             >
               <NuxtLink
-                :class="[$style.link, $style.linkSecondary]"
+                :class="[$style.link, $style.linkSecondary, $style.linkUnderline]"
                 :to="item.to"
                 :active-class="$style.linkActive"
                 @click="close"
@@ -306,7 +361,7 @@ onBeforeUnmount(() => {
         <section :class="$style.contacts" :aria-labelledby="contactsTitleId">
           <NuxtLink
             :id="contactsTitleId"
-            :class="[$style.link, $style.linkPrimary, $style.contactsTitle]"
+            :class="[$style.link, $style.linkUnderline, $style.contactsTitle]"
             to="/contacts"
             :active-class="$style.linkActive"
             @click="close"
@@ -335,18 +390,22 @@ onBeforeUnmount(() => {
                   :aria-label="item.label"
                   rel="noopener noreferrer"
                   target="_blank"
+                  :style="item.hoverColor
+                    ? { '--social-hover': item.hoverColor }
+                    : undefined"
                 >
-                  <img
+                  <UIcon
+                    :name="item.icon"
                     :class="$style.socialIcon"
-                    :src="item.icon"
-                    alt=""
-                    width="44"
-                    height="44"
-                  >
+                    aria-hidden="true"
+                  />
                 </a>
               </li>
             </ul>
           </div>
+          <span :class="$style.srOnly" aria-live="polite">
+            {{ activePrimaryItem?.label }}
+          </span>
         </section>
       </div>
     </template>
@@ -355,6 +414,9 @@ onBeforeUnmount(() => {
 
 <style module lang="scss">
 @use 'tools' as *;
+
+$menu-media-ease: cubic-bezier(0.33, 1, 0.18, 1);
+$menu-media-duration: 0.55s;
 
 .backdrop {
   display: none;
@@ -410,13 +472,18 @@ onBeforeUnmount(() => {
       var(--fs-grid-margin),
       calc((100% - var(--fs-grid-content-max)) / 2)
     );
-    display: grid;
-    grid-template-columns: auto rem(338) auto minmax(#{rem(260)}, 1fr);
-    gap: var(--fs-space-5) rem(70);
-    align-items: start;
+    /* Figma: lead(gap 70) + secondary + contacts; воздух — space-between */
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    justify-content: space-between;
     width: auto;
+    max-width: 100%;
     max-height: calc(100vh - #{rem(24)});
-    padding: var(--fs-space-5) rem(80);
+    padding: rem(80) rem(48);
+    overflow-x: hidden;
+    overflow-y: auto;
     border-radius: rem(60);
   }
 }
@@ -437,6 +504,8 @@ onBeforeUnmount(() => {
   .primary,
   .secondary,
   .contacts,
+  .media,
+  .lead,
   .divider {
     pointer-events: none;
   }
@@ -609,6 +678,15 @@ onBeforeUnmount(() => {
   width: 100%;
 }
 
+.lead {
+  @include from-desktop {
+    display: flex;
+    flex-shrink: 0;
+    gap: rem(70);
+    align-items: flex-start;
+  }
+}
+
 .primary,
 .secondary,
 .contacts {
@@ -619,6 +697,7 @@ onBeforeUnmount(() => {
   padding: var(--fs-space-4) var(--fs-grid-margin) 0;
 
   @include from-desktop {
+    flex-shrink: 0;
     padding: 0;
   }
 }
@@ -627,6 +706,7 @@ onBeforeUnmount(() => {
   padding: var(--fs-space-4) var(--fs-grid-margin) 0;
 
   @include from-desktop {
+    flex-shrink: 0;
     padding: 0;
   }
 }
@@ -689,37 +769,32 @@ onBeforeUnmount(() => {
   }
 }
 
+.linkUnderline {
+  border-bottom: rem(2) solid transparent;
+
+  &:hover,
+  &:focus-visible {
+    border-bottom-color: var(--fs-color-black);
+  }
+}
+
 .linkPrimary {
   padding-block: rem(12) rem(4);
-  border-bottom: rem(2) solid transparent;
   @include fs-h3;
 
   @include from-desktop {
     padding-block: rem(16) rem(4);
     white-space: nowrap;
   }
-
-  @media (hover: hover) {
-    &:hover {
-      border-bottom-color: var(--fs-color-black);
-    }
-  }
 }
 
 .linkSecondary {
   @include fs-text-md;
-  border-bottom: rem(2) solid transparent;
 
   @include from-desktop {
     padding-block: rem(16) rem(4);
     @include fs-h3;
     white-space: nowrap;
-  }
-
-  @media (hover: hover) {
-    &:hover {
-      border-bottom-color: var(--fs-color-black);
-    }
   }
 }
 
@@ -731,23 +806,38 @@ onBeforeUnmount(() => {
   display: none;
   flex-shrink: 0;
   width: rem(220);
-  aspect-ratio: 1;
+  aspect-ratio: 338 / 350;
   overflow: hidden;
   border-radius: 50%;
 
   @include from-desktop {
+    position: relative;
     display: block;
     width: rem(338);
+    height: rem(350);
+    aspect-ratio: auto;
     align-self: start;
   }
 }
 
 .mediaImg {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
+  opacity: 0;
+  transition: opacity $menu-media-duration $menu-media-ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.mediaImgVisible {
+  opacity: 1;
 }
 
 .contacts {
@@ -757,6 +847,9 @@ onBeforeUnmount(() => {
   padding: var(--fs-space-4) var(--fs-grid-margin) var(--fs-space-5);
 
   @include from-desktop {
+    flex-shrink: 0;
+    width: rem(306);
+    max-width: rem(306);
     padding: 0;
   }
 }
@@ -764,9 +857,12 @@ onBeforeUnmount(() => {
 .contactsTitle {
   display: none;
   align-self: flex-start;
+  @include fs-h3;
 
   @include from-desktop {
     display: inline-flex;
+    padding-block: rem(16) rem(4);
+    white-space: nowrap;
   }
 }
 
@@ -808,17 +904,23 @@ onBeforeUnmount(() => {
 }
 
 .contactLink {
+  align-self: flex-start;
   text-decoration: none;
   word-break: break-word;
+  border-bottom: rem(2) solid transparent;
+  transition: border-color 0.2s ease;
 
-  @media (hover: hover) {
-    &:hover {
-      text-decoration: underline;
-      text-underline-offset: rem(2);
-    }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:hover {
+    border-bottom-color: var(--fs-color-black);
+    text-decoration: none;
   }
 
   &:focus-visible {
+    border-bottom-color: var(--fs-color-black);
     outline: rem(2) solid var(--fs-color-black);
     outline-offset: rem(2);
   }
@@ -833,6 +935,7 @@ onBeforeUnmount(() => {
   list-style: none;
 
   @include from-desktop {
+    flex-wrap: nowrap;
     margin-top: 0;
   }
 }
@@ -840,9 +943,20 @@ onBeforeUnmount(() => {
 .socialLink {
   display: block;
   flex-shrink: 0;
+  color: var(--fs-color-black);
   border-radius: 50%;
+  transition: color 0.2s ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:hover {
+    color: var(--social-hover, var(--fs-color-beige));
+  }
 
   &:focus-visible {
+    color: var(--social-hover, var(--fs-color-beige));
     outline: rem(2) solid var(--fs-color-black);
     outline-offset: rem(2);
   }
@@ -852,5 +966,18 @@ onBeforeUnmount(() => {
   display: block;
   width: rem(44);
   height: rem(44);
+  color: inherit;
+}
+
+.srOnly {
+  position: absolute;
+  width: rem(1);
+  height: rem(1);
+  margin: rem(-1);
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  clip: rect(0, 0, 0, 0);
 }
 </style>

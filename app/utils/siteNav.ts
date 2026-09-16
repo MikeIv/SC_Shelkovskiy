@@ -3,14 +3,26 @@ export interface SiteNavItem {
   readonly to: string
 }
 
+export interface MenuNavPrimaryItem extends SiteNavItem {
+  /** Круглое фото в desktop-меню (UI-kit Menu animation). */
+  readonly imageSrc: string
+}
+
 export const siteNavItems = [
-  { label: 'Магазины', to: '/shops' },
-  { label: 'Кафе и рестораны', to: '/cafes' },
-  { label: 'Услуги', to: '/services' },
-  { label: 'Спорт и развлечения', to: '/entertainment' },
-  { label: 'Новости и акции', to: '/news' },
-  { label: 'Мероприятия', to: '/events' },
-] as const satisfies readonly SiteNavItem[]
+  { label: 'Магазины', to: '/shops', imageSrc: '/images/layout/menu/shops.jpg' },
+  { label: 'Кафе и рестораны', to: '/cafes', imageSrc: '/images/layout/menu/cafes.jpg' },
+  { label: 'Услуги', to: '/services', imageSrc: '/images/layout/menu/services.jpg' },
+  {
+    label: 'Спорт и развлечения',
+    to: '/entertainment',
+    imageSrc: '/images/layout/menu/entertainment.jpg',
+  },
+  { label: 'Новости и акции', to: '/news', imageSrc: '/images/layout/menu/news.jpg' },
+  { label: 'Мероприятия', to: '/events', imageSrc: '/images/layout/menu/events.jpg' },
+] as const satisfies readonly MenuNavPrimaryItem[]
+
+/** Дефолтный кадр меню до hover (и после mouseleave). */
+export const menuMediaDefaultSrc = '/images/layout/menu-mall.jpg'
 
 export const menuNavSecondary = [
   { label: 'О нас', to: '/about' },

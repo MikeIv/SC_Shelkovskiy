@@ -141,14 +141,15 @@ function onNewsletterSubmit() {
                 :aria-label="item.label"
                 rel="noopener noreferrer"
                 target="_blank"
+                :style="item.hoverColor
+                  ? { '--social-hover': item.hoverColor }
+                  : undefined"
               >
-                <img
+                <UIcon
+                  :name="item.icon"
                   :class="$style.socialIcon"
-                  :src="item.icon"
-                  alt=""
-                  width="44"
-                  height="44"
-                >
+                  aria-hidden="true"
+                />
               </a>
             </li>
           </ul>
@@ -351,9 +352,20 @@ function onNewsletterSubmit() {
 .socialLink {
   display: block;
   flex-shrink: 0;
+  color: var(--fs-color-black);
   border-radius: 50%;
+  transition: color 0.2s ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:hover {
+    color: var(--social-hover, var(--fs-color-beige));
+  }
 
   &:focus-visible {
+    color: var(--social-hover, var(--fs-color-beige));
     outline: rem(2) solid var(--fs-color-black);
     outline-offset: rem(2);
   }
@@ -363,6 +375,7 @@ function onNewsletterSubmit() {
   display: block;
   width: rem(44);
   height: rem(44);
+  color: inherit;
 }
 
 .newsletter {
