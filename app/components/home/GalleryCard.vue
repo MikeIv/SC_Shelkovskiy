@@ -69,6 +69,7 @@ function onActivate(): void {
   flex-direction: column;
   gap: var(--fs-space-2);
   width: 100%;
+  height: 100%;
   min-width: 0;
 }
 
@@ -97,6 +98,7 @@ function onActivate(): void {
 
 .media {
   position: relative;
+  flex-shrink: 0;
   width: 100%;
   aspect-ratio: 343 / 240;
   overflow: clip;
@@ -110,7 +112,8 @@ function onActivate(): void {
 }
 
 .image {
-  display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -138,6 +141,12 @@ function onActivate(): void {
 .title {
   margin: 0;
   @include fs-h4;
+  display: -webkit-box;
+  overflow: hidden;
+  min-height: 2lh;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   color: var(--fs-color-black);
 }
 </style>

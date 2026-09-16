@@ -109,6 +109,7 @@ function closeLightbox(): void {
 @use 'tools' as *;
 
 .root {
+  overflow-x: clip;
   padding-block: rem(60) var(--fs-space-6);
 
   @include from-desktop {
@@ -160,17 +161,7 @@ function closeLightbox(): void {
 }
 
 .viewport {
-  width: calc(100% + 2 * var(--fs-grid-margin));
-  margin-inline: calc(-1 * var(--fs-grid-margin));
-  padding-inline: var(--fs-grid-margin);
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  @include fs-carousel-viewport;
 }
 
 .track {
@@ -183,6 +174,7 @@ function closeLightbox(): void {
 }
 
 .slide {
+  display: flex;
   flex: 0 0 calc(100vw - 2 * var(--fs-grid-margin));
   scroll-snap-align: start;
 

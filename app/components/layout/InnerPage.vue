@@ -29,6 +29,7 @@ useSeoMeta({
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-3);
+  overflow-x: clip;
   padding-block: var(--fs-space-4);
   padding-inline: max(
     var(--fs-grid-margin),

@@ -32,6 +32,26 @@
   column-gap: var(--fs-grid-gutter);
 }
 
+/**
+ * Горизонтальная карусель: левый край карточек совпадает с сеткой,
+ * правый упирается во вьюпорт. Горизонтальный скролл страницы
+ * гасится `overflow-x: clip` на секции-родителе.
+ */
+@mixin fs-carousel-viewport {
+  align-self: flex-start;
+  width: calc(100% + (50vw - 50%));
+  min-width: 0;
+  margin-right: calc(50% - 50vw);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /** Хит-зона 24×24 для чекбокса и радио. */
 @mixin fs-choice-control {
   position: relative;

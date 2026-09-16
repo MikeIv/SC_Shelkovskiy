@@ -117,6 +117,7 @@ onUnmounted(() => {
   flex-direction: column;
   gap: var(--fs-space-5);
   width: 100%;
+  min-width: 0;
 }
 
 .head {
@@ -146,15 +147,7 @@ onUnmounted(() => {
 }
 
 .viewport {
-  width: 100%;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  @include fs-carousel-viewport;
 }
 
 .track {
