@@ -78,7 +78,7 @@ function togglePause() {
 @use 'tools' as *;
 
 .root {
-  --marquee-duration: 80s;
+  --marquee-duration: 30s;
 
   position: relative;
   display: flex;

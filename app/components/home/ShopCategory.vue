@@ -127,6 +127,12 @@ function resetActive() {
 
 $shop-category-ease: cubic-bezier(0.33, 1, 0.18, 1);
 $shop-category-duration: 0.55s;
+$shop-category-left-width: 350;
+$shop-category-left-height: 420;
+$shop-category-right-width: 440;
+$shop-category-right-height: 470;
+$shop-category-left-inset: rem(545 + $shop-category-left-width * 0.5);
+$shop-category-right-inset: rem(540 + $shop-category-right-width * 0.5);
 
 .root {
   position: relative;
@@ -138,10 +144,7 @@ $shop-category-duration: 0.55s;
   overflow: clip;
 
   @include from-desktop {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-    gap: var(--fs-space-3);
-    align-items: center;
+    justify-content: center;
     min-height: rem(618);
     padding-top: 0;
     overflow: visible;
@@ -167,12 +170,6 @@ $shop-category-duration: 0.55s;
   inset: 0;
   z-index: z('default');
   pointer-events: none;
-
-  @include from-desktop {
-    position: static;
-    display: contents;
-    pointer-events: auto;
-  }
 }
 
 .frame {
@@ -189,16 +186,9 @@ $shop-category-duration: 0.55s;
   border-radius: var(--fs-radius-2xl);
 
   @include from-desktop {
-    position: relative;
-    top: auto;
-    left: auto;
-    grid-row: 1;
-    grid-column: 1;
-    justify-self: end;
-    align-self: start;
-    width: min(100%, rem(350));
-    height: rem(420);
-    margin-top: rem(50);
+    left: max(0px, calc(50% - #{$shop-category-left-inset}));
+    width: rem($shop-category-left-width);
+    height: rem($shop-category-left-height);
     border-radius: var(--fs-radius-3xl);
   }
 }
@@ -212,16 +202,9 @@ $shop-category-duration: 0.55s;
   border-radius: 50%;
 
   @include from-desktop {
-    position: relative;
-    right: auto;
-    bottom: auto;
-    grid-row: 1;
-    grid-column: 3;
-    justify-self: start;
-    align-self: end;
-    width: min(100%, rem(440));
-    height: rem(470);
-    margin-bottom: rem(74);
+    right: max(0px, calc(50% - #{$shop-category-right-inset}));
+    width: rem($shop-category-right-width);
+    height: rem($shop-category-right-height);
   }
 }
 
@@ -261,8 +244,6 @@ $shop-category-duration: 0.55s;
   width: 100%;
 
   @include from-desktop {
-    grid-row: 1;
-    grid-column: 2;
     gap: rem(40);
     width: auto;
   }
