@@ -16,11 +16,11 @@ const { items } = defineProps<{
 @use 'tools' as *;
 
 .root {
+  width: 100%;
   max-width: var(--fs-grid-content-max);
   margin-inline: auto;
 
   @include from-desktop {
-    padding-block: rem(80) rem(140);
     padding-inline: var(--fs-grid-margin);
   }
 }

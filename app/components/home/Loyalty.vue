@@ -26,10 +26,12 @@ const { items } = defineProps<{
 @use 'tools' as *;
 
 .root {
-  padding-block: rem(60) rem(100);
+  padding-block: var(--home-stack-pad, #{rem(60)})
+    var(--home-stack-pad, #{rem(100)});
 
   @include from-desktop {
-    padding-block: rem(80) rem(140);
+    padding-block: var(--home-stack-pad, #{rem(80)})
+      var(--home-stack-pad, #{rem(140)});
   }
 }
 

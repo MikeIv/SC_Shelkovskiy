@@ -66,11 +66,6 @@ const {
 
 .root {
   overflow-x: clip;
-  padding-block: rem(100) var(--fs-space-6);
-
-  @include from-desktop {
-    padding-block: rem(140) var(--fs-space-6);
-  }
 }
 
 .inner {

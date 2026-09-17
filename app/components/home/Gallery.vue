@@ -110,11 +110,6 @@ function closeLightbox(): void {
 
 .root {
   overflow-x: clip;
-  padding-block: rem(60) var(--fs-space-6);
-
-  @include from-desktop {
-    padding-block: rem(80) var(--fs-space-6);
-  }
 }
 
 .inner {

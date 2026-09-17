@@ -191,25 +191,21 @@ function onNewsletterSubmit() {
 }
 
 .inner {
+  --footer-pad-inline: max(
+    var(--fs-grid-margin),
+    calc((100% - var(--fs-grid-content-max)) / 2)
+  );
+
   width: 100%;
-  max-width: var(--fs-grid-content-max);
-  margin-inline: auto;
-  padding:
-    var(--fs-space-6)
-    var(--fs-grid-margin)
-    var(--fs-space-4);
+  padding: var(--fs-space-6) var(--footer-pad-inline) var(--fs-space-6);
 
   @include from-desktop {
-    padding:
-      calc(var(--fs-space-6) + var(--fs-space-4))
-      var(--fs-grid-margin)
-      var(--fs-space-5);
+    padding-block: rem(80);
   }
 }
 
 .grid {
   display: grid;
-  /* Пропорции колонок — шаблон Figma, масштабируются через fr */
   grid-template-columns: minmax(0, 172fr) minmax(0, 101fr);
   grid-template-areas:
     'brand brand'
@@ -229,14 +225,11 @@ function onNewsletterSubmit() {
   }
 
   @include from-desktop {
-    grid-template-columns:
-      minmax(0, 306fr)
-      minmax(0, 297fr)
-      minmax(0, 101fr)
-      minmax(0, 504fr);
+    @include fs-grid;
     grid-template-areas:
-      'brand nav-a nav-b newsletter'
-      'contact nav-a nav-b newsletter';
+      'brand brand brand nav-a nav-a nav-a nav-b nav-b newsletter newsletter newsletter newsletter'
+      'contact contact contact nav-a nav-a nav-a nav-b nav-b newsletter newsletter newsletter newsletter';
+    row-gap: var(--fs-space-5);
     align-items: start;
   }
 }
@@ -384,10 +377,6 @@ function onNewsletterSubmit() {
   gap: var(--fs-space-2);
   grid-area: newsletter;
   min-width: 0;
-
-  @include from-desktop {
-    gap: var(--fs-space-3);
-  }
 }
 
 .newsletterTitle {
@@ -410,6 +399,10 @@ function onNewsletterSubmit() {
       'consent consent'
       'status status';
     grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  @include from-desktop {
+    gap: var(--fs-space-3);
   }
 }
 
@@ -438,7 +431,7 @@ function onNewsletterSubmit() {
 .consent {
   display: flex;
   grid-area: consent;
-  gap: var(--fs-space-2);
+  gap: rem(12);
   align-items: flex-start;
 }
 
@@ -468,23 +461,25 @@ function onNewsletterSubmit() {
 }
 
 .divider {
-  margin: var(--fs-space-5) 0 var(--fs-space-2);
+  margin-block: var(--fs-space-5);
+  margin-inline: calc(-1 * var(--footer-pad-inline));
   border: 0;
-  border-top: rem(2) solid var(--fs-color-black);
+  border-top: rem(2) solid var(--fs-color-white);
 
   @include from-tablet {
-    margin-block: var(--fs-space-6) var(--fs-space-4);
+    margin-block: var(--fs-space-6);
   }
 
   @include from-desktop {
-    margin-block: var(--fs-space-5) var(--fs-space-4);
+    margin-block: rem(80) var(--fs-space-5);
+    margin-inline: 0;
   }
 }
 
 .bottom {
   display: flex;
   flex-direction: column-reverse;
-  gap: var(--fs-space-2);
+  gap: var(--fs-space-5);
 
   @include from-tablet {
     flex-direction: row;

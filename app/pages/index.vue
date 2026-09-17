@@ -87,11 +87,31 @@ useHead({
 <template>
   <div>
     <HomeIntro :slides="homeIntroSlides" />
-    <HomeNews :items="homeNewsItems" />
-    <HomeBrands :rows="homeBrandRows" />
-    <HomeLoyalty :items="homeLoyaltyItems" />
-    <HomeShopCategories :items="homeShopCategories" />
-    <HomeCinema :items="homeCinemaItems" />
-    <HomeGallery :items="homeGalleryItems" />
+    <div :class="$style.stack">
+      <HomeNews :items="homeNewsItems" />
+      <HomeBrands :rows="homeBrandRows" />
+      <HomeLoyalty :items="homeLoyaltyItems" />
+      <HomeShopCategories :items="homeShopCategories" />
+      <HomeCinema :items="homeCinemaItems" />
+      <HomeGallery :items="homeGalleryItems" />
+    </div>
   </div>
 </template>
+
+<style module lang="scss">
+@use 'tools' as *;
+
+.stack {
+  --home-stack-pad: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: rem(100);
+  padding-block: rem(100);
+
+  @include from-desktop {
+    gap: rem(160);
+    padding-block: rem(140) rem(160);
+  }
+}
+</style>

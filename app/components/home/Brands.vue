@@ -85,12 +85,14 @@ function togglePause() {
   flex-direction: column;
   gap: var(--fs-space-2);
   width: 100%;
-  padding-block: var(--fs-space-6) rem(100);
+  padding-block: var(--home-stack-pad, var(--fs-space-6))
+    var(--home-stack-pad, #{rem(100)});
   overflow: hidden;
 
   @include from-desktop {
     gap: var(--fs-space-3);
-    padding-block: var(--fs-space-6) rem(140);
+    padding-block: var(--home-stack-pad, var(--fs-space-6))
+      var(--home-stack-pad, #{rem(140)});
   }
 }
 
