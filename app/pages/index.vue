@@ -89,8 +89,8 @@ useHead({
     <HomeIntro :slides="homeIntroSlides" />
     <div :class="$style.stack">
       <HomeNews :items="homeNewsItems" />
-      <HomeBrands :rows="homeBrandRows" />
-      <HomeLoyalty :items="homeLoyaltyItems" />
+      <HomeBrands :rows="homeBrandRows" flush />
+      <HomeLoyalty :items="homeLoyaltyItems" flush />
       <HomeShopCategories :items="homeShopCategories" />
       <HomeCinema :items="homeCinemaItems" />
       <HomeGallery :items="homeGalleryItems" />
@@ -102,8 +102,6 @@ useHead({
 @use 'tools' as *;
 
 .stack {
-  --home-stack-pad: 0;
-
   display: flex;
   flex-direction: column;
   gap: rem(100);

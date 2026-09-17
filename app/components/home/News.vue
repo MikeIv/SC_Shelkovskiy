@@ -65,6 +65,7 @@ const {
 @use 'tools' as *;
 
 .root {
+  /* Гасит горизонтальный скролл fs-carousel-viewport. */
   overflow-x: clip;
 }
 

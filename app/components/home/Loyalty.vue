@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import type { HomeLoyaltyCard } from '#shared/types/home'
 
-const { items } = defineProps<{
+const { items, flush = false } = defineProps<{
   items: HomeLoyaltyCard[]
+  flush?: boolean
 }>()
 </script>
 
 <template>
-  <section :class="$style.root" aria-label="Программа лояльности и подарочные карты">
+  <section
+    :class="[$style.root, flush && $style.flush]"
+    aria-label="Программа лояльности и подарочные карты"
+  >
     <div :class="$style.inner">
       <ul :class="$style.list">
         <li
@@ -26,12 +30,14 @@ const { items } = defineProps<{
 @use 'tools' as *;
 
 .root {
-  padding-block: var(--home-stack-pad, #{rem(60)})
-    var(--home-stack-pad, #{rem(100)});
+  padding-block: rem(60) rem(100);
 
   @include from-desktop {
-    padding-block: var(--home-stack-pad, #{rem(80)})
-      var(--home-stack-pad, #{rem(140)});
+    padding-block: rem(80) rem(140);
+  }
+
+  &.flush {
+    padding-block: 0;
   }
 }
 

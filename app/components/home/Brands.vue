@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { HomeBrandRow } from '#shared/types/home'
 
-const { rows } = defineProps<{
+const { rows, flush = false } = defineProps<{
   rows: HomeBrandRow[]
+  flush?: boolean
 }>()
 
 const paused = ref(false)
@@ -13,7 +14,10 @@ function togglePause() {
 </script>
 
 <template>
-  <section :class="$style.root" aria-label="Бренды торгового центра">
+  <section
+    :class="[$style.root, flush && $style.flush]"
+    aria-label="Бренды торгового центра"
+  >
     <button
       :class="$style.pause"
       type="button"
@@ -85,14 +89,16 @@ function togglePause() {
   flex-direction: column;
   gap: var(--fs-space-2);
   width: 100%;
-  padding-block: var(--home-stack-pad, var(--fs-space-6))
-    var(--home-stack-pad, #{rem(100)});
+  padding-block: var(--fs-space-6) rem(100);
   overflow: hidden;
 
   @include from-desktop {
     gap: var(--fs-space-3);
-    padding-block: var(--home-stack-pad, var(--fs-space-6))
-      var(--home-stack-pad, #{rem(140)});
+    padding-block: var(--fs-space-6) rem(140);
+  }
+
+  &.flush {
+    padding-block: 0;
   }
 }
 

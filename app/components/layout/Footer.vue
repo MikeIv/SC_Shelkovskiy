@@ -225,6 +225,7 @@ function onNewsletterSubmit() {
   }
 
   @include from-desktop {
+    /* Сетка 12 кол.: 3 + 3 + 2 + 4 (Figma 306 / 297 / 101 / 504 при gutter 24). */
     @include fs-grid;
     grid-template-areas:
       'brand brand brand nav-a nav-a nav-a nav-b nav-b newsletter newsletter newsletter newsletter'
@@ -431,7 +432,7 @@ function onNewsletterSubmit() {
 .consent {
   display: flex;
   grid-area: consent;
-  gap: rem(12);
+  gap: rem(12); /* Figma: 12px между чекбоксом и текстом */
   align-items: flex-start;
 }
 
@@ -462,8 +463,10 @@ function onNewsletterSubmit() {
 
 .divider {
   margin-block: var(--fs-space-5);
+  /* Mobile/tablet: край в край (Figma). Desktop: по контенту 1560. */
   margin-inline: calc(-1 * var(--footer-pad-inline));
   border: 0;
+  /* Figma: белая 2px на --fs-color-light, не чёрная. */
   border-top: rem(2) solid var(--fs-color-white);
 
   @include from-tablet {
