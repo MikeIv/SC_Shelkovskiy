@@ -1,0 +1,23 @@
+# Переносы строк: LF в репозитории и в рабочем дереве (совпадает с endOfLine: 'lf' в prettier.config.mjs).
+# Без этого core.autocrlf=true отдаёт на Windows CRLF, и `pnpm format:check` падает на всём репозитории.
+* text=auto eol=lf
+
+# Исполняемые скрипты и обвязка git — строго LF, иначе sh на Windows ломается на `\r` в shebang.
+.husky/** text eol=lf
+scripts/** text eol=lf
+
+# Бинарные ассеты — без какой-либо нормализации.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.avif binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.otf binary
+*.pdf binary
+*.zip binary
