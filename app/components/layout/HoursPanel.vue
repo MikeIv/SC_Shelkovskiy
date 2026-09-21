@@ -131,6 +131,8 @@ const todayIndex = computed(() => mallHoursTodayIndex())
 }
 
 .carded {
+  gap: 0;
+
   .mall,
   .tenantsSection {
     display: flex;

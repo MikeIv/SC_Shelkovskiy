@@ -565,6 +565,12 @@ onBeforeUnmount(() => {
 }
 
 .hours,
+.textLink,
+.action {
+  --fs-nav-underline: currentColor;
+}
+
+.hours,
 .textLink {
   display: inline-flex;
   gap: var(--fs-space-1);
@@ -573,7 +579,22 @@ onBeforeUnmount(() => {
   white-space: nowrap;
 }
 
+.textLink {
+  @include hover-underline;
+}
+
 .hours {
+  > span {
+    border-bottom: rem(2) solid transparent;
+    transition: border-color 0.2s ease;
+  }
+
+  @media (hover: hover) {
+    &:hover > span {
+      border-bottom-color: var(--fs-nav-underline, currentColor);
+    }
+  }
+
   .icon {
     transition: transform 0.2s ease;
   }
@@ -583,6 +604,7 @@ onBeforeUnmount(() => {
   }
 
   @media (prefers-reduced-motion: reduce) {
+    > span,
     .icon {
       transition: none;
     }

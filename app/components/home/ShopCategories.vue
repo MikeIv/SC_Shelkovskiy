@@ -8,7 +8,9 @@ const { items } = defineProps<{
 
 <template>
   <section :class="$style.root" aria-label="Категории магазина">
-    <HomeShopCategory :items="items" />
+    <div :class="$style.inner">
+      <HomeShopCategory :items="items" />
+    </div>
   </section>
 </template>
 
@@ -17,6 +19,10 @@ const { items } = defineProps<{
 
 .root {
   width: 100%;
+  overflow-x: clip;
+}
+
+.inner {
   max-width: var(--fs-grid-content-max);
   margin-inline: auto;
 

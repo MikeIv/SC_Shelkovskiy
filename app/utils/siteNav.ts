@@ -35,9 +35,9 @@ export const menuNavSecondary = [
 
 export type SiteNavPath = (typeof siteNavItems)[number]['to']
 
-/** Полоска hover/active пунктов хедера (UI-kit 94:12103…94:12279). */
+/** Полоска hover/active пунктов хедера (Figma 3149:37767, 3149:37937). */
 export const siteNavUnderline = {
-  '/shops': 'var(--fs-color-wheat)',
+  '/shops': 'var(--fs-color-pink)',
   '/cafes': 'var(--fs-color-green)',
   '/services': 'var(--fs-color-orange)',
   '/entertainment': 'var(--fs-color-cyan)',

@@ -39,15 +39,10 @@ function resetActive() {
     :class="$style.root"
     @mouseleave="resetActive"
   >
-    <img
+    <div
       :class="$style.pattern"
-      src="/images/home/categories/pattern.svg"
-      alt=""
-      width="374"
-      height="373"
       aria-hidden="true"
-      decoding="async"
-    >
+    />
 
     <div :class="$style.images" aria-hidden="true">
       <div :class="[$style.frame, $style.frameLeft]">
@@ -133,6 +128,13 @@ $shop-category-right-width: 440;
 $shop-category-right-height: 470;
 $shop-category-left-inset: rem(545 + $shop-category-left-width * 0.5);
 $shop-category-right-inset: rem(540 + $shop-category-right-width * 0.5);
+$shop-category-pattern-desktop: 1220;
+$shop-category-pattern-desktop-right: (
+    $shop-category-pattern-desktop - $shop-category-right-width
+  ) * 0.5;
+$shop-category-pattern-desktop-bottom: (
+    $shop-category-pattern-desktop - $shop-category-right-height
+  ) * 0.5;
 
 .root {
   position: relative;
@@ -158,10 +160,19 @@ $shop-category-right-inset: rem(540 + $shop-category-right-width * 0.5);
   width: rem(374);
   height: rem(373);
   pointer-events: none;
+  background-color: var(--fs-color-black);
   opacity: 0.08;
+  mask: url('/images/home/categories/pattern.svg') center / contain no-repeat;
 
   @include from-desktop {
-    display: none;
+    right: calc(
+      max(0px, 50% - #{$shop-category-right-inset}) - #{rem($shop-category-pattern-desktop-right)}
+    );
+    bottom: rem($shop-category-pattern-desktop-bottom * -1);
+    width: rem($shop-category-pattern-desktop);
+    height: rem($shop-category-pattern-desktop);
+    background-color: var(--fs-color-beige);
+    opacity: 0.2;
   }
 }
 
