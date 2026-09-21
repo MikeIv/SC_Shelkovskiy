@@ -584,16 +584,7 @@ onBeforeUnmount(() => {
 }
 
 .hours {
-  > span {
-    border-bottom: rem(2) solid transparent;
-    transition: border-color 0.2s ease;
-  }
-
-  @media (hover: hover) {
-    &:hover > span {
-      border-bottom-color: var(--fs-nav-underline, currentColor);
-    }
-  }
+  @include hover-underline;
 
   .icon {
     transition: transform 0.2s ease;
@@ -604,7 +595,6 @@ onBeforeUnmount(() => {
   }
 
   @media (prefers-reduced-motion: reduce) {
-    > span,
     .icon {
       transition: none;
     }
