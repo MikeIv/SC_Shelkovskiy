@@ -129,12 +129,6 @@ $shop-category-right-height: 470;
 $shop-category-left-inset: rem(545 + $shop-category-left-width * 0.5);
 $shop-category-right-inset: rem(540 + $shop-category-right-width * 0.5);
 $shop-category-pattern-desktop: 1220;
-$shop-category-pattern-desktop-right: (
-    $shop-category-pattern-desktop - $shop-category-right-width
-  ) * 0.5;
-$shop-category-pattern-desktop-bottom: (
-    $shop-category-pattern-desktop - $shop-category-right-height
-  ) * 0.5;
 
 .root {
   position: relative;
@@ -166,9 +160,10 @@ $shop-category-pattern-desktop-bottom: (
 
   @include from-desktop {
     right: calc(
-      max(0px, 50% - #{$shop-category-right-inset}) - #{rem($shop-category-pattern-desktop-right)}
+      max(0px, 50% - #{$shop-category-right-inset}) -
+        #{rem(($shop-category-pattern-desktop - $shop-category-right-width) * 0.5)}
     );
-    bottom: rem($shop-category-pattern-desktop-bottom * -1);
+    bottom: rem(($shop-category-right-height - $shop-category-pattern-desktop) * 0.5);
     width: rem($shop-category-pattern-desktop);
     height: rem($shop-category-pattern-desktop);
     background-color: var(--fs-color-beige);
