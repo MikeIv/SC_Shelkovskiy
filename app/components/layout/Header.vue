@@ -69,8 +69,15 @@ function measureSpacer(): void {
     return
   }
 
-  // fixed: pinned scroll или tablet-меню — нужен spacer в потоке.
-  if (!pinned.value && !menuOpen.value) {
+  // Spacer держит место, только если бар вынут из потока.
+  // Desktop-меню оставляет header в потоке (position: relative) —
+  // иначе полоса сверху сдвигает шапку вниз, и она пропадает с верха.
+  const takenOutOfFlow =
+    pinned.value ||
+    (menuOpen.value &&
+      getComputedStyle(headerRef.value).position === 'fixed')
+
+  if (!takenOutOfFlow) {
     spacerHeight.value = 0
     syncMenuHeaderOffset()
     return
@@ -340,7 +347,7 @@ onBeforeUnmount(() => {
     var(--fs-grid-margin),
     calc((100% - var(--fs-grid-content-max)) / 2)
   );
-  border-bottom: rem(2) solid currentColor;
+  border-bottom: rem(2) solid var(--fs-color-light);
   color: var(--fs-color-black);
   transition:
     transform 0.35s ease,
@@ -352,6 +359,7 @@ onBeforeUnmount(() => {
     color 0.25s ease;
 
   &[data-variant='white'] {
+    border-bottom-color: color-mix(in srgb, var(--fs-color-white) 50%, transparent);
     color: var(--fs-color-white);
   }
 
@@ -680,13 +688,17 @@ onBeforeUnmount(() => {
     max-height: rem(72);
     padding-top: var(--fs-space-2);
     overflow: hidden;
-    border-top: rem(2) solid currentColor;
+    border-top: rem(2) solid var(--fs-color-light);
     opacity: 1;
     transition:
       max-height 0.3s ease,
       opacity 0.2s ease,
       padding 0.3s ease,
       border-color 0.25s ease;
+  }
+
+  .root[data-variant='white'] & {
+    border-top-color: color-mix(in srgb, var(--fs-color-white) 50%, transparent);
   }
 
   .root[data-pinned] & {

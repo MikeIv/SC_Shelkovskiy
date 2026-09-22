@@ -102,6 +102,8 @@ useHead({
 @use 'tools' as *;
 
 .stack {
+  position: relative;
+  z-index: 0;
   display: flex;
   flex-direction: column;
   gap: rem(100);

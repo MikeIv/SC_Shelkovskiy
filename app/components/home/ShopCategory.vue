@@ -137,18 +137,17 @@ $shop-category-pattern-desktop: 1220;
   align-items: center;
   min-height: rem(720);
   padding-top: rem(203);
-  overflow: clip;
 
   @include from-desktop {
     justify-content: center;
     min-height: rem(618);
     padding-top: 0;
-    overflow: visible;
   }
 }
 
 .pattern {
   position: absolute;
+  z-index: -1;
   right: rem(-100);
   bottom: rem(-95);
   width: rem(374);

@@ -178,6 +178,8 @@ function onNewsletterSubmit() {
 @use 'tools' as *;
 
 .root {
+  position: relative;
+  z-index: z('default');
   margin-top: auto;
   color: var(--fs-color-black);
   background-color: var(--fs-color-light);
