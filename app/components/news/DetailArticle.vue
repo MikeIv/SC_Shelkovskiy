@@ -63,14 +63,13 @@ async function sharePage() {
           <div :class="$style.tenantInfo">
             <UiTag v-if="item.tenant.floor" variant="other">{{ item.tenant.floor }}</UiTag>
 
-            <NuxtLink
+            <UiIconLink
               v-if="item.tenant.mapUrl"
-              :class="$style.mapLink"
+              icon="local:map"
               :to="item.tenant.mapUrl"
             >
-              <UIcon name="local:map" :class="$style.mapIcon" aria-hidden="true" />
-              <span>Смотреть на схеме</span>
-            </NuxtLink>
+              Смотреть на схеме
+            </UiIconLink>
           </div>
         </div>
 
@@ -243,27 +242,6 @@ async function sharePage() {
   align-items: flex-start;
 }
 
-.mapLink {
-  display: inline-flex;
-  gap: rem(8);
-  align-items: center;
-  @include fs-text-md;
-  color: var(--fs-color-black);
-  text-decoration: none;
-
-  @media (hover: hover) {
-    &:hover {
-      color: var(--fs-color-gray);
-    }
-  }
-}
-
-.mapIcon {
-  flex-shrink: 0;
-  width: rem(24);
-  height: rem(24);
-}
-
 .intro,
 .paragraphs {
   display: flex;
@@ -317,7 +295,11 @@ async function sharePage() {
 }
 
 .quote {
+  --quote-pattern-size: #{rem(240)};
+  --quote-pattern-offset: #{rem(-72)};
+
   position: relative;
+  isolation: isolate;
   margin: 0;
   padding: var(--fs-space-4);
   overflow: clip;
@@ -325,6 +307,34 @@ async function sharePage() {
   color: var(--fs-color-black);
   background-color: var(--fs-color-light);
   border-radius: rem(32);
+
+  @include from-desktop {
+    --quote-pattern-size: #{rem(400)};
+    --quote-pattern-offset: #{rem(-140)};
+  }
+
+  &::before,
+  &::after {
+    position: absolute;
+    z-index: -1;
+    top: 50%;
+    width: var(--quote-pattern-size);
+    height: var(--quote-pattern-size);
+    pointer-events: none;
+    content: '';
+    background-color: var(--fs-color-white);
+    transform: translateY(-50%);
+    mask: url('/images/home/categories/pattern.svg') center / contain no-repeat;
+  }
+
+  &::before {
+    left: var(--quote-pattern-offset);
+  }
+
+  &::after {
+    right: var(--quote-pattern-offset);
+    transform: translateY(-50%) scaleX(-1);
+  }
 }
 
 .share {

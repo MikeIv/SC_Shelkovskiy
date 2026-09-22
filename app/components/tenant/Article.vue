@@ -28,10 +28,7 @@ defineProps<{
 
           <div :class="$style.mapInfo">
             <UiTag variant="other">{{ item.floor }}</UiTag>
-            <span :class="$style.mapLabel">
-              <UIcon name="local:map" :class="$style.mapIcon" aria-hidden="true" />
-              <span :class="$style.mapText">Смотреть на схеме</span>
-            </span>
+            <UiIconLink icon="local:map">Смотреть на схеме</UiIconLink>
           </div>
         </NuxtLink>
 
@@ -172,12 +169,6 @@ defineProps<{
     outline: rem(2) solid var(--fs-color-black);
     outline-offset: rem(2);
   }
-
-  @media (hover: hover) {
-    &:hover .mapText {
-      text-decoration-line: underline;
-    }
-  }
 }
 
 .logo {
@@ -220,25 +211,6 @@ defineProps<{
   flex-direction: column;
   gap: rem(12);
   align-items: flex-start;
-}
-
-.mapLabel {
-  display: inline-flex;
-  gap: rem(8);
-  align-items: flex-start;
-  @include fs-text-md;
-  color: var(--fs-color-black);
-}
-
-.mapText {
-  text-decoration: none;
-  text-underline-offset: rem(3);
-}
-
-.mapIcon {
-  flex-shrink: 0;
-  width: rem(24);
-  height: rem(24);
 }
 
 .contacts {
