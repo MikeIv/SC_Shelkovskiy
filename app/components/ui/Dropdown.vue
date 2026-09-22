@@ -248,29 +248,30 @@ onBeforeUnmount(() => {
       <span :class="$style.value">{{ triggerText }}</span>
       <UIcon name="local:arrow-down" :class="$style.icon" aria-hidden="true" />
     </button>
-    <ul
-      v-if="isOpen"
-      :id="listId"
-      ref="listRef"
-      :class="$style.list"
-      role="listbox"
-      :aria-labelledby="label ? labelId : undefined"
-      @mousedown.prevent
-    >
-      <li
-        v-for="(option, index) in options"
-        :id="optionId(index)"
-        :key="option.value"
-        :class="$style.option"
-        role="option"
-        :aria-selected="option.value === model"
-        :data-active="index === activeIndex ? 'true' : undefined"
-        @click="selectIndex(index)"
-        @mouseenter="activeIndex = index"
+    <div v-if="isOpen" :class="$style.panel">
+      <ul
+        :id="listId"
+        ref="listRef"
+        :class="$style.list"
+        role="listbox"
+        :aria-labelledby="label ? labelId : undefined"
+        @mousedown.prevent
       >
-        {{ option.label }}
-      </li>
-    </ul>
+        <li
+          v-for="(option, index) in options"
+          :id="optionId(index)"
+          :key="option.value"
+          :class="$style.option"
+          role="option"
+          :aria-selected="option.value === model"
+          :data-active="index === activeIndex ? 'true' : undefined"
+          @click="selectIndex(index)"
+          @mouseenter="activeIndex = index"
+        >
+          {{ option.label }}
+        </li>
+      </ul>
+    </div>
     <p
       v-if="error"
       :id="errorId"
@@ -374,25 +375,30 @@ onBeforeUnmount(() => {
   transition: transform 0.2s ease;
 }
 
+.panel {
+  position: absolute;
+  top: calc(100% + var(--fs-space-1));
+  right: 0;
+  left: 0;
+  z-index: z('dropdown');
+  padding-right: var(--fs-space-1);
+  overflow: hidden;
+  border-radius: var(--fs-radius-xl);
+  background-color: var(--fs-dropdown-bg);
+}
+
 .list {
   --scrollbar-thumb: var(--fs-color-beige);
   --scrollbar-track: transparent;
 
-  position: absolute;
-  top: calc(100% + var(--fs-space-1));
-  left: 0;
-  z-index: z('dropdown');
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-2);
-  width: 100%;
   max-height: var(--fs-dropdown-list-max);
   margin: 0;
   padding: var(--fs-dropdown-pad-inline);
   overflow: hidden auto;
-  border-radius: var(--fs-radius-xl);
   list-style: none;
-  background-color: var(--fs-dropdown-bg);
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 
