@@ -69,6 +69,7 @@ function goNext() {
 }
 
 .viewport {
+  flex-shrink: 0;
   width: 100%;
   height: rem(280);
   overflow: clip;
@@ -80,8 +81,6 @@ function goNext() {
   }
 
   @include from-desktop {
-    position: sticky;
-    top: var(--fs-space-5);
     height: rem(512);
     border-radius: rem(60);
   }
@@ -115,6 +114,7 @@ function goNext() {
 
 .controls {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: space-between;
   width: 100%;

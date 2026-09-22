@@ -30,7 +30,7 @@ defineProps<{
             <UiTag variant="other">{{ item.floor }}</UiTag>
             <span :class="$style.mapLabel">
               <UIcon name="local:map" :class="$style.mapIcon" aria-hidden="true" />
-              Смотреть на схеме
+              <span :class="$style.mapText">Смотреть на схеме</span>
             </span>
           </div>
         </NuxtLink>
@@ -174,8 +174,8 @@ defineProps<{
   }
 
   @media (hover: hover) {
-    &:hover .mapLabel {
-      color: var(--fs-color-gray);
+    &:hover .mapText {
+      text-decoration-line: underline;
     }
   }
 }
@@ -228,11 +228,11 @@ defineProps<{
   align-items: flex-start;
   @include fs-text-md;
   color: var(--fs-color-black);
-  transition: color 0.2s ease;
+}
 
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
+.mapText {
+  text-decoration: none;
+  text-underline-offset: rem(3);
 }
 
 .mapIcon {
@@ -268,7 +268,7 @@ defineProps<{
   flex-shrink: 0;
   width: rem(24);
   height: rem(24);
-  color: var(--fs-color-black);
+  color: inherit;
 }
 
 .contactValue {

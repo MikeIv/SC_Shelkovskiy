@@ -1,13 +1,30 @@
 <script setup lang="ts">
-import { siteNavItems } from '~/utils/siteNav'
+import { siteNavItems, type SiteNavPath } from '~/utils/siteNav'
 
 const route = useRoute()
 
 const headerOverlay = computed(() => Boolean(route.meta.headerOverlay))
 const headerVariant = computed(() => (headerOverlay.value ? 'white' : 'black'))
-const showNavPattern = computed(() =>
-  siteNavItems.some((item) => item.to === route.path),
-)
+
+function isSiteNavPath(path: string): path is SiteNavPath {
+  return siteNavItems.some((item) => item.to === path)
+}
+
+/** Слева на разделах каталога, справа на их карточках. */
+const patternSide = computed<'left' | 'right' | null>(() => {
+  if (isSiteNavPath(route.path)) {
+    return 'left'
+  }
+
+  const segments = route.path.split('/').filter(Boolean)
+  const section = segments[0]
+
+  if (segments.length === 2 && section && isSiteNavPath(`/${section}`)) {
+    return 'right'
+  }
+
+  return null
+})
 </script>
 
 <template>
@@ -15,8 +32,9 @@ const showNavPattern = computed(() =>
     <LayoutHeader :variant="headerVariant" :overlay="headerOverlay" />
     <main id="content" :class="$style.main" tabindex="-1">
       <div
-        v-if="showNavPattern"
+        v-if="patternSide"
         :class="$style.patternFrame"
+        :data-side="patternSide"
         aria-hidden="true"
       >
         <div :class="$style.pattern" />
@@ -44,7 +62,7 @@ const showNavPattern = computed(() =>
   flex: 1 1 auto;
 }
 
-/* Орнамент каталога: левый верх страницы, как в Figma 528:11709.
+/* Орнамент разделов: слева на каталоге, справа на карточке.
    Кадр клипует выход за край и не создаёт горизонтальный скролл. */
 .patternFrame {
   position: absolute;
@@ -68,9 +86,11 @@ const showNavPattern = computed(() =>
 }
 
 .pattern {
+  --pattern-offset: #{rem(-80)};
+
   position: absolute;
   top: rem(8);
-  left: rem(-80);
+  left: var(--pattern-offset);
   width: rem(320);
   height: rem(320);
   background-color: var(--fs-color-beige);
@@ -78,18 +98,25 @@ const showNavPattern = computed(() =>
   mask: url('/images/home/categories/pattern.svg') center / contain no-repeat;
 
   @include from-tablet {
+    --pattern-offset: #{rem(-420)};
+
     top: rem(-40);
-    left: rem(-420);
     width: rem(800);
     height: rem(800);
   }
 
   @include from-desktop {
+    --pattern-offset: #{rem(-560)};
+
     top: rem(-80);
-    left: rem(-560);
     width: rem(1220);
     height: rem(1220);
   }
+}
+
+.patternFrame[data-side='right'] .pattern {
+  right: var(--pattern-offset);
+  left: auto;
 }
 
 .main:focus-visible {

@@ -26,55 +26,11 @@ useSeoMeta({
 </script>
 
 <template>
-  <div :class="$style.root">
-    <img
-      :class="$style.watermark"
-      src="/images/about/watermark.svg"
-      alt=""
-      width="1348"
-      height="1344"
-      aria-hidden="true"
-      decoding="async"
-    >
+  <LayoutInnerPage>
+    <template #lead>
+      <UiBreadcrumbs :items="breadcrumbItems" />
+    </template>
 
-    <div :class="$style.page">
-      <LayoutInnerPage>
-        <template #lead>
-          <UiBreadcrumbs :items="breadcrumbItems" />
-        </template>
-
-        <EventsDetailArticle :item="item" />
-      </LayoutInnerPage>
-    </div>
-  </div>
+    <EventsDetailArticle :item="item" />
+  </LayoutInnerPage>
 </template>
-
-<style module lang="scss">
-@use 'tools' as *;
-
-.root {
-  position: relative;
-  overflow: clip;
-}
-
-.watermark {
-  position: absolute;
-  top: rem(-40);
-  right: rem(-180);
-  width: min(100%, rem(640));
-  height: auto;
-  pointer-events: none;
-  opacity: 0.12;
-
-  @include from-desktop {
-    top: rem(29);
-    right: rem(-40);
-    width: rem(1000);
-  }
-}
-
-.page {
-  position: relative;
-  z-index: z('default');
-}
-</style>

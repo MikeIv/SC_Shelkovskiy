@@ -690,6 +690,7 @@ function onSubmit() {
   flex-shrink: 0;
   width: rem(24);
   height: rem(24);
+  color: var(--fs-color-black);
 }
 
 .contactsValue {
