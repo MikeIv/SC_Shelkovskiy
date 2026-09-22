@@ -62,7 +62,7 @@ const availableLetters = computed(
 .root {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-2);
+  gap: var(--fs-space-5);
   width: 100%;
 }
 
@@ -120,6 +120,10 @@ const availableLetters = computed(
     grid-auto-flow: column;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: repeat(2, auto);
+
+    &:has(> :only-child) {
+      grid-template-rows: auto;
+    }
   }
 
   @include from-desktop {
