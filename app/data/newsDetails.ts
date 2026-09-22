@@ -1,4 +1,4 @@
-import type { NewsCardItem, NewsDetailItem } from '#shared/types/news'
+import type { NewsCardItem, NewsDetailItem, NewsTagVariant } from '#shared/types/news'
 import { getNewsItemBySlug, newsCatalogBaseItems } from '~/data/newsCatalogItems'
 import { normalizeNewsSlug } from '#shared/utils/newsPath'
 
@@ -93,9 +93,20 @@ export function getNewsDetailBySlug(slug: string): NewsDetailItem | undefined {
   return buildFallbackDetail(card, detail)
 }
 
+export type NewsRelatedKind = 'news' | 'action' | 'smi'
+
+export function getNewsRelatedKind(variant: NewsTagVariant | undefined): NewsRelatedKind {
+  if (variant === 'action' || variant === 'smi') {
+    return variant
+  }
+
+  return 'news'
+}
+
 export function getRelatedNewsItems(currentSlug: string, limit = 4): NewsCardItem[] {
   const normalized = normalizeNewsSlug(currentSlug)
   const current = getNewsItemBySlug(normalized)
+  const kind = getNewsRelatedKind(current?.tagVariant)
 
   return newsCatalogBaseItems
     .filter((item) => {
@@ -103,11 +114,11 @@ export function getRelatedNewsItems(currentSlug: string, limit = 4): NewsCardIte
         return false
       }
 
-      if (current?.tagVariant === 'action') {
-        return item.tagVariant === 'action'
+      if (kind === 'news') {
+        return item.tagVariant !== 'smi'
       }
 
-      return true
+      return item.tagVariant === kind
     })
     .slice(0, limit)
 }

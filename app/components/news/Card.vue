@@ -149,18 +149,18 @@ const linkTarget = computed(() => props.item.to ?? getNewsDetailPath(props.item.
   }
 
   @media (hover: hover) {
-    .root[data-layout='slider'] .image {
+    .image {
       transition: transform 0.45s ease;
     }
 
-    .root[data-layout='slider']:hover .image {
+    .root:hover .image {
       transform: scale(1.14);
     }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .root[data-layout='slider'] .image {
+  .image {
     transition: none;
     transform: none;
   }

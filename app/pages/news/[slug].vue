@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getNewsDetailBySlug, getRelatedNewsItems } from '~/data/newsDetails'
+import { getNewsDetailBySlug, getNewsRelatedKind, getRelatedNewsItems } from '~/data/newsDetails'
 
 const route = useRoute()
 const { label: newsListLabel } = getSiteNavItem('/news')
@@ -15,7 +15,7 @@ if (!item) {
 }
 
 const relatedItems = getRelatedNewsItems(slug)
-const relatedKind = item.tagVariant === 'action' ? 'action' : 'news'
+const relatedKind = getNewsRelatedKind(item.tagVariant)
 
 const breadcrumbItems = computed(() => [
   { label: 'Главная', to: '/' },

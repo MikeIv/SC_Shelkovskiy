@@ -12,6 +12,11 @@ const RELATED_COPY = {
     prev: 'Предыдущие акции',
     next: 'Следующие акции',
   },
+  smi: {
+    heading: 'Другие публикации',
+    prev: 'Предыдущие публикации',
+    next: 'Следующие публикации',
+  },
 } as const
 
 const props = withDefaults(
