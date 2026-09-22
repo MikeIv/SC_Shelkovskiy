@@ -8,10 +8,14 @@ defineProps<{
 </script>
 
 <template>
-  <CatalogList v-if="layout === 'list'" :items="items" />
+  <p v-if="!items.length" :class="$style.empty" role="status">
+    По вашему запросу ничего не найдено
+  </p>
+
+  <CatalogList v-else-if="layout === 'list'" :items="items" />
 
   <div v-else :class="$style.root">
-    <ul v-if="items.length" :class="[$style.list, $style.gridMode]">
+    <ul :class="[$style.list, $style.gridMode]">
       <li
         v-for="item in items"
         :key="item.id"
@@ -20,10 +24,6 @@ defineProps<{
         <CatalogCard v-bind="item" layout="card" />
       </li>
     </ul>
-
-    <p v-else :class="$style.empty">
-      По вашему запросу ничего не найдено
-    </p>
   </div>
 </template>
 
@@ -69,7 +69,7 @@ defineProps<{
 
 .empty {
   margin: 0;
-  @include fs-text-lg;
-  color: var(--fs-color-gray);
+  @include fs-h2;
+  color: var(--fs-color-black);
 }
 </style>

@@ -13,12 +13,12 @@ const availableLetters = computed(
 </script>
 
 <template>
-  <div :class="$style.root">
+  <div v-if="groups.length" :class="$style.root">
     <CatalogListIndex :available-letters="availableLetters" />
 
     <div :class="$style.divider" aria-hidden="true" />
 
-    <div v-if="groups.length" :class="$style.groups">
+    <div :class="$style.groups">
       <section
         v-for="group in groups"
         :id="catalogListSectionId(group.letter)"
@@ -49,10 +49,6 @@ const availableLetters = computed(
         <div :class="$style.divider" aria-hidden="true" />
       </section>
     </div>
-
-    <p v-else :class="$style.empty">
-      По вашему запросу ничего не найдено
-    </p>
   </div>
 </template>
 
@@ -143,11 +139,5 @@ const availableLetters = computed(
   width: 100%;
   height: rem(2);
   background-color: var(--fs-color-light);
-}
-
-.empty {
-  margin: 0;
-  @include fs-text-lg;
-  color: var(--fs-color-gray);
 }
 </style>
