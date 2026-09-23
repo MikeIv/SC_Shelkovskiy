@@ -128,11 +128,17 @@ onUnmounted(() => {
   gap: var(--fs-space-5);
   width: 100%;
   min-width: 0;
-  padding-top: var(--fs-space-6);
+  /* + gap .content (space-5) → mobile 80 / tablet+ 160 до заголовка */
+  padding-top: calc(#{rem(80)} - var(--fs-space-5));
+
+  @include from-tablet {
+    padding-top: calc(#{rem(160)} - var(--fs-space-5));
+    /* InnerPage padding-bottom 80 до desktop → итого 160 после блока */
+    padding-bottom: rem(80);
+  }
 
   @include from-desktop {
-    /* + gap .content (space-5) = 160px до заголовка */
-    padding-top: calc(#{rem(160)} - var(--fs-space-5));
+    padding-bottom: 0;
   }
 }
 

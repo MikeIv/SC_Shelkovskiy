@@ -31,6 +31,12 @@ defineProps<{
     </header>
 
     <div :class="$style.layout">
+      <NewsDetailGallery
+        :class="$style.gallery"
+        :images="item.gallery ?? []"
+        :alt="item.imageAlt || item.title"
+      />
+
       <div :class="$style.content">
         <div v-if="item.tenant" :class="$style.tenant">
           <div :class="$style.tenantLogo">
@@ -90,12 +96,6 @@ defineProps<{
 
         <UiShareMenu />
       </div>
-
-      <NewsDetailGallery
-        :class="$style.gallery"
-        :images="item.gallery ?? []"
-        :alt="item.imageAlt || item.title"
-      />
     </div>
   </div>
 </template>
@@ -169,6 +169,8 @@ defineProps<{
   min-width: 0;
 
   @include from-desktop {
+    /* DOM: gallery → content; order ставит галерею справа */
+    order: 1;
     position: sticky;
     top: var(--fs-space-5);
     flex-basis: rem(768);
