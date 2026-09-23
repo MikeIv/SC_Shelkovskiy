@@ -7,15 +7,25 @@ const goHome = async () => {
 <template>
   <section :class="$style.root" aria-labelledby="error-not-found-title">
     <div :class="$style.stage">
-      <img
-        :class="$style.ornament"
-        src="/images/error/404-ornament.svg"
-        alt=""
-        width="631"
-        height="630"
-        decoding="async"
-      >
-      <p :class="$style.code" aria-hidden="true">404</p>
+      <div :class="$style.medal">
+        <img
+          :class="$style.ornament"
+          src="/images/error/404-ornament.svg"
+          alt=""
+          width="631"
+          height="630"
+          decoding="async"
+        >
+        <img
+          :class="$style.ring"
+          src="/images/error/404-ring.svg"
+          alt=""
+          width="783"
+          height="797"
+          decoding="async"
+        >
+        <p :class="$style.code" aria-hidden="true">404</p>
+      </div>
       <UiButton type="button" :class="$style.action" @click="goHome">
         На главную
       </UiButton>
@@ -68,27 +78,39 @@ const goHome = async () => {
   }
 }
 
-.ornament {
-  display: block;
-  grid-area: 1 / 1;
-  width: rem(266);
-  height: rem(266);
+@mixin medal-layer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  max-width: none;
+  height: auto;
   pointer-events: none;
   user-select: none;
+  transform: translate(-50%, -50%);
+}
 
-  @include from-tablet {
-    width: rem(546);
-    height: rem(546);
-  }
+.medal {
+  position: relative;
+  grid-area: 1 / 1;
+  width: max-content;
+  overflow: visible;
+}
 
-  @include from-desktop {
-    width: rem(632);
-    height: rem(630);
-  }
+.ornament {
+  @include medal-layer;
+
+  width: 104%;
+  aspect-ratio: 631 / 630;
+}
+
+.ring {
+  @include medal-layer;
+
+  width: 124%;
 }
 
 .code {
-  grid-area: 1 / 1;
+  position: relative;
   z-index: z('default');
   margin: 0;
   font-family: var(--fs-font-display);
