@@ -4,23 +4,6 @@ import type { NewsDetailItem } from '#shared/types/news'
 defineProps<{
   item: NewsDetailItem
 }>()
-
-async function sharePage() {
-  const url = window.location.href
-
-  try {
-    if (navigator.share) {
-      await navigator.share({ url })
-      return
-    }
-
-    if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(url)
-    }
-  } catch {
-    // Пользователь отменил шаринг или браузер не поддерживает API.
-  }
-}
 </script>
 
 <template>
@@ -105,10 +88,7 @@ async function sharePage() {
           </blockquote>
         </section>
 
-        <button type="button" :class="$style.share" @click="sharePage">
-          <UIcon name="local:share" :class="$style.shareIcon" aria-hidden="true" />
-          <span>Поделиться</span>
-        </button>
+        <UiShareMenu />
       </div>
 
       <NewsDetailGallery
@@ -189,6 +169,8 @@ async function sharePage() {
   min-width: 0;
 
   @include from-desktop {
+    position: sticky;
+    top: var(--fs-space-5);
     flex-basis: rem(768);
     max-width: rem(768);
   }
@@ -335,32 +317,5 @@ async function sharePage() {
     right: var(--quote-pattern-offset);
     transform: translateY(-50%) scaleX(-1);
   }
-}
-
-.share {
-  display: inline-flex;
-  gap: rem(8);
-  align-items: center;
-  width: fit-content;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  @include fs-text-md;
-  color: var(--fs-color-black);
-  background: transparent;
-  cursor: pointer;
-  appearance: none;
-
-  @media (hover: hover) {
-    &:hover {
-      color: var(--fs-color-gray);
-    }
-  }
-}
-
-.shareIcon {
-  flex-shrink: 0;
-  width: rem(24);
-  height: rem(24);
 }
 </style>

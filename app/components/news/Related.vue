@@ -129,6 +129,11 @@ onUnmounted(() => {
   width: 100%;
   min-width: 0;
   padding-top: var(--fs-space-6);
+
+  @include from-desktop {
+    /* + gap .content (space-5) = 160px до заголовка */
+    padding-top: calc(#{rem(160)} - var(--fs-space-5));
+  }
 }
 
 .head {

@@ -7,23 +7,6 @@ defineProps<{
 }>()
 
 const isRegisterOpen = ref(false)
-
-async function sharePage() {
-  const url = window.location.href
-
-  try {
-    if (navigator.share) {
-      await navigator.share({ url })
-      return
-    }
-
-    if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(url)
-    }
-  } catch {
-    // Пользователь отменил шаринг или браузер не поддерживает API.
-  }
-}
 </script>
 
 <template>
@@ -107,18 +90,7 @@ async function sharePage() {
           </ol>
         </section>
 
-        <button
-          type="button"
-          :class="$style.share"
-          @click="sharePage"
-        >
-          <UIcon
-            name="local:share"
-            :class="$style.shareIcon"
-            aria-hidden="true"
-          />
-          <span>Поделиться</span>
-        </button>
+        <UiShareMenu />
       </div>
 
       <div :class="$style.media">
@@ -337,33 +309,6 @@ async function sharePage() {
   margin: 0;
   @include fs-text-lg;
   color: var(--fs-color-black);
-}
-
-.share {
-  display: inline-flex;
-  gap: rem(8);
-  align-items: center;
-  width: fit-content;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  @include fs-text-md;
-  color: var(--fs-color-black);
-  background: transparent;
-  cursor: pointer;
-  appearance: none;
-
-  @media (hover: hover) {
-    &:hover {
-      color: var(--fs-color-gray);
-    }
-  }
-}
-
-.shareIcon {
-  flex-shrink: 0;
-  width: rem(24);
-  height: rem(24);
 }
 
 .media {
