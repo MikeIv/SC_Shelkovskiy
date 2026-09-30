@@ -51,6 +51,7 @@ const { item } = defineProps<{
   text-decoration: none;
   background-color: var(--fs-color-light);
   border-radius: rem(24);
+  transition: background-color 0.2s ease;
 
   @include from-desktop {
     height: rem(260);
@@ -58,9 +59,27 @@ const { item } = defineProps<{
     border-radius: rem(32);
   }
 
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--fs-color-light-hover);
+
+      .patternFade {
+        background-image: linear-gradient(
+          138deg,
+          var(--fs-color-light-hover) 15%,
+          rgb(233 232 227 / 0%) 87%
+        );
+      }
+    }
+  }
+
   &:focus-visible {
     outline: rem(2) solid var(--fs-color-black);
     outline-offset: rem(2);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
   }
 }
 

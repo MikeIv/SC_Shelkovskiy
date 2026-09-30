@@ -37,11 +37,11 @@ useSeoMeta({
     :class="$style.root"
   >
     <img
-      :class="$style.watermark"
-      src="/images/about/watermark.svg"
+      :class="$style.pattern"
+      src="/images/awards/detail-pattern.svg"
       alt=""
-      width="1348"
-      height="1344"
+      width="1001"
+      height="999"
       aria-hidden="true"
       decoding="async"
     >
@@ -52,12 +52,14 @@ useSeoMeta({
           <UiBreadcrumbs :items="breadcrumbItems" />
         </template>
 
-        <AwardsDetailArticle :item="item" />
+        <div :class="$style.sections">
+          <AwardsDetailArticle :item="item" />
 
-        <AwardsRelated
-          v-if="relatedItems.length"
-          :items="relatedItems"
-        />
+          <AwardsRelated
+            v-if="relatedItems.length"
+            :items="relatedItems"
+          />
+        </div>
       </LayoutInnerPage>
     </div>
   </div>
@@ -71,19 +73,32 @@ useSeoMeta({
   overflow: clip;
 }
 
-.watermark {
+.pattern {
   position: absolute;
-  top: rem(-40);
-  right: rem(-180);
-  width: min(100%, rem(640));
+  top: 0;
+  right: rem(-160);
+  width: min(80%, rem(640));
   height: auto;
+  max-width: none;
   pointer-events: none;
-  opacity: 0.12;
 
   @include from-desktop {
-    top: rem(29);
-    right: rem(-40);
-    width: rem(1000);
+    /* 29px от верха кадра минус высота header (151px). */
+    top: calc(#{rem(29)} - #{rem(151)});
+    right: auto;
+    left: calc(75% - #{rem(25)});
+    width: rem(1001);
+  }
+}
+
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-section);
+
+  @include from-desktop {
+    /* Gap InnerPage 40px, в кадре до даты 56px. */
+    margin-top: calc(#{rem(56)} - var(--fs-space-5));
   }
 }
 

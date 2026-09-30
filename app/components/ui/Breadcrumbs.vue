@@ -73,7 +73,7 @@ const lastIndex = computed(() => items.length - 1)
   display: flex;
   flex-wrap: wrap;
   gap: rem(4);
-  align-items: center;
+  align-items: flex-start;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -118,14 +118,17 @@ const lastIndex = computed(() => items.length - 1)
 }
 
 .current {
+  min-width: 0;
   max-width: 100%;
   color: var(--fs-color-black);
   white-space: normal;
   overflow-wrap: break-word;
 }
 
+/* Длинное текущее название целиком уходит на следующую строку и там переносится. */
 .item:last-child {
-  flex: 1 1 rem(200);
+  flex: 0 1 auto;
+  min-width: min(100%, max-content);
   max-width: 100%;
 }
 
