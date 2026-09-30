@@ -259,8 +259,7 @@ const activeFloorId = ref(floors.at(-1)?.id ?? floors[0]?.id ?? '')
   aspect-ratio: 636 / 500;
 
   @include from-desktop {
-    flex: 0 1 rem(520);
-    max-width: rem(636);
+    flex: 0 0 rem(636);
     border-radius: rem(60);
   }
 }

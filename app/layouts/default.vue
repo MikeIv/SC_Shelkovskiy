@@ -10,8 +10,13 @@ function isSiteNavPath(path: string): path is SiteNavPath {
   return siteNavItems.some((item) => item.to === path)
 }
 
-/** Слева на разделах каталога, справа на их карточках. */
+/** Слева на разделах каталога, справа на их карточках; meta.patternSide — override. */
 const patternSide = computed<'left' | 'right' | null>(() => {
+  const metaSide = route.meta.patternSide
+  if (metaSide === 'left' || metaSide === 'right') {
+    return metaSide
+  }
+
   if (isSiteNavPath(route.path)) {
     return 'left'
   }
