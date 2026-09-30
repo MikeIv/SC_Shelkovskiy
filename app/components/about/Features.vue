@@ -19,6 +19,16 @@ const {
 
 <template>
   <section :class="$style.root" aria-labelledby="about-features-title">
+    <img
+      :class="$style.pattern"
+      src="/images/about/watermark.svg"
+      alt=""
+      width="1348"
+      height="1344"
+      aria-hidden="true"
+      decoding="async"
+    >
+
     <div :class="$style.inner">
       <div :class="$style.head">
         <div :class="$style.copy">
@@ -68,15 +78,30 @@ const {
 @use 'tools' as *;
 
 .root {
+  position: relative;
   overflow-x: clip;
-  padding-block: rem(60) 0;
+}
+
+.pattern {
+  position: absolute;
+  top: rem(-200);
+  left: rem(-280);
+  width: min(140%, rem(640));
+  height: auto;
+  max-width: none;
+  pointer-events: none;
+  opacity: 0.08;
 
   @include from-desktop {
-    padding-block: rem(80) 0;
+    top: rem(-320);
+    left: rem(-120);
+    width: rem(1100);
   }
 }
 
 .inner {
+  position: relative;
+  z-index: z('default');
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-3);
@@ -90,6 +115,7 @@ const {
 }
 
 .head {
+  position: relative;
   display: flex;
   gap: var(--fs-space-3);
   align-items: flex-end;
@@ -101,8 +127,13 @@ const {
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-2);
-  min-width: 0;
   max-width: rem(1105);
+
+  @include from-desktop {
+    max-width: none;
+    width: 100%;
+    padding-inline-end: rem(248);
+  }
 }
 
 .title {
@@ -125,6 +156,9 @@ const {
   flex-shrink: 0;
 
   @include from-desktop {
+    position: absolute;
+    right: 0;
+    bottom: 0;
     display: flex;
   }
 }

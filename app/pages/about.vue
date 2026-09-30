@@ -40,9 +40,9 @@ useSeoMeta({
         v-bind="aboutFeaturesTitle"
         :items="aboutFeatures"
       />
+      <HomeBrands :rows="homeBrandRows" flush />
+      <HomeLoyalty :items="homeLoyaltyItems" flush />
     </div>
-    <HomeBrands :rows="homeBrandRows" />
-    <HomeLoyalty :items="homeLoyaltyItems" />
   </div>
 </template>
 

@@ -47,6 +47,7 @@ const { feature } = defineProps<{
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-2);
+  width: 100%;
   height: 100%;
   padding: var(--fs-space-2);
   overflow: clip;
@@ -56,7 +57,7 @@ const { feature } = defineProps<{
   @include from-desktop {
     flex-direction: row;
     gap: var(--fs-space-3);
-    align-items: center;
+    align-items: stretch;
     padding: var(--fs-space-3);
     border-radius: rem(60);
   }
@@ -96,6 +97,7 @@ const { feature } = defineProps<{
   padding-block: var(--fs-space-1);
 
   @include from-desktop {
+    gap: 0;
     padding-block: var(--fs-space-2);
   }
 }
@@ -109,13 +111,13 @@ const { feature } = defineProps<{
 .title {
   @include fs-h2;
   margin: 0;
-  @include fs-line-clamp(2);
+  overflow-wrap: break-word;
 }
 
 .desc {
   margin: 0;
   @include fs-text-lg;
-  @include fs-line-clamp(3);
+  overflow-wrap: break-word;
 }
 
 .stats {

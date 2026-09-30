@@ -30,11 +30,11 @@ const { title, description, watermarkSrc } = defineProps<{
 
 .root {
   position: relative;
-  padding-block: var(--fs-space-6) rem(60);
+  padding-block: var(--fs-space-6) var(--fs-space-section);
   overflow: clip;
 
   @include from-desktop {
-    padding-block: rem(160) rem(80);
+    padding-block: var(--fs-space-section);
   }
 }
 

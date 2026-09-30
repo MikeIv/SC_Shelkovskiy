@@ -100,7 +100,7 @@ const { title, description, imageSrc, imageAlt, breadcrumbs } = defineProps<{
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-2);
-  max-width: rem(715);
+  max-width: rem(1335);
 }
 
 .title {
@@ -111,6 +111,7 @@ const { title, description, imageSrc, imageAlt, breadcrumbs } = defineProps<{
 
 .desc {
   margin: 0;
+  max-width: rem(715);
   @include fs-text;
   overflow-wrap: break-word;
 
