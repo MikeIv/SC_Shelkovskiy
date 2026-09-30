@@ -107,11 +107,11 @@ useHead({
   display: flex;
   flex-direction: column;
   gap: rem(100);
-  padding-block: rem(100);
+  padding-top: rem(100);
 
   @include from-desktop {
-    gap: rem(160);
-    padding-block: rem(140) rem(160);
+    gap: var(--fs-space-section);
+    padding-top: rem(140);
   }
 }
 </style>

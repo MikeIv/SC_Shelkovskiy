@@ -28,7 +28,7 @@ useSeoMeta({
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-3);
-  padding-block: var(--fs-space-4);
+  padding-top: var(--fs-space-4);
   padding-inline: max(
     var(--fs-grid-margin),
     calc((100% - var(--fs-grid-content-max)) / 2)
@@ -36,7 +36,7 @@ useSeoMeta({
 
   @include from-desktop {
     gap: var(--fs-space-5);
-    padding-block: var(--fs-space-6);
+    padding-top: var(--fs-space-6);
   }
 }
 </style>

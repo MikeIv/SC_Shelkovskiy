@@ -69,13 +69,7 @@ useSeoMeta({
 .root {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-5);
-  padding-bottom: var(--fs-space-5);
-
-  @include from-desktop {
-    gap: rem(160);
-    padding-bottom: rem(160);
-  }
+  gap: var(--fs-space-section);
 }
 
 .page {
@@ -88,11 +82,7 @@ useSeoMeta({
 .stack {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-5);
+  gap: var(--fs-space-section);
   min-width: 0;
-
-  @include from-desktop {
-    gap: rem(160);
-  }
 }
 </style>

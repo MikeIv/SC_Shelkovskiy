@@ -1,4 +1,5 @@
 @use '../tools/functions' as *;
+@use '../tools/mixins' as *;
 
 /* Шкала отступов, шаг 8px */
 :root {
@@ -9,4 +10,10 @@
   --fs-space-4: #{rem(32)};
   --fs-space-5: #{rem(40)};
   --fs-space-6: #{rem(48)};
+  /* Gap секций и отступ main → footer */
+  --fs-space-section: #{rem(80)};
+
+  @include from-desktop {
+    --fs-space-section: #{rem(160)};
+  }
 }

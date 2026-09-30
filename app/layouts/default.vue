@@ -60,6 +60,7 @@ const patternSide = computed<'left' | 'right' | null>(() => {
   position: relative;
   z-index: 0;
   flex: 1 1 auto;
+  padding-bottom: var(--fs-space-section);
 }
 
 /* Орнамент разделов: слева на каталоге, справа на карточке.

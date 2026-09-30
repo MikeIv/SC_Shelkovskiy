@@ -52,10 +52,6 @@ useSeoMeta({
 .sections {
   display: flex;
   flex-direction: column;
-  gap: rem(80);
-
-  @include from-desktop {
-    gap: rem(160);
-  }
+  gap: var(--fs-space-section);
 }
 </style>
