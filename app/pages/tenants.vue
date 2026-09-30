@@ -27,39 +27,35 @@ useSeoMeta({
 
 <template>
   <div :class="$style.root">
+    <img
+      :class="$style.watermark"
+      :src="tenantsStats.watermarkSrc"
+      alt=""
+      width="1348"
+      height="1344"
+      aria-hidden="true"
+      decoding="async"
+    >
+
     <TenantsHero
       v-bind="tenantsHero"
       :breadcrumbs="breadcrumbItems"
     />
 
     <div :class="$style.stack">
-      <div :class="$style.ornamentBlock">
-        <img
-          :class="$style.watermark"
-          :src="tenantsStats.watermarkSrc"
-          alt=""
-          width="1348"
-          height="1344"
-          aria-hidden="true"
-          decoding="async"
-        >
+      <div :class="$style.page">
+        <TenantsStats
+          :title="tenantsStats.title"
+          :description="tenantsStats.description"
+          :items="tenantsStatItems"
+        />
+      </div>
 
-        <div :class="$style.ornamentContent">
-          <div :class="$style.page">
-            <TenantsStats
-              :title="tenantsStats.title"
-              :description="tenantsStats.description"
-              :items="tenantsStatItems"
-            />
-          </div>
-
-          <div :class="$style.page">
-            <TenantsAdvantages
-              :title="tenantsAdvantages.title"
-              :items="tenantsAdvantageItems"
-            />
-          </div>
-        </div>
+      <div :class="$style.page">
+        <TenantsAdvantages
+          :title="tenantsAdvantages.title"
+          :items="tenantsAdvantageItems"
+        />
       </div>
 
       <div :class="$style.page">
@@ -76,12 +72,32 @@ useSeoMeta({
 @use 'tools' as *;
 
 .root {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-section);
+  overflow: clip;
+}
+
+.watermark {
+  position: absolute;
+  // Figma 580:33719 — центр 1920, top 488, 1348×1344.
+  top: rem(280);
+  left: 50%;
+  width: min(140%, rem(720));
+  height: auto;
+  pointer-events: none;
+  transform: translateX(-50%);
+
+  @include from-desktop {
+    top: rem(488);
+    width: rem(1348);
+  }
 }
 
 .stack {
+  position: relative;
+  z-index: z('default');
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-section);
@@ -92,34 +108,5 @@ useSeoMeta({
     var(--fs-grid-margin),
     calc((100% - var(--fs-grid-content-max)) / 2)
   );
-}
-
-.ornamentBlock {
-  position: relative;
-  overflow: clip;
-}
-
-.ornamentContent {
-  position: relative;
-  z-index: z('default');
-  display: flex;
-  flex-direction: column;
-  gap: var(--fs-space-section);
-}
-
-.watermark {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: min(100%, rem(900));
-  height: auto;
-  max-width: none;
-  pointer-events: none;
-  opacity: 0.12;
-  transform: translate(-50%, -50%);
-
-  @include from-desktop {
-    width: rem(1348);
-  }
 }
 </style>
