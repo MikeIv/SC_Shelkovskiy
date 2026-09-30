@@ -32,6 +32,14 @@ function close(): void {
   emit('close')
 }
 
+function clearFile(): void {
+  fileName.value = ''
+
+  if (fileInput.value) {
+    fileInput.value.value = ''
+  }
+}
+
 function resetForm(): void {
   form.topic = ''
   form.fullName = ''
@@ -39,11 +47,7 @@ function resetForm(): void {
   form.email = ''
   form.message = ''
   consent.value = false
-  fileName.value = ''
-
-  if (fileInput.value) {
-    fileInput.value.value = ''
-  }
+  clearFile()
 }
 
 function openFilePicker(): void {
@@ -230,7 +234,20 @@ onBeforeUnmount(() => {
                   :class="$style.attachIcon"
                   aria-hidden="true"
                 />
-                <span>{{ fileName || 'Прикрепить файл' }}</span>
+                <span :class="$style.attachLabel">{{ fileName || 'Прикрепить файл' }}</span>
+              </button>
+              <button
+                v-if="fileName"
+                :class="$style.attachClear"
+                type="button"
+                aria-label="Удалить файл"
+                @click="clearFile"
+              >
+                <UIcon
+                  name="local:cross"
+                  :class="$style.attachClearIcon"
+                  aria-hidden="true"
+                />
               </button>
             </div>
           </div>
@@ -424,8 +441,10 @@ onBeforeUnmount(() => {
 .attach {
   position: relative;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  gap: rem(12);
+  align-items: center;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .fileInput {
@@ -442,7 +461,8 @@ onBeforeUnmount(() => {
 .attachBtn {
   display: inline-flex;
   gap: rem(12);
-  align-items: flex-start;
+  align-items: center;
+  min-width: 0;
   margin: 0;
   padding: 0;
   border: 0;
@@ -459,10 +479,40 @@ onBeforeUnmount(() => {
   }
 }
 
-.attachIcon {
+.attachLabel {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attachIcon,
+.attachClearIcon {
   flex-shrink: 0;
   width: rem(24);
   height: rem(24);
+}
+
+.attachClear {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: rem(24);
+  height: rem(24);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--fs-color-black);
+  background-color: transparent;
+  cursor: pointer;
+  appearance: none;
+
+  &:focus-visible {
+    outline: rem(2) solid var(--fs-color-black);
+    outline-offset: rem(2);
+    border-radius: rem(2);
+  }
 }
 
 .footer {

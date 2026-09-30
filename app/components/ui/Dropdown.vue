@@ -385,6 +385,7 @@ onBeforeUnmount(() => {
   overflow: hidden;
   border-radius: var(--fs-radius-xl);
   background-color: var(--fs-dropdown-bg);
+  box-shadow: 0 #{rem(8)} #{rem(40)} rgb(172 172 172 / 25%);
 }
 
 .list {

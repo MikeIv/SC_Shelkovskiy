@@ -428,17 +428,18 @@ $metro-blue: #007ac6;
   min-width: 0;
 
   @include from-desktop {
-    flex: 0 1 rem(520);
-    max-width: rem(636);
+    flex: 0 0 rem(636);
+    max-width: 100%;
     gap: rem(16);
   }
 }
 
 .mapWrap {
+  position: relative;
   width: 100%;
   overflow: clip;
   border-radius: rem(32);
-  aspect-ratio: 634 / 443;
+  aspect-ratio: 636 / 439;
 
   @include from-desktop {
     border-radius: rem(60);
@@ -446,6 +447,8 @@ $metro-blue: #007ac6;
 }
 
 .map {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
