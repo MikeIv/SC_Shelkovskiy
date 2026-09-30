@@ -144,4 +144,23 @@ function onActivate(): void {
   @include fs-line-clamp(2);
   color: var(--fs-color-black);
 }
+
+@include from-desktop {
+  .image {
+    transition: transform 0.45s ease;
+  }
+
+  @media (hover: hover) {
+    .root:hover .image {
+      transform: scale(1.14);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image {
+    transition: none;
+    transform: none;
+  }
+}
 </style>

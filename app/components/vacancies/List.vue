@@ -1,17 +1,12 @@
 <script setup lang="ts">
 import type { VacancyItem } from '#shared/types/vacancies'
 
-const props = withDefaults(
-  defineProps<{
-    items: readonly VacancyItem[]
-    defaultOpenId?: string
-  }>(),
-  {
-    defaultOpenId: '',
-  },
-)
+defineProps<{
+  items: readonly VacancyItem[]
+}>()
 
-const openId = ref(props.defaultOpenId || props.items[0]?.id || '')
+/** По умолчанию все закрыты. */
+const openId = ref('')
 
 const labels = {
   contacts: 'Контакты',
@@ -60,6 +55,38 @@ function isOpen(id: string) {
           v-if="isOpen(item.id)"
           :class="$style.content"
         >
+          <div :class="$style.details">
+            <div
+              v-for="(section, sectionIndex) in item.sections"
+              :key="`${item.id}-section-${sectionIndex}`"
+              :class="$style.section"
+            >
+              <p :class="$style.sectionTitle">{{ section.title }}</p>
+              <ul :class="$style.sectionList">
+                <li
+                  v-for="(bullet, bulletIndex) in section.items"
+                  :key="`${item.id}-bullet-${sectionIndex}-${bulletIndex}`"
+                  :class="$style.sectionItem"
+                >
+                  {{ bullet }}
+                </li>
+              </ul>
+            </div>
+
+            <div
+              v-if="item.footnotes?.length"
+              :class="$style.footnotes"
+            >
+              <p
+                v-for="(note, noteIndex) in item.footnotes"
+                :key="`${item.id}-note-${noteIndex}`"
+                :class="$style.footnote"
+              >
+                {{ note }}
+              </p>
+            </div>
+          </div>
+
           <aside
             v-if="item.contacts"
             :class="$style.contacts"
@@ -118,38 +145,6 @@ function isOpen(id: string) {
               </div>
             </div>
           </aside>
-
-          <div :class="$style.details">
-            <div
-              v-for="(section, sectionIndex) in item.sections"
-              :key="`${item.id}-section-${sectionIndex}`"
-              :class="$style.section"
-            >
-              <p :class="$style.sectionTitle">{{ section.title }}</p>
-              <ul :class="$style.sectionList">
-                <li
-                  v-for="(bullet, bulletIndex) in section.items"
-                  :key="`${item.id}-bullet-${sectionIndex}-${bulletIndex}`"
-                  :class="$style.sectionItem"
-                >
-                  {{ bullet }}
-                </li>
-              </ul>
-            </div>
-
-            <div
-              v-if="item.footnotes?.length"
-              :class="$style.footnotes"
-            >
-              <p
-                v-for="(note, noteIndex) in item.footnotes"
-                :key="`${item.id}-note-${noteIndex}`"
-                :class="$style.footnote"
-              >
-                {{ note }}
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     </li>
@@ -162,32 +157,35 @@ function isOpen(id: string) {
 .list {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-3);
   margin: 0;
   padding: 0;
   list-style: none;
-
-  @include from-desktop {
-    gap: rem(40);
-  }
 }
 
 .item {
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-3);
-  padding-bottom: var(--fs-space-3);
+  /* Cards: gap вокруг линии (mob 32 / desk 40). */
+  padding-block: var(--fs-space-4);
   border-bottom: rem(2) solid var(--fs-color-light);
 
+  &:first-child {
+    padding-top: 0;
+  }
+
   @include from-desktop {
-    gap: rem(24);
-    padding-bottom: rem(40);
+    padding-block: rem(40);
+
+    &:first-child {
+      padding-top: 0;
+    }
   }
 }
 
 .trigger {
   display: flex;
-  gap: var(--fs-space-3);
+  gap: var(--fs-space-1);
   align-items: flex-start;
   justify-content: space-between;
   width: 100%;
@@ -198,6 +196,10 @@ function isOpen(id: string) {
   cursor: pointer;
   background: none;
   border: 0;
+
+  @include from-desktop {
+    gap: var(--fs-space-3);
+  }
 }
 
 .title {
@@ -211,8 +213,8 @@ function isOpen(id: string) {
   display: grid;
   flex: 0 0 auto;
   place-items: center;
-  width: rem(40);
-  height: rem(40);
+  width: rem(32);
+  height: rem(32);
 
   @include from-desktop {
     width: rem(50);
@@ -238,7 +240,7 @@ function isOpen(id: string) {
 .content {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-4);
+  gap: var(--fs-space-3);
 
   @include from-desktop {
     flex-direction: row;
@@ -254,14 +256,17 @@ function isOpen(id: string) {
   flex-direction: column;
   gap: var(--fs-space-2);
   width: 100%;
-  padding: var(--fs-space-3);
+  padding: var(--fs-space-2);
   overflow: clip;
   background-color: var(--fs-color-light);
   border-radius: rem(24);
 
   @include from-desktop {
+    /* Desk: контакты слева от текста. */
+    order: -1;
     flex: 0 0 rem(370);
     width: rem(370);
+    padding: var(--fs-space-3);
     border-radius: rem(32);
   }
 }
@@ -364,15 +369,18 @@ function isOpen(id: string) {
 
   @include from-desktop {
     max-width: rem(768);
-    gap: rem(32);
   }
 }
 
 .section {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-3);
+  gap: var(--fs-space-2);
   min-width: 0;
+
+  @include from-desktop {
+    gap: var(--fs-space-3);
+  }
 }
 
 .sectionTitle {
@@ -402,7 +410,7 @@ function isOpen(id: string) {
     width: rem(8);
     height: rem(8);
     content: '';
-    background-color: var(--fs-color-black);
+    background-color: var(--fs-color-beige);
     border-radius: 50%;
   }
 }
@@ -417,5 +425,11 @@ function isOpen(id: string) {
   margin: 0;
   @include fs-text-lg;
   overflow-wrap: break-word;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon {
+    transition: none;
+  }
 }
 </style>

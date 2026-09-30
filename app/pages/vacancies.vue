@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import {
-  vacanciesDefaultOpenId,
-  vacanciesItems,
-  vacanciesPageTitle,
-} from '~/data/vacanciesPage'
+import { vacanciesItems, vacanciesPageTitle } from '~/data/vacanciesPage'
 
 const pageTitle = vacanciesPageTitle
 
@@ -16,8 +12,8 @@ const breadcrumbItems = [
 <template>
   <div :class="$style.root">
     <img
-      :class="$style.watermark"
-      src="/images/about/watermark.svg"
+      :class="$style.pattern"
+      src="/images/ornament/pattern.svg"
       alt=""
       width="1348"
       height="1344"
@@ -31,10 +27,7 @@ const breadcrumbItems = [
           <UiBreadcrumbs :items="breadcrumbItems" />
         </template>
 
-        <VacanciesList
-          :items="vacanciesItems"
-          :default-open-id="vacanciesDefaultOpenId"
-        />
+        <VacanciesList :items="vacanciesItems" />
       </LayoutInnerPage>
     </div>
   </div>
@@ -48,22 +41,23 @@ const breadcrumbItems = [
   overflow: clip;
 }
 
-.watermark {
+.pattern {
   position: absolute;
-  top: rem(-120);
-  right: rem(-180);
-  width: min(100%, rem(640));
+  top: 0;
+  left: rem(-200);
+  width: min(140%, rem(520));
   height: auto;
+  max-width: none;
   pointer-events: none;
-  opacity: 0.12;
 
-  @include from-desktop {
-    top: rem(-200);
-    right: rem(-40);
-    width: rem(980);
+  @include from-tablet {
+    left: rem(-333);
+    width: rem(725);
   }
 
-  @include from-wide {
+  @include from-desktop {
+    top: calc(#{rem(-274)} - #{rem(151)});
+    left: calc(66.67% - #{rem(34)});
     width: rem(1348);
   }
 }

@@ -2,9 +2,6 @@ import type { VacancyContacts, VacancyItem } from '#shared/types/vacancies'
 
 export const vacanciesPageTitle = 'Вакансии'
 
-/** Id вакансии, раскрытой по умолчанию (как в макете). */
-export const vacanciesDefaultOpenId = 'street-beat-consultant'
-
 function contacts(name: string, phone: string, email: string): VacancyContacts {
   return {
     name,
