@@ -78,7 +78,6 @@ onMounted(() => {
           :leave-active-class="$style.fadeLeaveActive"
           :enter-from-class="$style.fadeEnterFrom"
           :leave-to-class="$style.fadeLeaveTo"
-          mode="out-in"
         >
           <div
             v-if="activeItem"
@@ -113,10 +112,10 @@ onMounted(() => {
 .root {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-4);
+  gap: var(--fs-space-5);
 
   @include from-desktop {
-    gap: rem(40);
+    gap: rem(64);
   }
 }
 
@@ -142,7 +141,7 @@ onMounted(() => {
 .nav {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-3);
+  gap: var(--fs-space-4);
   align-items: stretch;
 }
 
@@ -156,7 +155,7 @@ onMounted(() => {
   background: transparent;
   cursor: pointer;
   appearance: none;
-  transition: color 0.25s ease;
+  transition: color 0.12s linear;
 
   &[aria-selected='true'] {
     color: var(--fs-color-black);
@@ -246,7 +245,7 @@ onMounted(() => {
 
 .fadeEnterActive,
 .fadeLeaveActive {
-  transition: opacity 0.4s ease;
+  transition: opacity 0.12s linear;
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;

@@ -44,20 +44,22 @@ useSeoMeta({
           decoding="async"
         >
 
-        <div :class="$style.page">
-          <TenantsStats
-            :title="tenantsStats.title"
-            :description="tenantsStats.description"
-            :items="tenantsStatItems"
-          />
-        </div>
-      </div>
+        <div :class="$style.ornamentContent">
+          <div :class="$style.page">
+            <TenantsStats
+              :title="tenantsStats.title"
+              :description="tenantsStats.description"
+              :items="tenantsStatItems"
+            />
+          </div>
 
-      <div :class="$style.page">
-        <TenantsAdvantages
-          :title="tenantsAdvantages.title"
-          :items="tenantsAdvantageItems"
-        />
+          <div :class="$style.page">
+            <TenantsAdvantages
+              :title="tenantsAdvantages.title"
+              :items="tenantsAdvantageItems"
+            />
+          </div>
+        </div>
       </div>
 
       <div :class="$style.page">
@@ -97,15 +99,24 @@ useSeoMeta({
   overflow: clip;
 }
 
+.ornamentContent {
+  position: relative;
+  z-index: z('default');
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-section);
+}
+
 .watermark {
   position: absolute;
   top: 50%;
   left: 50%;
   width: min(100%, rem(900));
   height: auto;
+  max-width: none;
   pointer-events: none;
   opacity: 0.12;
-  transform: translate(-50%, -45%);
+  transform: translate(-50%, -50%);
 
   @include from-desktop {
     width: rem(1348);
