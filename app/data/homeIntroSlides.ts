@@ -8,6 +8,7 @@ export const homeIntroSlides: HomeIntroSlide[] = [
     description:
       '18 июля на 0 этаже ТРЦ «Щёлковский» юных гостей ждёт настоящее путешествие в подводное царство',
     imageSrc: '/images/home/intro-1.png',
+    imageSrcMobile: '/images/home/intro-1-mobile.jpg',
     imageAlt: '',
   },
   {

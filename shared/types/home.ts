@@ -2,7 +2,10 @@ export type HomeIntroSlide = {
   id: string
   title: string
   description?: string
+  /** Desktop / широкий кадр. */
   imageSrc: string
+  /** Портретный кадр для mobile (до desktop). */
+  imageSrcMobile?: string
   imageAlt: string
 }
 

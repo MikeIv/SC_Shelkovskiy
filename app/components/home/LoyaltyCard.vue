@@ -26,7 +26,7 @@ withDefaults(
 </script>
 
 <template>
-  <article :id="id" :class="$style.root">
+  <article :id="id" :class="$style.root" :data-variant="variant">
     <div :class="$style.content">
       <h3 :class="$style.title">{{ title }}</h3>
       <p :class="$style.description">{{ description }}</p>
@@ -94,11 +94,15 @@ $loyalty-hover-duration: 0.65s;
 
 .root {
   position: relative;
-  height: rem(400);
+  height: rem(414);
   border-radius: var(--fs-radius-3xl);
   background-color: var(--fs-color-light);
   overflow: hidden;
   transition: border-radius $loyalty-hover-duration $loyalty-hover-ease;
+
+  &[data-variant='gift'] {
+    border-radius: var(--fs-radius-pill);
+  }
 
   @include from-desktop {
     height: rem(488);
@@ -135,14 +139,14 @@ $loyalty-hover-duration: 0.65s;
 
 .content {
   position: absolute;
-  top: rem(40);
+  top: rem(48);
   left: 50%;
   z-index: z('default');
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-2);
+  gap: rem(12);
   align-items: center;
-  width: min(calc(100% - rem(48)), rem(632));
+  width: min(calc(100% - rem(32)), rem(632));
   text-align: center;
   transform: translateX(-50%);
   transition:
@@ -151,6 +155,8 @@ $loyalty-hover-duration: 0.65s;
 
   @include from-desktop {
     top: rem(56);
+    gap: var(--fs-space-2);
+    width: min(calc(100% - rem(48)), rem(632));
   }
 
   @media (prefers-reduced-motion: reduce) {

@@ -2,6 +2,7 @@
 import type { HomeIntroSlide } from '#shared/types/home'
 
 const SLIDE_MS = 10_000
+const DESKTOP_MQ = '(min-width: 1280px)'
 
 const { slides } = defineProps<{
   slides: HomeIntroSlide[]
@@ -74,16 +75,23 @@ onUnmounted(() => {
         :class="[$style.slide, i === index && $style.slideActive]"
         :aria-hidden="i !== index"
       >
-        <img
-          :class="$style.image"
-          :src="slide.imageSrc"
-          :alt="i === index ? slide.imageAlt : ''"
-          :loading="i === 0 ? 'eager' : 'lazy'"
-          :fetchpriority="i === 0 ? 'high' : 'low'"
-          decoding="async"
-          width="1230"
-          height="440"
-        />
+        <picture :class="$style.picture">
+          <source
+            v-if="slide.imageSrcMobile"
+            :srcset="slide.imageSrc"
+            :media="DESKTOP_MQ"
+          >
+          <img
+            :class="$style.image"
+            :src="slide.imageSrcMobile ?? slide.imageSrc"
+            :alt="i === index ? slide.imageAlt : ''"
+            :loading="i === 0 ? 'eager' : 'lazy'"
+            :fetchpriority="i === 0 ? 'high' : 'low'"
+            decoding="async"
+            :width="slide.imageSrcMobile ? 750 : 1230"
+            :height="slide.imageSrcMobile ? 1500 : 440"
+          >
+        </picture>
       </div>
       <div :class="$style.dim" aria-hidden="true" />
     </div>
@@ -173,6 +181,12 @@ onUnmounted(() => {
 .slideActive {
   z-index: z('default');
   opacity: 1;
+}
+
+.picture {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .image {
