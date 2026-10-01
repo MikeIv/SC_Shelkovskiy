@@ -119,10 +119,8 @@ async function onMapClick(event: MouseEvent) {
             </li>
           </ul>
 
-          <div :class="$style.copy">
-            <p :class="$style.category">{{ category }}</p>
-            <h3 :class="$style.title">{{ title }}</h3>
-          </div>
+          <p :class="$style.category">{{ category }}</p>
+          <h3 :class="$style.title">{{ title }}</h3>
         </div>
       </component>
 
@@ -300,13 +298,8 @@ async function onMapClick(event: MouseEvent) {
 .head {
   display: flex;
   flex-direction: column;
-  gap: rem(12);
+  gap: var(--fs-space-1);
   min-width: 0;
-  padding: 0 rem(8);
-
-  @include from-desktop {
-    gap: var(--fs-space-1);
-  }
 }
 
 .tags {
@@ -321,17 +314,6 @@ async function onMapClick(event: MouseEvent) {
 
   @include from-desktop {
     min-height: rem(30);
-  }
-}
-
-.copy {
-  display: flex;
-  flex-direction: column;
-  gap: rem(4);
-  min-width: 0;
-
-  @include from-desktop {
-    gap: var(--fs-space-1);
   }
 }
 
@@ -359,7 +341,6 @@ async function onMapClick(event: MouseEvent) {
   gap: var(--fs-space-1);
   align-items: center;
   justify-content: space-between;
-  padding: 0 rem(8) rem(8);
 }
 
 .floor {
