@@ -73,7 +73,7 @@ const lastIndex = computed(() => items.length - 1)
   display: flex;
   flex-wrap: wrap;
   gap: rem(4);
-  align-items: flex-start;
+  align-items: center;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -84,6 +84,7 @@ const lastIndex = computed(() => items.length - 1)
   gap: rem(4);
   align-items: center;
   min-width: 0;
+  min-height: rem(24);
 }
 
 .segment {
@@ -136,6 +137,7 @@ const lastIndex = computed(() => items.length - 1)
   flex-shrink: 0;
   width: rem(24);
   height: rem(24);
+  line-height: 0;
   color: var(--fs-color-gray);
 }
 
