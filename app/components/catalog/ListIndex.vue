@@ -38,6 +38,7 @@ function scrollToLetter(letter: string): void {
   <nav :class="$style.root" aria-label="Алфавитный указатель">
     <div :class="$style.row">
       <CatalogListIndexLetter
+        :class="$style.digit"
         :letter="CATALOG_LIST_DIGIT_GROUP"
         :available="isAvailable(CATALOG_LIST_DIGIT_GROUP)"
         @select="scrollToLetter"
@@ -54,15 +55,17 @@ function scrollToLetter(letter: string): void {
       </ul>
     </div>
 
-    <ul :class="$style.letters">
-      <li v-for="letter in CATALOG_LIST_CYRILLIC_LETTERS" :key="letter">
-        <CatalogListIndexLetter
-          :letter="letter"
-          :available="isAvailable(letter)"
-          @select="scrollToLetter"
-        />
-      </li>
-    </ul>
+    <div :class="$style.row">
+      <ul :class="$style.letters">
+        <li v-for="letter in CATALOG_LIST_CYRILLIC_LETTERS" :key="letter">
+          <CatalogListIndexLetter
+            :letter="letter"
+            :available="isAvailable(letter)"
+            @select="scrollToLetter"
+          />
+        </li>
+      </ul>
+    </div>
   </nav>
 </template>
 
@@ -74,25 +77,51 @@ function scrollToLetter(letter: string): void {
   flex-direction: column;
   gap: var(--fs-space-2);
   width: 100%;
+  min-width: 0;
 }
 
 .row {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--fs-space-3);
+  flex-wrap: nowrap;
+  gap: var(--fs-space-4);
   align-items: center;
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @include from-tablet {
+    flex-wrap: wrap;
+    gap: rem(32);
+    overflow-x: visible;
+  }
 
   @include from-desktop {
     gap: rem(56);
   }
 }
 
+.digit {
+  flex-shrink: 0;
+}
+
 .letters {
   display: flex;
-  flex-wrap: wrap;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
   gap: 0;
   margin: 0;
   padding: 0;
   list-style: none;
+
+  @include from-tablet {
+    flex-wrap: wrap;
+  }
 }
 </style>

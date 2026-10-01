@@ -435,6 +435,7 @@ onBeforeUnmount(() => {
   overflow-wrap: break-word;
   cursor: pointer;
 
+  &[aria-selected='true'],
   &[data-active='true'] {
     color: var(--fs-color-black);
   }

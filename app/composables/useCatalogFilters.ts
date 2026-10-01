@@ -15,7 +15,7 @@ export function useCatalogFilters(
   items: MaybeRefOrGetter<CatalogCardItem[]>,
   options: UseCatalogFiltersOptions = {},
 ) {
-  const { categoryPlaceholder = 'Категории', withCafeFilters = false } = options
+  const { categoryPlaceholder = 'Все категории', withCafeFilters = false } = options
   const source = computed(() => toValue(items))
 
   const query = ref('')

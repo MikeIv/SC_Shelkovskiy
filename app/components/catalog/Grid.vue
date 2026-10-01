@@ -36,7 +36,7 @@ defineProps<{
 
 .list {
   display: grid;
-  gap: var(--fs-space-3);
+  gap: var(--fs-space-1);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -51,11 +51,7 @@ defineProps<{
 }
 
 .gridMode {
-  grid-template-columns: minmax(0, 1fr);
-
-  @include from-tablet {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
   @include from-desktop {
     grid-template-columns: repeat(4, minmax(0, 1fr));

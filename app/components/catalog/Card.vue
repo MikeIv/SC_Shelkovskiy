@@ -182,7 +182,7 @@ async function onMapClick(event: MouseEvent) {
 
   &[data-layout='list'] {
     gap: var(--fs-space-1);
-    max-width: rem(372);
+    width: 100%;
 
     .category,
     .title,

@@ -14,7 +14,7 @@ type CatalogFilterTexts = {
 
 const DEFAULT_CATEGORY_TEXTS = {
   categoryLabel: 'Категория',
-  categoryPlaceholder: 'Категории',
+  categoryPlaceholder: 'Все категории',
 } as const satisfies Pick<CatalogFilterTexts, 'categoryLabel' | 'categoryPlaceholder'>
 
 const CATALOG_FILTER_TEXTS: Record<CatalogFiltersVariant, CatalogFilterTexts> = {
@@ -62,27 +62,72 @@ const breakfastOnly = defineModel<boolean>('breakfastOnly', { default: false })
 const businessLunchOnly = defineModel<boolean>('businessLunchOnly', { default: false })
 const viewMode = defineModel<CatalogCardLayout>('viewMode', { default: 'card' })
 
+const filtersOpen = ref(false)
 const texts = computed(() => CATALOG_FILTER_TEXTS[props.variant])
+
+const hasActiveFilters = computed(
+  () =>
+    Boolean(category.value) ||
+    Boolean(floor.value) ||
+    loyaltyOnly.value ||
+    actionsOnly.value ||
+    breakfastOnly.value ||
+    businessLunchOnly.value,
+)
 
 const viewModes = [
   { mode: 'card' as const, icon: 'local:dashboard', label: 'Плитка' },
   { mode: 'list' as const, icon: 'local:list', label: 'Список' },
 ]
+
+function openFilters(): void {
+  filtersOpen.value = true
+}
+
+function closeFilters(): void {
+  filtersOpen.value = false
+}
 </script>
 
 <template>
   <div :class="$style.toolbar">
-    <div :class="$style.fields">
-      <UiSearch
-        v-model="query"
-        :class="$style.search"
-        :label="texts.searchLabel"
-        :placeholder="texts.searchPlaceholder"
-        :options="searchOptions"
+    <UiSearch
+      v-model="query"
+      :class="$style.search"
+      :label="texts.searchLabel"
+      :placeholder="texts.searchPlaceholder"
+      :options="searchOptions"
+    />
+
+    <div :class="$style.actions">
+      <UiTab
+        :class="$style.filterBtn"
+        variant="circle"
+        icon="local:filter"
+        :selected="hasActiveFilters || filtersOpen"
+        aria-label="Фильтры"
+        :aria-expanded="filtersOpen"
+        aria-haspopup="dialog"
+        @click="openFilters"
       />
 
+      <div :class="$style.view" role="group" aria-label="Вид каталога">
+        <UiTab
+          v-for="view in viewModes"
+          :key="view.mode"
+          variant="circle"
+          :icon="view.icon"
+          :selected="viewMode === view.mode"
+          :aria-label="view.label"
+          @click="viewMode = view.mode"
+        />
+      </div>
+    </div>
+
+    <div :class="$style.desktopFields">
       <UiDropdown
         v-model="category"
+        :class="$style.category"
         :label="texts.categoryLabel"
         :placeholder="texts.categoryPlaceholder"
         :options="categoryOptions"
@@ -119,17 +164,19 @@ const viewModes = [
       </div>
     </div>
 
-    <div :class="$style.view" role="group" aria-label="Вид каталога">
-      <UiTab
-        v-for="view in viewModes"
-        :key="view.mode"
-        variant="circle"
-        :icon="view.icon"
-        :selected="viewMode === view.mode"
-        :aria-label="view.label"
-        @click="viewMode = view.mode"
-      />
-    </div>
+    <CatalogFiltersPanel
+      v-model:category="category"
+      v-model:floor="floor"
+      v-model:loyalty-only="loyaltyOnly"
+      v-model:actions-only="actionsOnly"
+      v-model:breakfast-only="breakfastOnly"
+      v-model:business-lunch-only="businessLunchOnly"
+      :open="filtersOpen"
+      :category-options="categoryOptions"
+      :floor-options="floorOptions"
+      :show-cafe-filters="variant === 'cafes'"
+      @close="closeFilters"
+    />
   </div>
 </template>
 
@@ -139,63 +186,86 @@ const viewModes = [
 .toolbar {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-3);
+  gap: var(--fs-space-2);
+  width: 100%;
 
   @include from-desktop {
-    flex-direction: row;
-    gap: var(--fs-space-3);
-    align-items: flex-start;
-    justify-content: space-between;
-  }
-}
-
-.fields {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  gap: var(--fs-space-3);
-  min-width: 0;
-
-  @include from-tablet {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: rem(440) rem(320) max-content 1fr;
+    gap: var(--fs-space-3);
     align-items: start;
-  }
-
-  @include from-desktop {
-    grid-template-columns: rem(440) rem(320) max-content;
-
-    > .floor {
-      width: max-content;
-    }
   }
 }
 
 .search {
-  @include from-tablet {
-    grid-column: 1 / -1;
-  }
+  width: 100%;
 
   @include from-desktop {
-    grid-column: auto;
+    grid-column: 1;
+    grid-row: 1;
+  }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+
+  @include from-desktop {
+    grid-column: 4;
+    grid-row: 1;
+    gap: var(--fs-space-1);
+    justify-content: flex-end;
+    justify-self: end;
+    width: auto;
+  }
+}
+
+.filterBtn {
+  @include from-desktop {
+    display: none;
+  }
+}
+
+.view {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: var(--fs-space-1);
+  align-items: center;
+}
+
+.desktopFields {
+  display: none;
+
+  @include from-desktop {
+    display: contents;
+  }
+}
+
+.category {
+  @include from-desktop {
+    grid-column: 2;
+    grid-row: 1;
   }
 }
 
 .floor {
-  @include from-tablet {
-    grid-column: span 1;
+  @include from-desktop {
+    grid-column: 3;
+    grid-row: 1;
+    width: max-content;
   }
 }
 
 .checks {
   display: flex;
-  flex-direction: column;
-  gap: var(--fs-space-2);
+  flex-flow: row wrap;
+  gap: var(--fs-space-3);
 
-  @include from-tablet {
+  @include from-desktop {
     grid-column: 1 / -1;
-    flex-flow: row wrap;
-    gap: var(--fs-space-3);
+    grid-row: 2;
   }
 }
 
@@ -207,12 +277,5 @@ const viewModes = [
   @include fs-text-lg;
   color: var(--fs-color-black);
   cursor: pointer;
-}
-
-.view {
-  display: inline-flex;
-  flex-shrink: 0;
-  gap: var(--fs-space-1);
-  align-self: flex-start;
 }
 </style>

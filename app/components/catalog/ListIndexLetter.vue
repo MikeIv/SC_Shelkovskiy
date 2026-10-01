@@ -28,9 +28,12 @@ const emit = defineEmits<{
 
 .letter {
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
   min-width: rem(38);
+  min-height: rem(38);
   margin: 0;
   padding: rem(4);
   border: 0;

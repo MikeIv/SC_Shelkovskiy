@@ -58,8 +58,12 @@ const availableLetters = computed(
 .root {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-5);
+  gap: var(--fs-space-4);
   width: 100%;
+
+  @include from-desktop {
+    gap: var(--fs-space-5);
+  }
 }
 
 .groups {
@@ -77,16 +81,20 @@ const availableLetters = computed(
   @include from-desktop {
     scroll-margin-top: rem(80);
   }
+
+  &:last-child .divider {
+    display: none;
+  }
 }
 
 .row {
   display: flex;
-  flex-direction: column;
-  gap: var(--fs-space-3);
+  flex-direction: row;
+  gap: var(--fs-space-2);
   align-items: flex-start;
+  width: 100%;
 
   @include from-desktop {
-    flex-direction: row;
     gap: var(--fs-space-3);
   }
 }
@@ -94,45 +102,45 @@ const availableLetters = computed(
 .letter {
   @include fs-h1;
   flex-shrink: 0;
+  box-sizing: border-box;
+  width: max-content;
+  min-width: rem(60);
   margin: 0;
   padding: rem(4);
+  white-space: nowrap;
 
   @include from-desktop {
     width: rem(372);
+    min-width: rem(372);
   }
 }
 
 .items {
-  display: grid;
+  display: flex;
   flex: 1 1 auto;
-  grid-template-columns: minmax(0, 1fr);
+  flex-direction: column;
   gap: var(--fs-space-3);
+  width: 100%;
   min-width: 0;
   margin: 0;
   padding: 0;
   list-style: none;
 
   @include from-tablet {
-    grid-auto-flow: column;
+    display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(2, auto);
-
-    &:has(> :only-child) {
-      grid-template-rows: auto;
-    }
+    gap: var(--fs-space-3) var(--fs-space-2);
   }
 
   @include from-desktop {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--fs-space-3);
   }
 }
 
 .item {
+  width: 100%;
   min-width: 0;
-
-  @include from-desktop {
-    max-width: rem(372);
-  }
 }
 
 .divider {
