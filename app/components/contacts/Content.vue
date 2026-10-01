@@ -27,43 +27,51 @@ const labels = {
 <template>
   <section :class="$style.root" aria-labelledby="contacts-title">
     <div :class="$style.main">
-      <div :class="$style.intro">
-        <h1 id="contacts-title" :class="$style.title">
-          {{ content.title }}
-        </h1>
+      <div :class="$style.head">
+        <div :class="$style.intro">
+          <h1 id="contacts-title" :class="$style.title">
+            {{ content.title }}
+          </h1>
 
-        <div :class="$style.addressRow">
-          <p :class="$style.address">{{ content.address }}</p>
-          <span
-            :class="$style.metro"
-            :aria-label="`Станция метро ${content.metroLabel}`"
-          >
-            <span :class="$style.metroBadge" aria-hidden="true">
-              <img
-                :class="$style.metroIcon"
-                :src="content.metroIconSrc"
-                alt=""
-                width="12"
-                height="7"
-              >
+          <div :class="$style.location">
+            <span
+              :class="$style.metro"
+              :aria-label="`Станция метро ${content.metroLabel}`"
+            >
+              <span :class="$style.metroBadge" aria-hidden="true">
+                <img
+                  :class="$style.metroIcon"
+                  :src="content.metroIconSrc"
+                  alt=""
+                  width="12"
+                  height="7"
+                >
+              </span>
+              <span :class="$style.metroLabel" aria-hidden="true">
+                {{ content.metroLabel }}
+              </span>
             </span>
-            <span :class="$style.metroLabel" aria-hidden="true">
-              {{ content.metroLabel }}
-            </span>
-          </span>
+
+            <p :class="$style.address">{{ content.address }}</p>
+          </div>
         </div>
-      </div>
 
-      <div :class="$style.general">
-        <div :class="$style.generalCol">
-          <div :class="$style.row">
+        <div :class="$style.general">
+          <div :class="[$style.row, $style.phone]">
             <span :class="$style.label">{{ labels.phone }}</span>
             <a :class="$style.value" :href="content.phoneHref">
               {{ content.phone }}
             </a>
           </div>
 
-          <div :class="$style.block">
+          <div :class="[$style.row, $style.email]">
+            <span :class="$style.label">{{ labels.email }}</span>
+            <a :class="$style.value" :href="content.emailHref">
+              {{ content.email }}
+            </a>
+          </div>
+
+          <div :class="[$style.block, $style.hoursBlock]">
             <span :class="$style.label">{{ labels.hours }}</span>
             <ul :class="$style.hours">
               <li
@@ -76,17 +84,8 @@ const labels = {
               </li>
             </ul>
           </div>
-        </div>
 
-        <div :class="$style.generalCol">
-          <div :class="$style.row">
-            <span :class="$style.label">{{ labels.email }}</span>
-            <a :class="$style.value" :href="content.emailHref">
-              {{ content.email }}
-            </a>
-          </div>
-
-          <div :class="$style.block">
+          <div :class="[$style.block, $style.social]">
             <span :class="$style.label">{{ labels.social }}</span>
             <ul :class="$style.socialList">
               <li v-for="item in footerSocialLinks" :key="item.label">
@@ -183,7 +182,7 @@ $metro-blue: #007ac6;
 .root {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-4);
+  gap: var(--fs-space-3);
   min-width: 0;
 
   @include from-desktop {
@@ -211,6 +210,13 @@ $metro-blue: #007ac6;
   }
 }
 
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-3);
+  min-width: 0;
+}
+
 .intro {
   display: flex;
   flex-direction: column;
@@ -222,11 +228,17 @@ $metro-blue: #007ac6;
   margin: 0;
 }
 
-.addressRow {
+.location {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--fs-space-2) var(--fs-space-3);
-  align-items: center;
+  flex-direction: column;
+  gap: var(--fs-space-2);
+  align-items: flex-start;
+
+  @include from-desktop {
+    flex-flow: row wrap;
+    gap: var(--fs-space-2) var(--fs-space-3);
+    align-items: center;
+  }
 }
 
 .address {
@@ -262,30 +274,50 @@ $metro-blue: #007ac6;
 }
 
 .metroLabel {
-  @include fs-text-sm;
+  font-family: var(--fs-font-sans);
+  font-size: rem(14);
+  font-weight: 500;
+  line-height: 1.25;
   color: var(--fs-color-black);
 }
 
 .general {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-3);
-
-  @include from-tablet {
-    flex-direction: row;
-    gap: rem(24);
-  }
-}
-
-.generalCol {
-  display: flex;
-  flex: 1 1 0;
-  flex-direction: column;
   gap: var(--fs-space-2);
   min-width: 0;
 
   @include from-desktop {
-    gap: rem(16);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      'phone email'
+      'hours social';
+    gap: rem(16) rem(24);
+  }
+}
+
+.phone {
+  @include from-desktop {
+    grid-area: phone;
+  }
+}
+
+.email {
+  @include from-desktop {
+    grid-area: email;
+  }
+}
+
+.hoursBlock {
+  @include from-desktop {
+    grid-area: hours;
+  }
+}
+
+.social {
+  @include from-desktop {
+    grid-area: social;
   }
 }
 
@@ -392,7 +424,7 @@ $metro-blue: #007ac6;
 .departments {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--fs-space-4);
+  gap: var(--fs-space-3);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -409,10 +441,6 @@ $metro-blue: #007ac6;
   flex-direction: column;
   gap: var(--fs-space-2);
   min-width: 0;
-
-  @include from-desktop {
-    gap: rem(16);
-  }
 }
 
 .departmentTitle {
@@ -423,7 +451,7 @@ $metro-blue: #007ac6;
 .aside {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-2);
+  gap: var(--fs-space-3);
   width: 100%;
   min-width: 0;
 
@@ -437,11 +465,13 @@ $metro-blue: #007ac6;
 .mapWrap {
   position: relative;
   width: 100%;
+  height: rem(360);
   overflow: clip;
   border-radius: rem(32);
-  aspect-ratio: 636 / 439;
 
   @include from-desktop {
+    height: auto;
+    aspect-ratio: 636 / 439;
     border-radius: rem(60);
   }
 }
@@ -458,7 +488,7 @@ $metro-blue: #007ac6;
 .help {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-3);
+  gap: var(--fs-space-2);
   align-items: flex-start;
   padding: var(--fs-space-3);
   background-color: var(--fs-color-light);
@@ -466,6 +496,7 @@ $metro-blue: #007ac6;
 
   @include from-desktop {
     flex-direction: row;
+    gap: var(--fs-space-3);
     align-items: center;
     justify-content: space-between;
     padding: rem(24);
