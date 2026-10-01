@@ -1,10 +1,16 @@
-# install → verify (lint + types) → build. Node 22 = engines.package.json.
+# Quality gate + DevOps deploy (marlenuscom/devdeployer).
+# Dev URL: GitLab → Operate → Environments после успешного deploy develop.
+
+include:
+  - project: marlenuscom/devdeployer
+    file: 'template.gitlab-ci.yml'
 
 stages:
   - verify
   - build
+  - deploy
 
-default:
+.nodejs:
   image: node:22
   interruptible: true
   cache:
@@ -19,13 +25,30 @@ default:
     - pnpm install --frozen-lockfile
 
 verify:
+  extends: .nodejs
   stage: verify
   script:
     - pnpm verify
 
 build:
+  extends: .nodejs
   stage: build
   script:
     - pnpm build
   needs:
     - verify
+
+deploy develop:
+  stage: deploy
+  variables:
+    PROJECT_TYPE: nuxt
+  extends: .start
+  rules:
+    - if: $CI_COMMIT_REF_PROTECTED == "true"
+
+destroy develop:
+  stage: deploy
+  extends: .stop
+  needs: []
+  rules:
+    - if: $CI_COMMIT_REF_PROTECTED == "true"
