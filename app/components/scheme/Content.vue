@@ -19,6 +19,7 @@ const query = ref('')
 const activeAmenity = ref<SchemeAmenityKind | null>(null)
 const activeFloorId = ref(props.content.defaultMallFloorId)
 const highlightedUnitId = ref<string | null>(null)
+const mapScrollRef = ref<HTMLElement | null>(null)
 
 const floors = computed(() =>
   mode.value === 'mall' ? props.content.mallFloors : props.content.parkingFloors,
@@ -37,15 +38,15 @@ const searchOptions = computed((): UiSearchOption[] =>
     })),
 )
 
-watch(mode, (next) => {
-  activeFloorId.value =
-    next === 'mall'
-      ? props.content.defaultMallFloorId
-      : props.content.defaultParkingFloorId
-  highlightedUnitId.value = null
-  activeAmenity.value = null
-  query.value = ''
-})
+function centerMapScroll(): void {
+  const el = mapScrollRef.value
+  if (!el) {
+    return
+  }
+
+  el.scrollLeft = Math.max(0, (el.scrollWidth - el.clientWidth) / 2)
+  el.scrollTop = Math.max(0, (el.scrollHeight - el.clientHeight) / 2)
+}
 
 function focusUnit(unitId: string): void {
   const match = flattenSchemeUnits(floors.value).find(({ unit }) => unit.id === unitId)
@@ -100,8 +101,23 @@ function applyTenantFromQuery(): void {
   focusUnit(tenantId)
 }
 
+watch(mode, (next) => {
+  activeFloorId.value =
+    next === 'mall'
+      ? props.content.defaultMallFloorId
+      : props.content.defaultParkingFloorId
+  highlightedUnitId.value = null
+  activeAmenity.value = null
+  query.value = ''
+})
+
+watch(activeFloorId, () => {
+  void nextTick(centerMapScroll)
+})
+
 watch(() => route.query.tenant, applyTenantFromQuery, { immediate: true })
-</script>
+
+onMounted(centerMapScroll)</script>
 
 <template>
   <section :class="$style.root" aria-labelledby="scheme-title">
@@ -133,12 +149,20 @@ watch(() => route.query.tenant, applyTenantFromQuery, { immediate: true })
 
     <div :class="$style.mapBlock">
       <div :class="$style.mapWrap">
-        <SchemeMap
-          :floor="activeFloor"
-          :active-amenity="activeAmenity"
-          :highlighted-unit-id="highlightedUnitId"
-          @select-unit="onSelectUnit"
-        />
+        <div
+          ref="mapScrollRef"
+          :class="$style.mapScroll"
+          tabindex="0"
+          role="region"
+          aria-label="Схема этажа. Прокрутите, чтобы осмотреть"
+        >
+          <SchemeMap
+            :floor="activeFloor"
+            :active-amenity="activeAmenity"
+            :highlighted-unit-id="highlightedUnitId"
+            @select-unit="onSelectUnit"
+          />
+        </div>
 
         <div
           :class="$style.floors"
@@ -241,7 +265,36 @@ watch(() => route.query.tenant, applyTenantFromQuery, { immediate: true })
 .mapWrap {
   position: relative;
   width: 100%;
+  height: rem(500);
   min-width: 0;
+  overflow: clip;
+  border-radius: rem(32);
+  background-color: var(--fs-color-white);
+
+  @include from-desktop {
+    height: auto;
+    overflow: visible;
+    border-radius: 0;
+    background-color: transparent;
+  }
+}
+
+.mapScroll {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @include from-desktop {
+    overflow: visible;
+    height: auto;
+  }
 }
 
 .floors {
