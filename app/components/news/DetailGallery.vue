@@ -1,15 +1,8 @@
 <script setup lang="ts">
-const props = withDefaults(
-  defineProps<{
-    images: string[]
-    alt: string
-    /** `tenant` — mob 228/r24 (карточка арендатора); иначе статья новости. */
-    size?: 'article' | 'tenant'
-  }>(),
-  {
-    size: 'article',
-  },
-)
+const props = defineProps<{
+  images: string[]
+  alt: string
+}>()
 
 const currentIndex = ref(0)
 
@@ -35,7 +28,7 @@ function goNext() {
 </script>
 
 <template>
-  <div :class="$style.root" :data-size="size">
+  <div :class="$style.root">
     <div :class="$style.viewport">
       <img
         v-if="currentImage"
@@ -69,18 +62,13 @@ function goNext() {
 @use 'tools' as *;
 
 .root {
-  --fs-gallery-height: #{rem(280)};
-  --fs-gallery-radius: #{rem(32)};
+  --fs-gallery-height: #{rem(228)};
+  --fs-gallery-radius: #{rem(24)};
 
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-2);
   width: 100%;
-
-  &[data-size='tenant'] {
-    --fs-gallery-height: #{rem(228)};
-    --fs-gallery-radius: #{rem(24)};
-  }
 
   @include from-tablet {
     --fs-gallery-height: #{rem(400)};

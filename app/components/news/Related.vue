@@ -31,50 +31,14 @@ const props = withDefaults(
 
 const copy = computed(() => RELATED_COPY[props.kind])
 
-const viewportRef = ref<HTMLElement | null>(null)
-const trackRef = ref<HTMLElement | null>(null)
-const canScrollPrev = ref(false)
-const canScrollNext = ref(false)
-const showNav = ref(false)
-
-function updateNavState() {
-  const viewport = viewportRef.value
-
-  if (!viewport) {
-    return
-  }
-
-  const hasOverflow = viewport.scrollWidth > viewport.clientWidth + 1
-  showNav.value = hasOverflow
-  canScrollPrev.value = viewport.scrollLeft > 1
-  canScrollNext.value = viewport.scrollLeft + viewport.clientWidth < viewport.scrollWidth - 1
-}
-
-function scrollByCard(direction: -1 | 1) {
-  const viewport = viewportRef.value
-  const track = trackRef.value
-  const card = track?.firstElementChild as HTMLElement | null
-
-  if (!viewport || !track || !card) {
-    return
-  }
-
-  const styles = getComputedStyle(track)
-  const gap = Number.parseFloat(styles.gap || styles.columnGap || '0')
-
-  viewport.scrollBy({ left: direction * (card.offsetWidth + gap), behavior: 'smooth' })
-}
-
-onMounted(() => {
-  viewportRef.value?.addEventListener('scroll', updateNavState, { passive: true })
-  window.addEventListener('resize', updateNavState)
-  updateNavState()
-})
-
-onUnmounted(() => {
-  viewportRef.value?.removeEventListener('scroll', updateNavState)
-  window.removeEventListener('resize', updateNavState)
-})
+const {
+  viewportRef,
+  trackRef,
+  canScrollPrev,
+  canScrollNext,
+  showNav,
+  scrollByCard,
+} = useScrollCarousel()
 </script>
 
 <template>
@@ -123,22 +87,19 @@ onUnmounted(() => {
 @use 'tools' as *;
 
 .root {
+  /* Гасит горизонтальный скролл fs-carousel-viewport. */
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-5);
+  gap: var(--fs-space-3);
   width: 100%;
   min-width: 0;
-  /* + gap .content (space-5) → mobile 80 / tablet+ 160 до заголовка */
-  padding-top: calc(#{rem(80)} - var(--fs-space-5));
-
-  @include from-tablet {
-    padding-top: calc(#{rem(160)} - var(--fs-space-5));
-    /* + main --fs-space-section → 160 до footer; на desktop только main (160) */
-    padding-bottom: calc(#{rem(160)} - var(--fs-space-section));
-  }
+  overflow-x: clip;
+  /* + gap .content (space-4 / desk space-5) → --fs-space-section до блока */
+  padding-top: calc(var(--fs-space-section) - var(--fs-space-4));
 
   @include from-desktop {
-    padding-bottom: 0;
+    gap: var(--fs-space-5);
+    padding-top: calc(var(--fs-space-section) - var(--fs-space-5));
   }
 }
 

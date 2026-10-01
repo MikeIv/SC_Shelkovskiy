@@ -19,7 +19,6 @@ defineProps<{
     <NewsDetailGallery
       v-if="item.gallery?.length"
       :class="$style.gallery"
-      size="tenant"
       :images="item.gallery"
       :alt="item.galleryAlt || item.title"
     />

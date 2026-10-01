@@ -32,8 +32,9 @@ defineProps<{
 
     <div :class="$style.layout">
       <NewsDetailGallery
+        v-if="item.gallery?.length"
         :class="$style.gallery"
-        :images="item.gallery ?? []"
+        :images="item.gallery"
         :alt="item.imageAlt || item.title"
       />
 
@@ -62,39 +63,41 @@ defineProps<{
           </div>
         </div>
 
-        <div v-if="item.intro?.length" :class="$style.intro">
-          <p v-for="(paragraph, index) in item.intro" :key="index">
-            {{ paragraph }}
-          </p>
-        </div>
-
-        <section
-          v-for="(section, index) in item.sections"
-          :key="index"
-          :class="$style.section"
-        >
-          <h2 v-if="section.heading" :class="$style.sectionTitle">
-            {{ section.heading }}
-          </h2>
-
-          <ul v-if="section.list?.length" :class="$style.list">
-            <li v-for="(listItem, listIndex) in section.list" :key="listIndex">
-              {{ listItem }}
-            </li>
-          </ul>
-
-          <div v-if="section.paragraphs?.length" :class="$style.paragraphs">
-            <p v-for="(paragraph, paragraphIndex) in section.paragraphs" :key="paragraphIndex">
+        <div :class="$style.article">
+          <div v-if="item.intro?.length" :class="$style.intro">
+            <p v-for="(paragraph, index) in item.intro" :key="index">
               {{ paragraph }}
             </p>
           </div>
 
-          <blockquote v-if="section.quote" :class="$style.quote">
-            {{ section.quote }}
-          </blockquote>
-        </section>
+          <section
+            v-for="(section, index) in item.sections"
+            :key="index"
+            :class="$style.section"
+          >
+            <h2 v-if="section.heading" :class="$style.sectionTitle">
+              {{ section.heading }}
+            </h2>
 
-        <UiShareMenu />
+            <ul v-if="section.list?.length" :class="$style.list">
+              <li v-for="(listItem, listIndex) in section.list" :key="listIndex">
+                {{ listItem }}
+              </li>
+            </ul>
+
+            <div v-if="section.paragraphs?.length" :class="$style.paragraphs">
+              <p v-for="(paragraph, paragraphIndex) in section.paragraphs" :key="paragraphIndex">
+                {{ paragraph }}
+              </p>
+            </div>
+
+            <blockquote v-if="section.quote" :class="$style.quote">
+              {{ section.quote }}
+            </blockquote>
+          </section>
+
+          <UiShareMenu />
+        </div>
       </div>
     </div>
   </div>
@@ -103,11 +106,16 @@ defineProps<{
 <style module lang="scss">
 @use 'tools' as *;
 
+/* Mob Figma 971:55022: Top gap 24 (title/photo/info), Section→Article 40, Article 32. */
 .root {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-5);
+  gap: var(--fs-space-3);
   width: 100%;
+
+  @include from-desktop {
+    gap: var(--fs-space-5);
+  }
 }
 
 .header {
@@ -119,7 +127,7 @@ defineProps<{
 .meta {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--fs-space-3);
+  gap: var(--fs-space-2);
   align-items: center;
 }
 
@@ -141,7 +149,7 @@ defineProps<{
 .layout {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-5);
+  gap: var(--fs-space-3);
 
   @include from-desktop {
     flex-direction: row;
@@ -186,7 +194,11 @@ defineProps<{
   max-width: 100%;
   padding: var(--fs-space-2) var(--fs-space-3) var(--fs-space-2) var(--fs-space-2);
   background-color: var(--fs-color-light);
-  border-radius: rem(32);
+  border-radius: rem(24);
+
+  @include from-desktop {
+    border-radius: rem(32);
+  }
 }
 
 .tenantLogo {
@@ -208,10 +220,15 @@ defineProps<{
 
 .tenantLogoImage {
   display: block;
-  width: 100%;
-  height: 100%;
+  width: rem(68);
+  height: rem(68);
   object-fit: contain;
   object-position: center;
+
+  @include from-desktop {
+    width: rem(72);
+    height: rem(72);
+  }
 }
 
 .tenantLogoFallback {
@@ -224,6 +241,18 @@ defineProps<{
   flex-direction: column;
   gap: rem(12);
   align-items: flex-start;
+}
+
+.article {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-4);
+  min-width: 0;
+  width: 100%;
+
+  @include from-desktop {
+    gap: var(--fs-space-5);
+  }
 }
 
 .intro,
@@ -242,7 +271,7 @@ defineProps<{
 .section {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-3);
+  gap: rem(12);
 }
 
 .sectionTitle {
@@ -285,16 +314,18 @@ defineProps<{
   position: relative;
   isolation: isolate;
   margin: 0;
-  padding: var(--fs-space-4);
+  padding: var(--fs-space-2);
   overflow: clip;
   @include fs-text-md;
   color: var(--fs-color-black);
   background-color: var(--fs-color-light);
-  border-radius: rem(32);
+  border-radius: rem(24);
 
   @include from-desktop {
     --quote-pattern-size: #{rem(400)};
     --quote-pattern-offset: #{rem(-140)};
+    padding: var(--fs-space-4);
+    border-radius: rem(32);
   }
 
   &::before,
