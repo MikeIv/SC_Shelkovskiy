@@ -33,7 +33,7 @@ defineProps<{
 
 .list {
   display: grid;
-  gap: var(--fs-space-3);
+  gap: var(--fs-space-4);
   margin: 0;
   padding: 0;
   list-style: none;

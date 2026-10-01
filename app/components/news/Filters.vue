@@ -30,8 +30,17 @@ const tab = defineModel<NewsFilterTab>('tab', { default: 'news' })
 
 .root {
   display: flex;
-  flex-flow: row wrap;
+  flex-flow: row nowrap;
   gap: 0;
   align-items: center;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 </style>
