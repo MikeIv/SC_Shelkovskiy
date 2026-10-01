@@ -36,7 +36,7 @@ const CATALOG_FILTER_TEXTS: Record<CatalogFiltersVariant, CatalogFilterTexts> = 
   },
   entertainment: {
     searchLabel: 'Поиск спорта или развлечения',
-    searchPlaceholder: 'Найти спорт или развлечение',
+    searchPlaceholder: 'Найти спорт или развлечения',
     ...DEFAULT_CATEGORY_TEXTS,
   },
 }
