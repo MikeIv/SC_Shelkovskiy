@@ -102,21 +102,15 @@ useHead({
 @use 'tools' as *;
 
 .stack {
-  /* Mob: 100 (Figma). Desk: --fs-space-section. */
-  --home-stack-gap: #{rem(100)};
-
+  /* Секции через --fs-space-section; desk: padding-top героя 140. */
   position: relative;
   z-index: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--home-stack-gap);
-  padding-top: var(--home-stack-gap);
-  /* + main --fs-space-section → 100 до footer на mobile */
-  margin-bottom: calc(var(--home-stack-gap) - var(--fs-space-section));
+  gap: var(--fs-space-section);
+  padding-top: var(--fs-space-section);
 
   @include from-desktop {
-    --home-stack-gap: var(--fs-space-section);
-    margin-bottom: 0;
     padding-top: rem(140);
   }
 }

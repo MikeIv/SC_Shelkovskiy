@@ -10,8 +10,8 @@
   --fs-space-4: #{rem(32)};
   --fs-space-5: #{rem(40)};
   --fs-space-6: #{rem(48)};
-  /* Gap секций и отступ main → footer */
-  --fs-space-section: #{rem(80)};
+  /* Gap секций и main → footer: Mob/Tab 100, Desk 160 (Figma) */
+  --fs-space-section: #{rem(100)};
 
   @include from-desktop {
     --fs-space-section: #{rem(160)};

@@ -133,8 +133,8 @@ onUnmounted(() => {
 
   @include from-tablet {
     padding-top: calc(#{rem(160)} - var(--fs-space-5));
-    /* + main --fs-space-section (80) → 160 до footer; на desktop только main (160) */
-    padding-bottom: rem(80);
+    /* + main --fs-space-section → 160 до footer; на desktop только main (160) */
+    padding-bottom: calc(#{rem(160)} - var(--fs-space-section));
   }
 
   @include from-desktop {

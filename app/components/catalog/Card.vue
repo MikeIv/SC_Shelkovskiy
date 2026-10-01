@@ -202,11 +202,16 @@ async function onMapClick(event: MouseEvent) {
   flex-direction: column;
   gap: rem(12);
   width: 100%;
+  min-height: rem(366);
   padding: rem(12);
   border: rem(2) solid var(--fs-color-light);
   border-radius: rem(24);
   background-color: var(--fs-color-white);
   transition: border-color 0.2s ease;
+
+  @include from-tablet {
+    min-height: auto;
+  }
 
   @include from-desktop {
     gap: var(--fs-space-2);
