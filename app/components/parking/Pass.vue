@@ -66,11 +66,11 @@ const { title, description, contact, phone, phoneHref, items } = defineProps<{
 .root {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-4);
+  gap: var(--fs-space-3);
   min-width: 0;
 
   @include from-desktop {
-    gap: rem(40);
+    gap: var(--fs-space-5);
   }
 }
 
@@ -89,11 +89,12 @@ const { title, description, contact, phone, phoneHref, items } = defineProps<{
 
 .desc {
   margin: 0;
-  @include fs-h4;
-  font-weight: 400;
+  @include fs-text;
   overflow-wrap: break-word;
 
   @include from-desktop {
+    @include fs-h4;
+    font-weight: 400;
     max-width: rem(907);
   }
 }
@@ -101,14 +102,18 @@ const { title, description, contact, phone, phoneHref, items } = defineProps<{
 .banners {
   display: flex;
   flex-direction: column;
-  gap: rem(12);
+  gap: rem(8);
   min-width: 0;
+
+  @include from-desktop {
+    gap: rem(12);
+  }
 }
 
 .cards {
   display: grid;
   grid-template-columns: 1fr;
-  gap: rem(12);
+  gap: rem(8);
   min-width: 0;
 
   @include from-desktop {
@@ -121,12 +126,8 @@ const { title, description, contact, phone, phoneHref, items } = defineProps<{
   position: relative;
   width: 100%;
   max-width: rem(768);
-  height: rem(200);
+  height: rem(290);
   overflow: hidden;
-
-  @include from-tablet {
-    height: rem(260);
-  }
 
   @include from-desktop {
     height: rem(306);
@@ -154,12 +155,13 @@ const { title, description, contact, phone, phoneHref, items } = defineProps<{
   display: flex;
   flex-direction: column;
   gap: rem(8);
-  justify-content: center;
+  justify-content: flex-start;
   height: 100%;
   min-width: 0;
   padding: var(--fs-space-3);
 
   @include from-desktop {
+    justify-content: center;
     padding-block: rem(40);
     padding-inline: rem(40);
   }
@@ -167,8 +169,12 @@ const { title, description, contact, phone, phoneHref, items } = defineProps<{
 
 .label {
   margin: 0;
-  @include fs-h4;
-  font-weight: 400;
+  @include fs-text;
+
+  @include from-desktop {
+    @include fs-h4;
+    font-weight: 400;
+  }
 }
 
 .price {
@@ -247,13 +253,15 @@ const { title, description, contact, phone, phoneHref, items } = defineProps<{
 
 .contact {
   margin: 0;
-  padding: var(--fs-space-3);
-  @include fs-text-lg;
+  padding: var(--fs-space-2);
+  @include fs-text;
   background-color: var(--fs-color-light);
   border-radius: rem(24);
   overflow-wrap: break-word;
 
   @include from-desktop {
+    padding: var(--fs-space-3);
+    @include fs-text-lg;
     border-radius: rem(32);
   }
 }

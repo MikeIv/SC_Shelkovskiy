@@ -84,7 +84,6 @@ const { benefitsTitle, benefitGroups, special } = defineProps<{
 
   @include from-desktop {
     flex-direction: row;
-    gap: var(--fs-space-3);
     align-items: stretch;
   }
 }
@@ -93,9 +92,9 @@ const { benefitsTitle, benefitGroups, special } = defineProps<{
   display: flex;
   flex: 1 1 0;
   flex-direction: column;
-  gap: rem(32);
+  gap: var(--fs-space-3);
   min-width: 0;
-  padding: var(--fs-space-4);
+  padding: var(--fs-space-2);
   overflow: clip;
   background-color: var(--fs-color-light);
   border-radius: rem(24);

@@ -28,14 +28,41 @@ const {
 }>()
 
 const activeFloorId = ref(floors.at(-1)?.id ?? floors[0]?.id ?? '')
+const mapScrollRef = ref<HTMLElement | null>(null)
+
+function centerMapScroll(): void {
+  const el = mapScrollRef.value
+  if (!el) {
+    return
+  }
+
+  el.scrollLeft = Math.max(0, (el.scrollWidth - el.clientWidth) / 2)
+  el.scrollTop = Math.max(0, (el.scrollHeight - el.clientHeight) / 2)
+}
+
+watch(activeFloorId, () => {
+  void nextTick(centerMapScroll)
+})
+
+onMounted(centerMapScroll)
 </script>
 
 <template>
   <section :class="$style.root" aria-labelledby="parking-info-title">
     <div :class="$style.top">
-      <div :class="$style.copy">
+      <div :class="$style.lead">
         <h1 id="parking-info-title" :class="$style.title">{{ title }}</h1>
-        <p :class="$style.desc">{{ description }}</p>
+
+        <div :class="$style.media">
+          <img
+            :class="$style.image"
+            :src="imageSrc"
+            :alt="imageAlt"
+            width="636"
+            height="500"
+            decoding="async"
+          >
+        </div>
 
         <ul :class="$style.tariffs">
           <li
@@ -47,7 +74,10 @@ const activeFloorId = ref(floors.at(-1)?.id ?? floors[0]?.id ?? '')
             <p :class="$style.tariffPrice">{{ tariff.price }}</p>
           </li>
         </ul>
+      </div>
 
+      <div :class="$style.article">
+        <p :class="$style.desc">{{ description }}</p>
         <p :class="$style.notes">{{ notes }}</p>
 
         <a
@@ -62,29 +92,26 @@ const activeFloorId = ref(floors.at(-1)?.id ?? floors[0]?.id ?? '')
           <span>{{ rulesLabel }}</span>
         </a>
       </div>
-
-      <div :class="$style.media">
-        <img
-          :class="$style.image"
-          :src="imageSrc"
-          :alt="imageAlt"
-          width="636"
-          height="500"
-          decoding="async"
-        >
-      </div>
     </div>
 
     <div :class="$style.mapWrap">
-      <img
-        :class="$style.map"
-        :src="mapSrc"
-        :alt="mapAlt"
-        width="1560"
-        height="600"
-        loading="lazy"
-        decoding="async"
+      <div
+        ref="mapScrollRef"
+        :class="$style.mapScroll"
+        tabindex="0"
+        role="region"
+        aria-label="Схема парковки. Прокрутите, чтобы осмотреть"
       >
+        <img
+          :class="$style.map"
+          :src="mapSrc"
+          :alt="mapAlt"
+          width="1560"
+          height="600"
+          loading="lazy"
+          decoding="async"
+        >
+      </div>
 
       <div
         :class="$style.floors"
@@ -113,53 +140,71 @@ const activeFloorId = ref(floors.at(-1)?.id ?? floors[0]?.id ?? '')
 .root {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-3);
+  gap: var(--fs-space-4);
   min-width: 0;
-
-  @include from-desktop {
-    gap: rem(24);
-  }
 }
 
 .top {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-4);
-
-  @include from-desktop {
-    flex-direction: row;
-    gap: rem(80);
-    align-items: flex-start;
-    justify-content: space-between;
-  }
-
-  @include from-wide {
-    gap: rem(156);
-  }
-}
-
-.copy {
-  display: flex;
-  flex-direction: column;
-  gap: var(--fs-space-4);
+  gap: var(--fs-space-5);
   min-width: 0;
 
   @include from-desktop {
-    flex: 1 1 rem(560);
-    max-width: rem(768);
-    gap: rem(48);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) rem(636);
+    column-gap: rem(80);
+    row-gap: rem(48);
+    align-items: start;
+  }
+
+  @include from-wide {
+    column-gap: rem(156);
+  }
+}
+
+.lead {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-3);
+  min-width: 0;
+
+  @include from-desktop {
+    display: contents;
   }
 }
 
 .title {
   @include fs-h1;
   margin: 0;
+
+  @include from-desktop {
+    grid-column: 1;
+    grid-row: 1;
+  }
 }
 
-.desc {
-  margin: 0;
-  @include fs-text-lg;
-  overflow-wrap: break-word;
+.media {
+  width: 100%;
+  height: rem(228);
+  overflow: clip;
+  border-radius: rem(32);
+
+  @include from-desktop {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    width: rem(636);
+    height: auto;
+    aspect-ratio: 636 / 500;
+    border-radius: rem(60);
+  }
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .tariffs {
@@ -174,13 +219,18 @@ const activeFloorId = ref(floors.at(-1)?.id ?? floors[0]?.id ?? '')
     flex-direction: row;
     gap: var(--fs-space-3);
   }
+
+  @include from-desktop {
+    grid-column: 1;
+    grid-row: 2;
+  }
 }
 
 .tariff {
   display: flex;
   flex: 1 1 0;
   flex-direction: column;
-  gap: var(--fs-space-2);
+  gap: rem(12);
   justify-content: center;
   min-width: 0;
   padding: var(--fs-space-3);
@@ -189,20 +239,37 @@ const activeFloorId = ref(floors.at(-1)?.id ?? floors[0]?.id ?? '')
 
   @include from-desktop {
     gap: var(--fs-space-3);
-    padding: var(--fs-space-3);
     border-radius: rem(32);
   }
 }
 
 .tariffLabel {
   margin: 0;
-  @include fs-h4;
-  font-weight: 400;
+  @include fs-text;
 }
 
 .tariffPrice {
   margin: 0;
   @include fs-h2;
+}
+
+.article {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-4);
+  min-width: 0;
+
+  @include from-desktop {
+    grid-column: 1;
+    grid-row: 3;
+    gap: rem(48);
+  }
+}
+
+.desc {
+  margin: 0;
+  @include fs-text-lg;
+  overflow-wrap: break-word;
 }
 
 .notes {
@@ -219,15 +286,20 @@ const activeFloorId = ref(floors.at(-1)?.id ?? floors[0]?.id ?? '')
 .rules {
   display: inline-flex;
   gap: var(--fs-space-2);
-  align-items: center;
+  align-items: flex-start;
   align-self: flex-start;
-  padding: var(--fs-space-2) var(--fs-space-3);
+  padding: var(--fs-space-3);
   @include fs-h4;
   color: var(--fs-color-black);
   text-decoration: none;
   background-color: var(--fs-color-light);
-  border-radius: rem(32);
+  border-radius: rem(24);
   transition: background-color 0.2s ease;
+
+  @include from-desktop {
+    align-items: center;
+    border-radius: rem(32);
+  }
 
   @media (hover: hover) {
     &:hover {
@@ -251,50 +323,58 @@ const activeFloorId = ref(floors.at(-1)?.id ?? floors[0]?.id ?? '')
   height: rem(32);
 }
 
-.media {
-  flex-shrink: 0;
+.mapWrap {
+  position: relative;
   width: 100%;
+  height: rem(500);
+  min-width: 0;
   overflow: clip;
+  background-color: var(--fs-color-white);
   border-radius: rem(32);
-  aspect-ratio: 636 / 500;
 
   @include from-desktop {
-    flex: 0 0 rem(636);
+    height: auto;
+    aspect-ratio: 1560 / 600;
     border-radius: rem(60);
   }
 }
 
-.image {
-  display: block;
+.mapScroll {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-}
+  overflow: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 
-.mapWrap {
-  position: relative;
-  width: 100%;
-  overflow: clip;
-  background-color: var(--fs-color-white);
-  border-radius: rem(32);
-  aspect-ratio: 1560 / 600;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   @include from-desktop {
-    border-radius: rem(60);
+    overflow: visible;
   }
 }
 
 .map {
   display: block;
-  width: 100%;
+  width: auto;
+  max-width: none;
   height: 100%;
+  aspect-ratio: 1560 / 600;
   object-fit: contain;
+
+  @include from-desktop {
+    width: 100%;
+    aspect-ratio: auto;
+  }
 }
 
 .floors {
   position: absolute;
   top: 50%;
-  right: var(--fs-space-2);
+  right: 0;
+  z-index: z('default');
   display: flex;
   flex-direction: column;
   gap: rem(4);
