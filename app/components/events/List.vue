@@ -34,14 +34,10 @@ defineProps<{
 .list {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-3);
+  gap: var(--fs-space-5);
   margin: 0;
   padding: 0;
   list-style: none;
-
-  @include from-desktop {
-    gap: var(--fs-space-5);
-  }
 }
 
 .item {
