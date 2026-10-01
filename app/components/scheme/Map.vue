@@ -157,11 +157,12 @@ const visibleAmenities = computed(() => {
   position: relative;
   width: 100%;
   overflow: clip;
-  aspect-ratio: 1560 / 600;
+  aspect-ratio: 343 / 500;
   background-color: var(--fs-color-white);
-  border-radius: rem(24);
+  border-radius: rem(32);
 
   @include from-desktop {
+    aspect-ratio: 1560 / 600;
     border-radius: rem(60);
   }
 }

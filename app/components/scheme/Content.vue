@@ -105,27 +105,29 @@ watch(() => route.query.tenant, applyTenantFromQuery, { immediate: true })
 
 <template>
   <section :class="$style.root" aria-labelledby="scheme-title">
-    <h1 id="scheme-title" :class="$style.srOnly">{{ content.title }}</h1>
+    <div :class="$style.top">
+      <h1 id="scheme-title" :class="$style.title">{{ content.title }}</h1>
 
-    <div :class="$style.toolbar">
-      <UiSearch
-        v-model="query"
-        :class="$style.search"
-        :label="content.searchPlaceholder"
-        :placeholder="content.searchPlaceholder"
-        :options="searchOptions"
-        @select="onSearchSelect"
-      />
+      <div :class="$style.toolbar">
+        <UiSearch
+          v-model="query"
+          :class="$style.search"
+          :label="content.searchPlaceholder"
+          :placeholder="content.searchPlaceholder"
+          :options="searchOptions"
+          @select="onSearchSelect"
+        />
 
-      <div :class="$style.modes" role="group" aria-label="Тип схемы">
-        <UiTab
-          v-for="item in content.modes"
-          :key="item.id"
-          :selected="mode === item.id"
-          @click="mode = item.id"
-        >
-          {{ item.label }}
-        </UiTab>
+        <div :class="$style.modes" role="group" aria-label="Тип схемы">
+          <UiTab
+            v-for="item in content.modes"
+            :key="item.id"
+            :selected="mode === item.id"
+            @click="mode = item.id"
+          >
+            {{ item.label }}
+          </UiTab>
+        </div>
       </div>
     </div>
 
@@ -161,6 +163,7 @@ watch(() => route.query.tenant, applyTenantFromQuery, { immediate: true })
         <UiTab
           v-for="item in content.amenities"
           :key="item.id"
+          variant="circle"
           :icon="item.icon"
           :selected="activeAmenity === item.id"
           @click="toggleAmenity(item.id)"
@@ -178,23 +181,30 @@ watch(() => route.query.tenant, applyTenantFromQuery, { immediate: true })
 .root {
   display: flex;
   flex-direction: column;
+  gap: var(--fs-space-5);
+  min-width: 0;
+}
+
+.top {
+  display: flex;
+  flex-direction: column;
   gap: var(--fs-space-3);
   min-width: 0;
+}
 
-  @include from-desktop {
-    gap: rem(40);
-  }
+.title {
+  @include fs-h1;
+  margin: 0;
 }
 
 .toolbar {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-2);
+  gap: var(--fs-space-3);
   min-width: 0;
 
   @include from-desktop {
     flex-direction: row;
-    gap: var(--fs-space-3);
     align-items: center;
     justify-content: space-between;
   }
@@ -220,11 +230,11 @@ watch(() => route.query.tenant, applyTenantFromQuery, { immediate: true })
 .mapBlock {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-3);
+  gap: rem(26);
   min-width: 0;
 
   @include from-desktop {
-    gap: rem(24);
+    gap: var(--fs-space-3);
   }
 }
 
@@ -237,7 +247,7 @@ watch(() => route.query.tenant, applyTenantFromQuery, { immediate: true })
 .floors {
   position: absolute;
   top: 50%;
-  right: var(--fs-space-1);
+  right: 0;
   z-index: z('default');
   display: flex;
   flex-direction: column;
@@ -254,8 +264,8 @@ watch(() => route.query.tenant, applyTenantFromQuery, { immediate: true })
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: rem(40);
-  height: rem(40);
+  width: rem(44);
+  height: rem(44);
   margin: 0;
   padding: 0;
   border: rem(2) solid var(--fs-color-white);
@@ -294,23 +304,11 @@ watch(() => route.query.tenant, applyTenantFromQuery, { immediate: true })
   flex-wrap: wrap;
   gap: var(--fs-space-2);
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   min-width: 0;
 
   @include from-desktop {
-    gap: rem(24);
-    justify-content: center;
+    gap: var(--fs-space-3);
   }
-}
-
-.srOnly {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
 }
 </style>
