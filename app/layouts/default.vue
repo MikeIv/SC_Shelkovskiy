@@ -92,13 +92,13 @@ const patternSide = computed<'left' | 'right' | null>(() => {
 }
 
 .pattern {
-  --pattern-offset: #{rem(-80)};
+  --pattern-offset: #{rem(-194)};
 
   position: absolute;
-  top: rem(8);
+  top: 0;
   left: var(--pattern-offset);
-  width: rem(320);
-  height: rem(320);
+  width: rem(374);
+  height: rem(373);
   background-color: var(--fs-color-beige);
   opacity: 0.2;
   mask: url('/images/home/categories/pattern.svg') center / contain no-repeat;
