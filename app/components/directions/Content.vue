@@ -55,12 +55,8 @@ const routeHref = computed(() => {
 .root {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-3);
+  gap: var(--fs-space-5);
   min-width: 0;
-
-  @include from-desktop {
-    gap: var(--fs-space-5);
-  }
 }
 
 .lead {
@@ -68,10 +64,6 @@ const routeHref = computed(() => {
   flex-direction: column;
   gap: var(--fs-space-3);
   min-width: 0;
-
-  @include from-desktop {
-    gap: rem(40);
-  }
 }
 
 .title {
@@ -82,11 +74,7 @@ const routeHref = computed(() => {
 .tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: rem(8);
+  gap: 0;
   align-items: center;
-
-  @include from-desktop {
-    gap: 0;
-  }
 }
 </style>

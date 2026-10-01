@@ -65,23 +65,22 @@ const iframeSrc = computed(() => {
 .root {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-2);
+  gap: 0;
   min-width: 0;
+
+  @include from-desktop {
+    gap: var(--fs-space-2);
+  }
 }
 
 .map {
   display: block;
   width: 100%;
-  height: rem(280);
+  height: rem(500);
   overflow: clip;
   border: 0;
-  border-radius: rem(24);
+  border-radius: rem(32);
   background-color: var(--fs-color-light);
-
-  @include from-tablet {
-    height: rem(420);
-    border-radius: rem(40);
-  }
 
   @include from-desktop {
     height: rem(600);
@@ -90,11 +89,16 @@ const iframeSrc = computed(() => {
 }
 
 .routeLink {
+  display: none;
   @include fs-text-lg;
   align-self: flex-start;
   color: var(--fs-color-black);
   text-decoration: underline;
   text-underline-offset: rem(3);
+
+  @include from-desktop {
+    display: inline;
+  }
 
   &:focus-visible {
     outline: rem(2) solid var(--fs-color-black);
