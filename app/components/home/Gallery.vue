@@ -174,6 +174,11 @@ function closeLightbox(): void {
   flex: 0 0 calc(100vw - 2 * var(--fs-grid-margin));
   scroll-snap-align: start;
 
+  /* Tab 343 + peek; Desk 768 (Figma Gallery). */
+  @include from-tablet {
+    flex: 0 0 rem(343);
+  }
+
   @include from-desktop {
     flex: 0 0 rem(768);
   }
@@ -185,7 +190,8 @@ function closeLightbox(): void {
   justify-content: space-between;
   width: 100%;
 
-  @include from-desktop {
+  /* Tab+: свайп / head nav; стрелки только на mobile. */
+  @include from-tablet {
     display: none;
   }
 }

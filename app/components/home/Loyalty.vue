@@ -54,8 +54,12 @@ const { items, flush = false } = defineProps<{
   padding: 0;
   list-style: none;
 
-  @include from-desktop {
+  /* Tab+: 2 колонки (Figma Card and loyalty). */
+  @include from-tablet {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include from-desktop {
     gap: var(--fs-space-3);
   }
 }

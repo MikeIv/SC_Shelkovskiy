@@ -235,6 +235,15 @@ function togglePause() {
   @include fs-h2;
   color: var(--fs-color-black);
   white-space: nowrap;
+
+  /* Figma brand: Tab 30; Desk — токен H2. */
+  @include from-tablet {
+    font-size: rem(30);
+  }
+
+  @include from-desktop {
+    font-size: var(--fs-text-h2-size);
+  }
 }
 
 @keyframes home-brands-marquee-rtl {

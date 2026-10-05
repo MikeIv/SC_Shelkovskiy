@@ -138,10 +138,15 @@ $shop-category-pattern-desktop: 1220;
   min-height: rem(720);
   padding-top: rem(203);
 
-  @include from-desktop {
+  /* Tab: 600 по центру; Desk: 618 (Figma Shop category). */
+  @include from-tablet {
     justify-content: center;
-    min-height: rem(618);
+    min-height: rem(600);
     padding-top: 0;
+  }
+
+  @include from-desktop {
+    min-height: rem(618);
   }
 }
 
@@ -190,6 +195,11 @@ $shop-category-pattern-desktop: 1220;
   height: rem(166);
   border-radius: var(--fs-radius-2xl);
 
+  @include from-tablet {
+    width: rem(190);
+    height: rem(229);
+  }
+
   @include from-desktop {
     left: max(0px, calc(50% - #{$shop-category-left-inset}));
     width: rem($shop-category-left-width);
@@ -205,6 +215,11 @@ $shop-category-pattern-desktop: 1220;
   width: rem(175);
   height: rem(187);
   border-radius: 50%;
+
+  @include from-tablet {
+    width: rem(223);
+    height: rem(238);
+  }
 
   @include from-desktop {
     right: max(0px, calc(50% - #{$shop-category-right-inset}));

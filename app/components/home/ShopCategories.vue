@@ -26,7 +26,8 @@ const { items } = defineProps<{
   max-width: var(--fs-grid-content-max);
   margin-inline: auto;
 
-  @include from-desktop {
+  /* Tab+: inset сетки; Mob — edge-to-edge. */
+  @include from-tablet {
     padding-inline: var(--fs-grid-margin);
   }
 }
