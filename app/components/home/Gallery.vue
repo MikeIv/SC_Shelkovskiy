@@ -10,13 +10,11 @@ const {
   trackRef,
   canScrollPrev,
   canScrollNext,
-  hasOverflow,
-  isDesktop,
   showNav: showHeadNav,
+  showFootNav,
   scrollByCard,
 } = useScrollCarousel()
 
-const showFootNav = computed(() => !isDesktop.value && hasOverflow.value)
 const activeAlbum = ref<HomeGalleryAlbum | null>(null)
 
 function openAlbum(album: HomeGalleryAlbum): void {
@@ -146,6 +144,7 @@ function closeLightbox(): void {
 }
 
 .nav {
+  /* Стрелки шапки — только desktop (Tab+ листается свайпом). */
   display: none;
   gap: var(--fs-space-4);
   align-items: center;
@@ -185,15 +184,11 @@ function closeLightbox(): void {
 }
 
 .footNav {
+  /* Только mobile: на Tab+ стрелок нет по макету — решает `showFootNav`. */
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-
-  /* Tab+: свайп / head nav; стрелки только на mobile. */
-  @include from-tablet {
-    display: none;
-  }
 }
 
 .allBtn {

@@ -1,8 +1,12 @@
+/** Пороги совпадают с `from-tablet` / `from-desktop` (`variables/resolutions.scss`). */
+const TABLET_QUERY = '(min-width: 768px)'
 const DESKTOP_QUERY = '(min-width: 1280px)'
 
 /**
  * Горизонтальная карусель: refs viewport/track, стрелки при overflow.
- * `showNav` — только desktop; для мобильного футера смотрите `hasOverflow` + `isDesktop`.
+ * `showNav` — стрелки в шапке: только desktop (≥1280).
+ * `showFootNav` — стрелки под каруселью: только mobile (<768); на планшете
+ * стрелок нет по макету, навигация — свайпом.
  */
 export function useScrollCarousel() {
   const viewportRef = ref<HTMLElement | null>(null)
@@ -10,9 +14,12 @@ export function useScrollCarousel() {
   const canScrollPrev = ref(false)
   const canScrollNext = ref(false)
   const hasOverflow = ref(false)
+  const isTabletUp = ref(false)
   const isDesktop = ref(false)
   const showNav = computed(() => isDesktop.value && hasOverflow.value)
+  const showFootNav = computed(() => !isTabletUp.value && hasOverflow.value)
 
+  let tabletMedia: MediaQueryList | null = null
   let desktopMedia: MediaQueryList | null = null
 
   function updateNavState() {
@@ -45,11 +52,19 @@ export function useScrollCarousel() {
     })
   }
 
+  function onTabletChange(event: MediaQueryListEvent) {
+    isTabletUp.value = event.matches
+  }
+
   function onDesktopChange(event: MediaQueryListEvent) {
     isDesktop.value = event.matches
   }
 
   onMounted(() => {
+    tabletMedia = window.matchMedia(TABLET_QUERY)
+    isTabletUp.value = tabletMedia.matches
+    tabletMedia.addEventListener('change', onTabletChange)
+
     desktopMedia = window.matchMedia(DESKTOP_QUERY)
     isDesktop.value = desktopMedia.matches
     desktopMedia.addEventListener('change', onDesktopChange)
@@ -62,6 +77,7 @@ export function useScrollCarousel() {
   })
 
   onUnmounted(() => {
+    tabletMedia?.removeEventListener('change', onTabletChange)
     desktopMedia?.removeEventListener('change', onDesktopChange)
     viewportRef.value?.removeEventListener('scroll', updateNavState)
     window.removeEventListener('resize', updateNavState)
@@ -75,6 +91,7 @@ export function useScrollCarousel() {
     hasOverflow,
     isDesktop,
     showNav,
+    showFootNav,
     scrollByCard,
   }
 }
