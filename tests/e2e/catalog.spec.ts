@@ -36,13 +36,17 @@ test.describe('Каталог арендаторов', () => {
   })
 
   test('карточка открывается по slug, чужой раздел даёт 404', async ({ page }) => {
-    await page.goto('/shops/test-shop')
+    const response = await page.goto('/shops/test-shop')
 
     await expect(page.getByRole('heading', { level: 1, name: 'Тестовый магазин' })).toBeVisible()
     await expect(page.getByText('Описание тестового магазина')).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Тестовая акция арендатора' })).toBeVisible()
 
-    const response = await page.goto('/cafes/test-shop')
-    expect(response?.status()).toBe(404)
+    /** `seo.title` из API доходит до `<title>`: и в SSR-разметке, и в head после гидратации. */
+    expect(await response?.text()).toContain('<title>Тестовый магазин</title>')
+    await expect(page).toHaveTitle('Тестовый магазин')
+
+    const other = await page.goto('/cafes/test-shop')
+    expect(other?.status()).toBe(404)
   })
 })

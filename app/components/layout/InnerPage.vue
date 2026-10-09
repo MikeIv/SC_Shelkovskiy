@@ -3,9 +3,14 @@ const props = defineProps<{
   title?: string
 }>()
 
-useSeoMeta({
-  title: () => props.title ?? '',
-})
+/**
+ * `title` объявляем только когда он передан: пустая строка перебивала заголовок,
+ * который детальные страницы ставят сами (`LayoutInnerPage` без `title` + свой
+ * `useSeoMeta` → тега `<title>` не было вовсе).
+ */
+if (props.title) {
+  useSeoMeta({ title: () => props.title })
+}
 </script>
 
 <template>

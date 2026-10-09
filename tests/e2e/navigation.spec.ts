@@ -18,5 +18,8 @@ test.describe('Навигация и вёрстка страниц', () => {
 
     await expect(page).toHaveURL(/\/news\/.+/)
     await expect(page.locator('h1')).toHaveCount(1)
+
+    /** Заголовок карточки доходит до `<title>`: `LayoutInnerPage` без `title` его не перебивает. */
+    await expect(page).toHaveTitle((await page.locator('h1').innerText()).trim())
   })
 })
