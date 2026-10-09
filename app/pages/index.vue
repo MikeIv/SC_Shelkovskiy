@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { siteDescription, siteName, siteOgImage, siteUrl } from '~/data/siteMeta'
-import { homeBrandRows } from '~/data/homeBrandItems'
 import { homeCinemaItems } from '~/data/homeCinemaItems'
-import { homeGalleryItems } from '~/data/homeGalleryItems'
 import { homeLoyaltyItems } from '~/data/homeLoyaltyItems'
-import { homeNewsItems } from '~/data/homeNewsItems'
-import { homeShopCategories } from '~/data/homeShopCategories'
 import { footerContacts } from '~/utils/siteFooter'
 
 definePageMeta({
@@ -13,7 +9,7 @@ definePageMeta({
 })
 
 const layout = useLayoutStore()
-const { data: homeIntro } = await useHome()
+const { data: home } = await useHome()
 
 /** Корневой URL площадки (rutube.ru/) — не профиль центра, в sameAs не публикуем. */
 function hasSocialProfilePath(href: string): boolean {
@@ -94,14 +90,14 @@ useHead(() => ({
 <template>
   <div>
     <h1 :class="$style.hiddenTitle">{{ siteName }}</h1>
-    <HomeIntro :slides="homeIntro.slides" />
+    <HomeIntro :slides="home.slides" />
     <div :class="$style.stack">
-      <HomeNews :items="homeNewsItems" />
-      <HomeBrands :rows="homeBrandRows" flush />
+      <HomeNews :items="home.feed" />
+      <HomeBrands :rows="home.brands" flush />
       <HomeLoyalty :items="homeLoyaltyItems" flush />
-      <HomeShopCategories :items="homeShopCategories" />
+      <HomeShopCategories :items="home.categories" />
       <HomeCinema :items="homeCinemaItems" />
-      <HomeGallery :items="homeGalleryItems" />
+      <HomeGallery :items="home.gallery" />
     </div>
   </div>
 </template>

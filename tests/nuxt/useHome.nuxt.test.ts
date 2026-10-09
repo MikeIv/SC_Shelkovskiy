@@ -1,9 +1,11 @@
 import { describe, expect, it, vi } from 'vitest'
 import { mountSuspended, registerEndpoint } from '@nuxt/test-utils/runtime'
+import { homeBrandRows } from '~/data/homeBrandItems'
+import { homeGalleryItems } from '~/data/homeGalleryItems'
 import { HomeProbe } from './support/HomeProbe'
 
 describe('useHome — данные из API', () => {
-  it('отдаёт слайды из API и не включает фолбэк', async () => {
+  it('берёт слайды и ленту из API, пустые разделы закрывает моком', async () => {
     registerEndpoint('/api/home', () => ({
       data: {
         slides: [
@@ -14,6 +16,22 @@ describe('useHome — данные из API', () => {
             imageAlt: 'Из API',
           },
         ],
+        feed: [
+          {
+            id: 'linzmaster',
+            imageSrc: '/images/home/news/colins.jpg',
+            imageAlt: 'Акция',
+            date: 'до 31 октября',
+            category: 'ЛИНЗМАСТЕР',
+            title: 'Акция',
+            tagLabel: 'Акция',
+            tagVariant: 'action',
+          },
+        ],
+        brands: [],
+        categories: [],
+        gallery: [],
+        videoUrl: null,
       },
     }))
 
@@ -21,6 +39,10 @@ describe('useHome — данные из API', () => {
 
     await vi.waitFor(() => expect(wrapper.attributes('data-first-id')).toBe('901'))
     expect(wrapper.attributes('data-slides')).toBe('1')
+    expect(wrapper.attributes('data-feed')).toBe('1')
+    expect(wrapper.attributes('data-feed-date')).toBe('до 31 октября')
+    expect(wrapper.attributes('data-brands')).toBe(String(homeBrandRows.length))
+    expect(wrapper.attributes('data-gallery')).toBe(String(homeGalleryItems.length))
     expect(wrapper.attributes('data-fallback')).toBe('false')
   })
 })

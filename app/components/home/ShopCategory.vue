@@ -14,6 +14,7 @@ const props = withDefaults(
 )
 
 const activeIndex = ref(0)
+const mediaSrc = useMediaSrc()
 const revealed = ref<number[]>([0])
 
 const activeItem = computed(() => props.items[activeIndex.value])
@@ -49,7 +50,7 @@ function resetActive() {
         <template v-for="(item, index) in items" :key="`${item.id}-left`">
           <img
             v-if="isRevealed(index)"
-            :src="item.leftImageSrc"
+            :src="mediaSrc(item.leftImageSrc, 700)"
             alt=""
             :class="[
               $style.image,
@@ -68,7 +69,7 @@ function resetActive() {
         <template v-for="(item, index) in items" :key="`${item.id}-right`">
           <img
             v-if="isRevealed(index)"
-            :src="item.rightImageSrc"
+            :src="mediaSrc(item.rightImageSrc, 880)"
             alt=""
             :class="[
               $style.image,

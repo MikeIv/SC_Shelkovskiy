@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import type { HomeResponseDto, HomeSlideDto } from '#shared/types/dto/home'
-import { mapHomeIntroSlides } from '#shared/utils/mappers/home'
+import {
+  mapHomeBrands,
+  mapHomeCategories,
+  mapHomeFeed,
+  mapHomeGallery,
+  mapHomeIntroSlides,
+} from '#shared/utils/mappers/home'
 
 function homeDto(slides: unknown[]): HomeResponseDto {
   return {
@@ -81,5 +87,143 @@ describe('mapHomeIntroSlides', () => {
 
     expect(slide.id).toBe('7')
     expect(typeof slide.id).toBe('string')
+  })
+})
+
+describe('mapHomeFeed', () => {
+  it('акцию показывает сроком «до …», новость — датой без года', () => {
+    const cards = mapHomeFeed([
+      {
+        type: 'action',
+        slug: 'linzmaster',
+        title: 'Диагностика',
+        image: '/storage/promo.jpg',
+        date: '2026-10-01',
+        period: { from: '2026-10-01', to: '2026-10-31' },
+        source: { kind: 'tenant', name: 'ЛИНЗМАСТЕР', slug: 'linzmaster' },
+        url: '/news/linzmaster',
+      },
+      {
+        type: 'news',
+        slug: 'balabala',
+        title: 'Коллекция',
+        image: null,
+        date: '2026-09-30',
+        period: null,
+        source: { kind: 'mall', name: 'ТРЦ «Щёлковский»' },
+        url: '/news/balabala',
+      },
+    ])
+
+    expect(cards[0]).toMatchObject({
+      id: 'linzmaster',
+      date: 'до 31 октября',
+      category: 'ЛИНЗМАСТЕР',
+      tagLabel: 'Акция',
+      tagVariant: 'action',
+      imageAlt: 'Диагностика',
+      to: '/news/linzmaster',
+    })
+    expect(cards[1]).toMatchObject({
+      date: '30 сентября',
+      imageSrc: '',
+      tagLabel: 'Новость',
+      category: 'ТРЦ «Щёлковский»',
+    })
+  })
+
+  it('неизвестный type помечает как other и не роняет карточку', () => {
+    const [card] = mapHomeFeed([
+      {
+        type: 'podcast',
+        slug: 'pod',
+        title: 'Выпуск',
+        image: '/a.jpg',
+        date: '2026-01-02',
+        period: null,
+        source: null,
+        url: '',
+      },
+    ])
+
+    expect(card).toMatchObject({ tagVariant: 'other', tagLabel: 'podcast', date: '2 января' })
+    expect(card).not.toHaveProperty('to')
+  })
+
+  it('внешний url не становится ссылкой карточки', () => {
+    const [card] = mapHomeFeed([
+      {
+        type: 'news',
+        slug: 'external',
+        title: 'Снаружи',
+        image: '/a.jpg',
+        date: '2026-07-14',
+        period: null,
+        source: null,
+        url: 'https://example.invalid/news',
+      },
+    ])
+
+    expect(card).not.toHaveProperty('to')
+  })
+
+  it('пропускает элемент без slug', () => {
+    expect(mapHomeFeed([{ type: 'news', slug: '  ', title: 'Без адреса' }])).toEqual([])
+  })
+})
+
+describe('mapHomeGallery', () => {
+  it('форматирует дату и кладёт обложку в lightbox, если есть фото', () => {
+    const [album] = mapHomeGallery([
+      {
+        slug: 'party',
+        title: 'Вечеринка',
+        date: '2026-05-30',
+        cover: '  /storage/cover.jpg  ',
+        photos_count: 13,
+        has_video: false,
+      },
+    ])
+
+    expect(album).toEqual({
+      id: 'party',
+      title: 'Вечеринка',
+      date: '30.05.2026',
+      imageSrc: '/storage/cover.jpg',
+      imageAlt: 'Вечеринка',
+      photoCount: 13,
+      photos: ['/storage/cover.jpg'],
+    })
+    expect(album).not.toHaveProperty('has_video')
+  })
+
+  it('альбом без фото не открывает lightbox', () => {
+    const [album] = mapHomeGallery([
+      {
+        slug: 'video',
+        title: 'Ролик',
+        date: '2026-03-08',
+        cover: '/storage/cover.jpg',
+        photos_count: 0,
+        has_video: true,
+      },
+    ])
+
+    expect(album?.photoCount).toBe(0)
+    expect(album).not.toHaveProperty('photos')
+  })
+
+  it('пропускает альбом без обложки', () => {
+    expect(mapHomeGallery([{ slug: 'empty', title: 'Пусто', cover: '  ' }])).toEqual([])
+  })
+})
+
+describe('mapHomeBrands / mapHomeCategories', () => {
+  it('не собирает вёрстку из нераспознанных элементов', () => {
+    const unknown = [{ name: 'EKONIKA', logo: '/storage/logo.png' }]
+
+    expect(mapHomeBrands(unknown)).toEqual([])
+    expect(mapHomeBrands([])).toEqual([])
+    expect(mapHomeCategories(unknown)).toEqual([])
   })
 })

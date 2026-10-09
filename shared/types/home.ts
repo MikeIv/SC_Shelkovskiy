@@ -1,3 +1,5 @@
+import type { NewsCardItem } from '#shared/types/news'
+
 export type HomeIntroSlide = {
   id: string
   title: string
@@ -77,4 +79,15 @@ export type HomeGalleryAlbum = {
   /** Фото альбома для lightbox; без `to` карточка открывает просмотр. */
   photos?: string[]
   to?: string
+}
+
+/** Ответ `/api/home`: UI-типы, те же, что у моков главной. */
+export type HomePageData = {
+  slides: HomeIntroSlide[]
+  feed: NewsCardItem[]
+  brands: HomeBrandRow[]
+  categories: HomeShopCategory[]
+  gallery: HomeGalleryAlbum[]
+  /** Ссылка на видео со стенда. На главной не выводится: ролика в макете нет. */
+  videoUrl: string | null
 }

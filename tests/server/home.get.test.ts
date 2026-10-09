@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createError } from 'h3'
-import type { HomeIntroSlide } from '#shared/types/home'
+import type { HomePageData } from '#shared/types/home'
 import type { HomeResponseDto } from '#shared/types/dto/home'
 
 type CacheOptions = {
@@ -9,7 +9,7 @@ type CacheOptions = {
   getKey?: () => string
 }
 
-type HomeHandler = (event: unknown) => Promise<{ data: { slides: HomeIntroSlide[] } }>
+type HomeHandler = (event: unknown) => Promise<{ data: HomePageData }>
 
 const validDto: HomeResponseDto = {
   data: {
@@ -33,11 +33,41 @@ const validDto: HomeResponseDto = {
         url: null,
       },
     ],
-    feed: [],
-    brands: [],
+    feed: [
+      {
+        type: 'action',
+        slug: 'linzmaster',
+        title: 'Бесплатная диагностика',
+        image: '/images/home/news/colins.jpg',
+        date: '2026-10-01',
+        period: { from: '2026-10-01', to: '2026-10-31' },
+        source: { kind: 'tenant', name: 'ЛИНЗМАСТЕР', slug: 'linzmaster' },
+        url: '/news/linzmaster',
+      },
+      {
+        type: 'news',
+        slug: 'balabala',
+        title: 'Зимняя коллекция',
+        image: '/images/home/news/ekonika.jpg',
+        date: '2026-09-30',
+        period: null,
+        source: { kind: 'mall', name: 'ТРЦ «Щёлковский»' },
+        url: '/news/balabala',
+      },
+    ],
+    brands: [{ name: 'Без схемы' }],
     categories: [],
-    gallery: [],
-    video_url: null,
+    gallery: [
+      {
+        slug: 'test-album',
+        title: 'Тестовый альбом',
+        date: '2026-05-30',
+        cover: '/images/gallery/stars-time-party.jpg',
+        photos_count: 10,
+        has_video: false,
+      },
+    ],
+    video_url: 'https://rutube.ru/play/embed/test',
   },
 }
 
@@ -77,19 +107,33 @@ describe('server/api/home.get', () => {
 
     const body = await handler({})
 
-    expect(body).toEqual({
-      data: {
-        slides: [
-          {
-            id: '472',
-            title: 'Русалочка',
-            imageSrc: '/images/home/intro-1.png',
-            imageSrcMobile: '/images/home/intro-1-mobile.jpg',
-            imageAlt: 'Русалочка',
-          },
-        ],
+    expect(body.data.slides).toEqual([
+      {
+        id: '472',
+        title: 'Русалочка',
+        imageSrc: '/images/home/intro-1.png',
+        imageSrcMobile: '/images/home/intro-1-mobile.jpg',
+        imageAlt: 'Русалочка',
       },
+    ])
+    expect(body.data.feed.map((item) => item.date)).toEqual(['до 31 октября', '30 сентября'])
+    expect(body.data.feed[0]).toMatchObject({
+      tagLabel: 'Акция',
+      tagVariant: 'action',
+      category: 'ЛИНЗМАСТЕР',
+      to: '/news/linzmaster',
     })
+    expect(body.data.feed[1]).toMatchObject({ tagLabel: 'Новость', tagVariant: 'news' })
+    expect(body.data.feed[1]).not.toHaveProperty('source')
+    expect(body.data.brands).toEqual([])
+    expect(body.data.categories).toEqual([])
+    expect(body.data.gallery[0]).toMatchObject({
+      id: 'test-album',
+      date: '30.05.2026',
+      photoCount: 10,
+      photos: ['/images/gallery/stars-time-party.jpg'],
+    })
+    expect(body.data.videoUrl).toBe('https://rutube.ru/play/embed/test')
   })
 
   it('кэширует ответ на 300 секунд по постоянному ключу', async () => {
@@ -110,6 +154,16 @@ describe('server/api/home.get', () => {
 
   it('502, если в ответе нет data.slides', async () => {
     const handler = await loadHomeHandler(upstreamReturning({ data: {} }))
+
+    await expect(handler({})).rejects.toMatchObject({ statusCode: 502 })
+  })
+
+  it('502, если feed не массив', async () => {
+    const handler = await loadHomeHandler(
+      upstreamReturning({
+        data: { ...validDto.data, feed: null },
+      }),
+    )
 
     await expect(handler({})).rejects.toMatchObject({ statusCode: 502 })
   })

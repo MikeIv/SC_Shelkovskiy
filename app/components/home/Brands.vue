@@ -7,6 +7,7 @@ const { rows, flush = false } = defineProps<{
 }>()
 
 const paused = ref(false)
+const mediaSrc = useMediaSrc()
 
 function togglePause() {
   paused.value = !paused.value
@@ -57,7 +58,7 @@ function togglePause() {
               ]"
             >
               <img
-                :src="item.imageSrc"
+                :src="mediaSrc(item.imageSrc, 320)"
                 :alt="item.imageAlt"
                 :class="[
                   $style.logoImage,

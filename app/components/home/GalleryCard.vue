@@ -19,6 +19,8 @@ const emit = defineEmits<{
 
 const titleId = useId()
 const isLink = computed(() => Boolean(props.to))
+const mediaSrc = useMediaSrc()
+const coverSrc = computed(() => mediaSrc(props.imageSrc, 1536))
 
 function onActivate(): void {
   if (!props.to) {
@@ -40,7 +42,7 @@ function onActivate(): void {
     <div :class="$style.media">
       <img
         :class="$style.image"
-        :src="imageSrc"
+        :src="coverSrc"
         :alt="imageAlt"
         width="768"
         height="500"

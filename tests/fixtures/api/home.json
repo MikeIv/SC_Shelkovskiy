@@ -20,10 +20,40 @@
         "url": null
       }
     ],
-    "feed": [],
+    "feed": [
+      {
+        "type": "action",
+        "slug": "test-action",
+        "title": "Тестовая акция",
+        "image": "/images/home/news/colins.jpg",
+        "date": "2026-10-01",
+        "period": { "from": "2026-10-01", "to": "2026-10-31" },
+        "source": { "kind": "tenant", "name": "COLIN’S", "slug": "colins" },
+        "url": "/news/test-action"
+      },
+      {
+        "type": "news",
+        "slug": "test-news",
+        "title": "Тестовая новость",
+        "image": "/images/home/news/ekonika.jpg",
+        "date": "2026-09-30",
+        "period": null,
+        "source": { "kind": "mall", "name": "ТРЦ «Щёлковский»" },
+        "url": "/news/test-news"
+      }
+    ],
     "brands": [],
     "categories": [],
-    "gallery": [],
+    "gallery": [
+      {
+        "slug": "test-album",
+        "title": "Тестовый альбом",
+        "date": "2026-05-30",
+        "cover": "/images/gallery/stars-time-party.jpg",
+        "photos_count": 10,
+        "has_video": false
+      }
+    ],
     "video_url": null
   }
 }

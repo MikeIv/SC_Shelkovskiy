@@ -13,6 +13,8 @@ const props = withDefaults(
 )
 
 const linkTarget = computed(() => props.item.to ?? getNewsDetailPath(props.item.id))
+const mediaSrc = useMediaSrc()
+const cardImage = computed(() => mediaSrc(props.item.imageSrc, 960))
 </script>
 
 <template>
@@ -25,7 +27,7 @@ const linkTarget = computed(() => props.item.to ?? getNewsDetailPath(props.item.
       <img
         v-if="item.imageSrc"
         :class="$style.image"
-        :src="item.imageSrc"
+        :src="cardImage"
         :alt="item.imageAlt || item.title"
         loading="lazy"
         decoding="async"

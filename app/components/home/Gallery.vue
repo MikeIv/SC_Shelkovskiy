@@ -16,6 +16,10 @@ const {
 } = useScrollCarousel()
 
 const activeAlbum = ref<HomeGalleryAlbum | null>(null)
+const mediaSrc = useMediaSrc()
+const lightboxImages = computed(() =>
+  (activeAlbum.value?.photos ?? []).map((photo) => mediaSrc(photo, 1600)),
+)
 
 function openAlbum(album: HomeGalleryAlbum): void {
   if (!album.photos?.length) {
@@ -96,7 +100,7 @@ function closeLightbox(): void {
 
     <GalleryLightbox
       :open="activeAlbum !== null"
-      :images="activeAlbum?.photos ?? []"
+      :images="lightboxImages"
       :alt="activeAlbum?.imageAlt ?? ''"
       @close="closeLightbox"
     />

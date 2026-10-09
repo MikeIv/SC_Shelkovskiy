@@ -38,4 +38,28 @@ test.describe('Главная страница', () => {
       await expect(counter).toHaveText('2/2', { timeout: 1_000 })
     }).toPass({ timeout: 15_000 })
   })
+
+  test('лента и галерея берут даты макета, картинки идут через ipx', async ({ page }) => {
+    const news = page.locator('section').filter({ has: page.locator('#home-news-title') })
+    const gallery = page.locator('section').filter({ has: page.locator('#home-gallery-title') })
+
+    await expect(news.getByRole('heading', { name: 'Тестовая акция' })).toBeVisible()
+    await expect(news.getByText('до 31 октября')).toBeVisible()
+    await expect(news.getByText('30 сентября')).toBeVisible()
+    await expect(gallery.getByRole('heading', { name: 'Тестовый альбом' })).toBeVisible()
+    await expect(gallery.getByText('30.05.2026')).toBeVisible()
+
+    const sources = [
+      await news.locator('img').first().getAttribute('src'),
+      await gallery.locator('img').first().getAttribute('src'),
+    ]
+
+    for (const src of sources) {
+      expect(src).toContain('/_ipx/')
+      expect(src).not.toContain('/storage/')
+    }
+
+    await expect(page.getByRole('heading', { name: 'Кино' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Женская одежда' })).toBeVisible()
+  })
 })

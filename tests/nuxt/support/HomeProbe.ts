@@ -12,6 +12,10 @@ export const HomeProbe = defineComponent({
       h('div', {
         'data-slides': String(data.value.slides.length),
         'data-first-id': data.value.slides[0]?.id ?? '',
+        'data-feed': String(data.value.feed.length),
+        'data-feed-date': data.value.feed[0]?.date ?? '',
+        'data-brands': String(data.value.brands.length),
+        'data-gallery': String(data.value.gallery.length),
         'data-fallback': String(isFallback.value),
       })
   },
