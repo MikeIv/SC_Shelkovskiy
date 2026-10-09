@@ -1,3 +1,13 @@
+# sharp (@nuxt/image) ставится и под Linux, иначе prod-сборка с Windows падает на linux-x64.
+supportedArchitectures:
+  os:
+    - current
+    - linux
+  cpu:
+    - current
+    - x64
+    - arm64
+
 allowBuilds:
   '@parcel/watcher': true
   esbuild: true

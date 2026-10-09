@@ -3,6 +3,12 @@ import type { HomeIntroSlide } from '#shared/types/home'
 
 const SLIDE_MS = 10_000
 const DESKTOP_MQ = '(min-width: 1280px)'
+const DESKTOP_WIDTH = 1230
+const DESKTOP_HEIGHT = 440
+const MOBILE_WIDTH = 400
+const MOBILE_HEIGHT = 500
+
+const img = useImage()
 
 const { slides } = defineProps<{
   slides: HomeIntroSlide[]
@@ -15,6 +21,10 @@ const hiddenPaused = ref(false)
 const paused = computed(() => userPaused.value || hiddenPaused.value)
 const current = computed(() => slides[index.value])
 const total = computed(() => slides.length)
+const frames = computed(() => slides.map(slide => ({
+  slide,
+  image: introImage(slide),
+})))
 const canCycle = computed(() => total.value > 1)
 
 function goTo(next: number) {
@@ -51,6 +61,33 @@ function onVisibilityChange() {
   hiddenPaused.value = document.hidden
 }
 
+function optimizedSrc(src: string, width: number, height: number): string {
+  const modifiers = { width, height, format: 'webp' as const }
+  return img(src, modifiers)
+}
+
+function introImage(slide: HomeIntroSlide): {
+  src: string
+  desktopSrc?: string
+  width: number
+  height: number
+} {
+  if (slide.imageSrcMobile) {
+    return {
+      src: optimizedSrc(slide.imageSrcMobile, MOBILE_WIDTH, MOBILE_HEIGHT),
+      desktopSrc: optimizedSrc(slide.imageSrc, DESKTOP_WIDTH, DESKTOP_HEIGHT),
+      width: MOBILE_WIDTH,
+      height: MOBILE_HEIGHT,
+    }
+  }
+
+  return {
+    src: optimizedSrc(slide.imageSrc, DESKTOP_WIDTH, DESKTOP_HEIGHT),
+    width: DESKTOP_WIDTH,
+    height: DESKTOP_HEIGHT,
+  }
+}
+
 onMounted(() => {
   onVisibilityChange()
   document.addEventListener('visibilitychange', onVisibilityChange)
@@ -70,26 +107,29 @@ onUnmounted(() => {
   >
     <div :class="$style.viewport">
       <div
-        v-for="(slide, i) in slides"
-        :key="slide.id"
+        v-for="(frame, i) in frames"
+        :key="frame.slide.id"
         :class="[$style.slide, i === index && $style.slideActive]"
         :aria-hidden="i !== index"
       >
         <picture :class="$style.picture">
           <source
-            v-if="slide.imageSrcMobile"
-            :srcset="slide.imageSrc"
+            v-if="frame.image.desktopSrc"
+            :srcset="frame.image.desktopSrc"
             :media="DESKTOP_MQ"
+            type="image/webp"
+            sizes="100vw"
           >
           <img
             :class="$style.image"
-            :src="slide.imageSrcMobile ?? slide.imageSrc"
-            :alt="i === index ? slide.imageAlt : ''"
+            :src="frame.image.src"
+            :alt="i === index ? frame.slide.imageAlt : ''"
             :loading="i === 0 ? 'eager' : 'lazy'"
             :fetchpriority="i === 0 ? 'high' : 'low'"
             decoding="async"
-            :width="slide.imageSrcMobile ? 750 : 1230"
-            :height="slide.imageSrcMobile ? 1500 : 440"
+            sizes="100vw"
+            :width="frame.image.width"
+            :height="frame.image.height"
           >
         </picture>
       </div>
@@ -98,7 +138,7 @@ onUnmounted(() => {
 
     <div :class="$style.chrome">
       <div :class="$style.copy">
-        <h1 :class="$style.title">{{ current.title }}</h1>
+        <h1 v-if="current.title" :class="$style.title">{{ current.title }}</h1>
         <p v-if="current.description" :class="$style.desc">
           {{ current.description }}
         </p>

@@ -1,8 +1,14 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { basicAuthorization } from './shared/utils/basicAuthorization'
+
 const isDev = process.env.NODE_ENV === 'development'
 
 /** Без ключа модуль vue-yandex-maps падает в плагине (`createYmapsOptions`). */
 const yandexMapsApikey = process.env.NUXT_PUBLIC_YANDEX_MAPS_APIKEY?.trim() ?? ''
+
+/** Хост стенда: IPX тянет `/storage` только с этого домена и с Basic из `NUXT_API_AUTH`. */
+const apiImageHost = 'schelkovsky-backend-main.grandfs-develop.ru'
+const apiImageAuthorizationHeader = basicAuthorization(process.env.NUXT_API_AUTH)
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
@@ -10,12 +16,19 @@ export default defineNuxtConfig({
   /** Исходники приложения в `app/`. Каталог `server/` — в корне репозитория. */
   srcDir: 'app/',
 
+  /** Вложенные composables не сканируются: unimport берёт только `*.ts` в корне каталога. */
+  imports: {
+    dirs: ['composables/api'],
+  },
+
   css: ['~/assets/css/ui.css', '~/assets/styles/main.scss'],
 
   modules: [
     '@nuxt/eslint',
     '@nuxt/ui',
     '@nuxt/icon',
+    '@pinia/nuxt',
+    '@nuxt/image',
     ...(yandexMapsApikey ? (['vue-yandex-maps/nuxt'] as const) : []),
   ],
 
@@ -83,11 +96,32 @@ export default defineNuxtConfig({
     typeCheck: 'build',
   },
 
-  /** Публичные ключи доступны на клиенте; секреты — только в корне `runtimeConfig` без `public` */
+  /**
+   * Публичные ключи доступны на клиенте; секреты — только в корне `runtimeConfig` без `public`.
+   * `apiUpstream` / `apiAuth` перекрываются `NUXT_API_UPSTREAM` и `NUXT_API_AUTH`.
+   */
   runtimeConfig: {
+    apiUpstream: '',
+    apiAuth: '',
+    ipx: {
+      http: {
+        domains: [apiImageHost],
+        fetchOptions: {
+          headers: apiImageAuthorizationHeader
+            ? { Authorization: apiImageAuthorizationHeader }
+            : {},
+        },
+      },
+    },
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE ?? '',
     },
+  },
+
+  image: {
+    provider: 'ipx',
+    domains: [apiImageHost],
+    format: ['webp'],
   },
 
   features: {

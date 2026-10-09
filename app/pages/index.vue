@@ -4,7 +4,6 @@ import { siteDescription, siteName, siteOgImage, siteUrl } from '~/data/siteMeta
 import { homeBrandRows } from '~/data/homeBrandItems'
 import { homeCinemaItems } from '~/data/homeCinemaItems'
 import { homeGalleryItems } from '~/data/homeGalleryItems'
-import { homeIntroSlides } from '~/data/homeIntroSlides'
 import { homeLoyaltyItems } from '~/data/homeLoyaltyItems'
 import { homeNewsItems } from '~/data/homeNewsItems'
 import { homeShopCategories } from '~/data/homeShopCategories'
@@ -13,6 +12,8 @@ import { footerContacts, footerSocialLinks } from '~/utils/siteFooter'
 definePageMeta({
   headerOverlay: true,
 })
+
+const { data: homeIntro } = await useHome()
 
 /** Корневой URL площадки (rutube.ru/) — не профиль центра, в sameAs не публикуем. */
 function hasSocialProfilePath(href: string): boolean {
@@ -86,7 +87,7 @@ useHead({
 
 <template>
   <div>
-    <HomeIntro :slides="homeIntroSlides" />
+    <HomeIntro :slides="homeIntro.slides" />
     <div :class="$style.stack">
       <HomeNews :items="homeNewsItems" />
       <HomeBrands :rows="homeBrandRows" flush />
