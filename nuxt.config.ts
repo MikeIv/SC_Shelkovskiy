@@ -1,14 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import { basicAuthorization } from './shared/utils/basicAuthorization'
-
 const isDev = process.env.NODE_ENV === 'development'
 
 /** Без ключа модуль vue-yandex-maps падает в плагине (`createYmapsOptions`). */
 const yandexMapsApikey = process.env.NUXT_PUBLIC_YANDEX_MAPS_APIKEY?.trim() ?? ''
 
-/** Хост стенда: IPX тянет `/storage` только с этого домена и с Basic из `NUXT_API_AUTH`. */
+/** Хост стенда: IPX тянет `/storage` только с этого домена и с Basic из рантайм-env. */
 const apiImageHost = 'schelkovsky-backend-main.grandfs-develop.ru'
-const apiImageAuthorizationHeader = basicAuthorization(process.env.NUXT_API_AUTH)
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
@@ -103,13 +100,16 @@ export default defineNuxtConfig({
   runtimeConfig: {
     apiUpstream: '',
     apiAuth: '',
+    /**
+     * `headers` намеренно пустой: Basic для ipx приходит только из рантайма
+     * (`NUXT_IPX_HTTP_FETCH_OPTIONS_HEADERS_AUTHORIZATION`), иначе секрет вшивается
+     * в серверный бандл и ротация кредов требует пересборки.
+     */
     ipx: {
       http: {
         domains: [apiImageHost],
         fetchOptions: {
-          headers: apiImageAuthorizationHeader
-            ? { Authorization: apiImageAuthorizationHeader }
-            : {},
+          headers: {},
         },
       },
     },

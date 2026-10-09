@@ -12,11 +12,15 @@ export function useHome() {
     data: { slides: homeIntroSlides },
   }))
 
-  const data = computed<HomeIntroData>(() => result.data.value.data)
+  /** Пустой список — тоже отсутствие данных: главная не остаётся без intro. */
+  const isEmpty = computed(() => result.data.value.data.slides.length === 0)
+  const data = computed<HomeIntroData>(() =>
+    isEmpty.value ? { slides: homeIntroSlides } : result.data.value.data,
+  )
 
   return {
     data,
-    isFallback: result.isFallback,
+    isFallback: computed(() => result.isFallback.value || isEmpty.value),
     error: result.error,
     pending: result.pending,
     refresh: result.refresh,

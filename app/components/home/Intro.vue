@@ -3,16 +3,33 @@ import type { HomeIntroSlide } from '#shared/types/home'
 
 const SLIDE_MS = 10_000
 const DESKTOP_MQ = '(min-width: 1280px)'
-const DESKTOP_WIDTH = 1230
-const DESKTOP_HEIGHT = 440
-const MOBILE_WIDTH = 400
-const MOBILE_HEIGHT = 500
+
+/**
+ * Слайд занимает всю ширину экрана на всех брейкпоинтах. Размеры кадров (широкого и
+ * портретного) задаёт админка, поэтому пропорции не фиксируем — варианты строит ipx.
+ * `sm` + `2xl` дают четыре ширины (640/1280/1536/3072) вместо набора по всем брейкпоинтам.
+ */
+const SLIDE_SIZES = 'sm:100vw 2xl:100vw'
 
 const img = useImage()
 
 const { slides } = defineProps<{
   slides: HomeIntroSlide[]
 }>()
+
+/** Кадр слайда: `srcset`/`sizes` из ipx, без зашитых размеров. */
+type IntroFrameImage = {
+  src: string
+  srcset?: string
+  sizes?: string
+}
+
+type IntroFrame = {
+  slide: HomeIntroSlide
+  image: IntroFrameImage
+  /** Широкий кадр для desktop; без него слайд использует один кадр на всех экранах. */
+  desktopImage?: IntroFrameImage
+}
 
 const index = ref(0)
 const userPaused = ref(false)
@@ -21,10 +38,7 @@ const hiddenPaused = ref(false)
 const paused = computed(() => userPaused.value || hiddenPaused.value)
 const current = computed(() => slides[index.value])
 const total = computed(() => slides.length)
-const frames = computed(() => slides.map(slide => ({
-  slide,
-  image: introImage(slide),
-})))
+const frames = computed<IntroFrame[]>(() => slides.map(introFrame))
 const canCycle = computed(() => total.value > 1)
 
 function goTo(next: number) {
@@ -61,30 +75,28 @@ function onVisibilityChange() {
   hiddenPaused.value = document.hidden
 }
 
-function optimizedSrc(src: string, width: number, height: number): string {
-  const modifiers = { width, height, format: 'webp' as const }
-  return img(src, modifiers)
+function frameImage(source: string): IntroFrameImage {
+  const { src, srcset, sizes } = img.getSizes(source, {
+    sizes: SLIDE_SIZES,
+    modifiers: { format: 'webp' },
+  })
+
+  return {
+    src: src ?? source,
+    ...(srcset ? { srcset } : {}),
+    ...(sizes ? { sizes } : {}),
+  }
 }
 
-function introImage(slide: HomeIntroSlide): {
-  src: string
-  desktopSrc?: string
-  width: number
-  height: number
-} {
-  if (slide.imageSrcMobile) {
-    return {
-      src: optimizedSrc(slide.imageSrcMobile, MOBILE_WIDTH, MOBILE_HEIGHT),
-      desktopSrc: optimizedSrc(slide.imageSrc, DESKTOP_WIDTH, DESKTOP_HEIGHT),
-      width: MOBILE_WIDTH,
-      height: MOBILE_HEIGHT,
-    }
+function introFrame(slide: HomeIntroSlide): IntroFrame {
+  if (!slide.imageSrcMobile) {
+    return { slide, image: frameImage(slide.imageSrc) }
   }
 
   return {
-    src: optimizedSrc(slide.imageSrc, DESKTOP_WIDTH, DESKTOP_HEIGHT),
-    width: DESKTOP_WIDTH,
-    height: DESKTOP_HEIGHT,
+    slide,
+    image: frameImage(slide.imageSrcMobile),
+    desktopImage: frameImage(slide.imageSrc),
   }
 }
 
@@ -114,22 +126,21 @@ onUnmounted(() => {
       >
         <picture :class="$style.picture">
           <source
-            v-if="frame.image.desktopSrc"
-            :srcset="frame.image.desktopSrc"
+            v-if="frame.desktopImage"
+            :srcset="frame.desktopImage.srcset"
+            :sizes="frame.desktopImage.sizes"
             :media="DESKTOP_MQ"
             type="image/webp"
-            sizes="100vw"
           >
           <img
             :class="$style.image"
             :src="frame.image.src"
+            :srcset="frame.image.srcset"
+            :sizes="frame.image.sizes"
             :alt="i === index ? frame.slide.imageAlt : ''"
             :loading="i === 0 ? 'eager' : 'lazy'"
             :fetchpriority="i === 0 ? 'high' : 'low'"
             decoding="async"
-            sizes="100vw"
-            :width="frame.image.width"
-            :height="frame.image.height"
           >
         </picture>
       </div>
@@ -138,7 +149,7 @@ onUnmounted(() => {
 
     <div :class="$style.chrome">
       <div :class="$style.copy">
-        <h1 v-if="current.title" :class="$style.title">{{ current.title }}</h1>
+        <h2 v-if="current.title" :class="$style.title">{{ current.title }}</h2>
         <p v-if="current.description" :class="$style.desc">
           {{ current.description }}
         </p>

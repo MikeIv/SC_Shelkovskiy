@@ -87,6 +87,7 @@ useHead({
 
 <template>
   <div>
+    <h1 :class="$style.hiddenTitle">{{ siteName }}</h1>
     <HomeIntro :slides="homeIntro.slides" />
     <div :class="$style.stack">
       <HomeNews :items="homeNewsItems" />
@@ -114,5 +115,10 @@ useHead({
   @include from-desktop {
     padding-top: rem(140);
   }
+}
+
+/* Единственный h1 страницы: заголовки слайдов — h2, поэтому главная не остаётся без h1. */
+.hiddenTitle {
+  @include fs-visually-hidden;
 }
 </style>
