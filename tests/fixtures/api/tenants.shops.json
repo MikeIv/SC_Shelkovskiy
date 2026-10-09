@@ -1,0 +1,45 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "slug": "test-shop",
+      "name": "Тестовый магазин",
+      "type": "shops",
+      "category": { "slug": "odezhda", "name": "Одежда" },
+      "floor": { "id": 1, "label": "1", "name": "1 этаж" },
+      "podium": "101",
+      "logo": "/images/home/brands/zolotoy.png",
+      "image": "/images/home/brands/zolotoy.png",
+      "status": "new",
+      "tags": ["action", "unknown"],
+      "breakfast": false,
+      "business_lunch": false,
+      "url": "/shops/test-shop"
+    },
+    {
+      "id": 2,
+      "slug": "alpha",
+      "name": "Альфа",
+      "type": "shops",
+      "category": { "slug": "produkty", "name": "Продукты" },
+      "floor": { "id": 1, "label": "1", "name": "1 этаж" },
+      "podium": "102",
+      "logo": "/images/home/brands/acoola.png",
+      "image": null,
+      "status": "none",
+      "tags": [],
+      "breakfast": false,
+      "business_lunch": false,
+      "url": "/shops/alpha"
+    }
+  ],
+  "meta": {
+    "filters": {
+      "categories": [
+        { "slug": "odezhda", "name": "Одежда", "count": 6 },
+        { "slug": "produkty", "name": "Продукты", "count": 2 }
+      ],
+      "floors": [{ "id": 1, "name": "1 этаж", "count": 41 }]
+    }
+  }
+}

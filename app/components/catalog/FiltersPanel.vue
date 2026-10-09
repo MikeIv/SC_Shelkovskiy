@@ -6,10 +6,12 @@ const props = withDefaults(
     open: boolean
     categoryOptions: UiDropdownOption[]
     floorOptions: UiDropdownOption[]
-    showCafeFilters?: boolean
+    showBreakfast?: boolean
+    showBusinessLunch?: boolean
   }>(),
   {
-    showCafeFilters: false,
+    showBreakfast: false,
+    showBusinessLunch: false,
   },
 )
 
@@ -175,7 +177,8 @@ onBeforeUnmount(() => {
                 :aria-pressed="draftCategory === option.value"
                 @click="draftCategory = option.value"
               >
-                {{ option.label }}
+                <span>{{ option.label }}</span>
+                <span v-if="option.count != null">{{ option.count }}</span>
               </button>
             </li>
           </ul>
@@ -203,6 +206,7 @@ onBeforeUnmount(() => {
                 type="button"
                 :class="$style.floorChip"
                 :aria-pressed="draftFloor === option.value"
+                :aria-label="option.count != null ? `${option.label}, ${option.count}` : option.label"
                 @click="draftFloor = option.value"
               >
                 {{ floorChipLabel(option.label) }}
@@ -224,12 +228,12 @@ onBeforeUnmount(() => {
             <span>Доступные акции</span>
           </label>
 
-          <label v-if="showCafeFilters" :class="$style.checkbox">
+          <label v-if="showBreakfast" :class="$style.checkbox">
             <UiCheckbox v-model="draftBreakfastOnly" />
             <span>Завтраки</span>
           </label>
 
-          <label v-if="showCafeFilters" :class="$style.checkbox">
+          <label v-if="showBusinessLunch" :class="$style.checkbox">
             <UiCheckbox v-model="draftBusinessLunchOnly" />
             <span>Бизнес-ланч</span>
           </label>
@@ -332,7 +336,10 @@ onBeforeUnmount(() => {
 }
 
 .categoryOption {
-  display: block;
+  display: flex;
+  gap: var(--fs-space-2);
+  align-items: baseline;
+  justify-content: space-between;
   width: 100%;
   margin: 0;
   padding: 0;

@@ -82,13 +82,22 @@ export function getTenantDetailBySlug(
     logoSrc: card.imageSrc,
     logoAlt: card.imageAlt,
     mapUrl: `/map?tenant=${encodeURIComponent(tenantId)}`,
+    status: 'none',
+    podium: '',
+    assortment: null,
+    workingHours: [],
+    seo: null,
     phone: tenantPageMock.phone,
     phoneHref: tenantPageMock.phoneHref,
     website: tenantPageMock.website,
     aboutTitle: tenantPageMock.aboutTitle,
-    about: [...tenantPageMock.about],
+    about: tenantPageMock.about.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join(''),
     gallery: [...tenantPageMock.gallery],
     galleryAlt: card.imageAlt || card.title,
     news: news.length >= TENANT_NEWS_BLOCK_MIN ? news : [],
   }
+}
+
+function escapeHtml(value: string): string {
+  return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
 }

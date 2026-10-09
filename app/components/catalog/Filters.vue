@@ -47,9 +47,13 @@ const props = withDefaults(
     categoryOptions: UiDropdownOption[]
     floorOptions: UiDropdownOption[]
     searchOptions: UiSearchOption[]
+    showBreakfast?: boolean
+    showBusinessLunch?: boolean
   }>(),
   {
     variant: 'shops',
+    showBreakfast: false,
+    showBusinessLunch: false,
   },
 )
 
@@ -152,12 +156,12 @@ function closeFilters(): void {
           <span>Доступные акции</span>
         </label>
 
-        <label v-if="variant === 'cafes'" :class="$style.checkbox">
+        <label v-if="showBreakfast" :class="$style.checkbox">
           <UiCheckbox v-model="breakfastOnly" />
           <span>Завтраки</span>
         </label>
 
-        <label v-if="variant === 'cafes'" :class="$style.checkbox">
+        <label v-if="showBusinessLunch" :class="$style.checkbox">
           <UiCheckbox v-model="businessLunchOnly" />
           <span>Бизнес-ланч</span>
         </label>
@@ -174,7 +178,8 @@ function closeFilters(): void {
       :open="filtersOpen"
       :category-options="categoryOptions"
       :floor-options="floorOptions"
-      :show-cafe-filters="variant === 'cafes'"
+      :show-breakfast="showBreakfast"
+      :show-business-lunch="showBusinessLunch"
       @close="closeFilters"
     />
   </div>

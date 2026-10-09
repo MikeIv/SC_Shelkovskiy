@@ -18,6 +18,8 @@
 import { NuxtLink } from '#components'
 import type { CatalogCardLayout, CatalogCardTag } from '#shared/types/catalog'
 
+defineOptions({ inheritAttrs: false })
+
 const SCHEME_PATH = '/map'
 
 const tagIconMap: Record<CatalogCardTag, string> = {
@@ -55,6 +57,8 @@ const emit = defineEmits<{
 }>()
 
 const visibleTags = computed(() => props.tags.slice(0, 3))
+const mediaSrc = useMediaSrc()
+const logoSrc = computed(() => (props.imageSrc ? mediaSrc(props.imageSrc, 480) : ''))
 
 const listRootTag = computed(() => (props.to ? NuxtLink : 'article'))
 const listRootBind = computed(() => (props.to ? { to: props.to } : {}))
@@ -98,7 +102,7 @@ async function onMapClick(event: MouseEvent) {
           <img
             v-if="imageSrc"
             :class="$style.logo"
-            :src="imageSrc"
+            :src="logoSrc"
             :alt="imageAlt || title"
             loading="lazy"
             decoding="async"

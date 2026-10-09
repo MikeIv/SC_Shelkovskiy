@@ -1,15 +1,21 @@
 <script setup lang="ts">
 import type { TenantDetail } from '#shared/types/tenantDetail'
 
-defineProps<{
+const props = defineProps<{
   item: TenantDetail
 }>()
+
+const mediaSrc = useMediaSrc()
+const logoSrc = computed(() => (props.item.logoSrc ? mediaSrc(props.item.logoSrc, 480) : ''))
+const galleryImages = computed(() =>
+  (props.item.gallery ?? []).map((src) => mediaSrc(src, 1536)),
+)
 </script>
 
 <template>
   <article
     :class="$style.root"
-    :data-has-gallery="item.gallery?.length ? '' : undefined"
+    :data-has-gallery="galleryImages.length ? '' : undefined"
   >
     <header :class="$style.header">
       <h1 :class="$style.title">{{ item.title }}</h1>
@@ -17,9 +23,9 @@ defineProps<{
     </header>
 
     <NewsDetailGallery
-      v-if="item.gallery?.length"
+      v-if="galleryImages.length"
       :class="$style.gallery"
-      :images="item.gallery"
+      :images="galleryImages"
       :alt="item.galleryAlt || item.title"
     />
 
@@ -29,7 +35,7 @@ defineProps<{
           <img
             v-if="item.logoSrc"
             :class="$style.logoImage"
-            :src="item.logoSrc"
+            :src="logoSrc"
             :alt="item.logoAlt || item.title"
           >
           <UiLogo v-else :class="$style.logoFallback" />
@@ -75,18 +81,15 @@ defineProps<{
     </div>
 
     <section
-      v-if="item.about?.length"
+      v-if="item.about"
       :class="$style.about"
       aria-labelledby="tenant-about-title"
     >
       <h2 id="tenant-about-title" :class="$style.aboutTitle">
         {{ item.aboutTitle || 'О бренде' }}
       </h2>
-      <div :class="$style.aboutText">
-        <p v-for="(paragraph, index) in item.about" :key="index">
-          {{ paragraph }}
-        </p>
-      </div>
+      <!-- eslint-disable-next-line vue/no-v-html -- HTML очищен на бэкенде, маппер снимает script и инлайн-стили -->
+      <div :class="$style.aboutText" v-html="item.about" />
     </section>
   </article>
 </template>

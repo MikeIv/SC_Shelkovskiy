@@ -1,0 +1,14 @@
+{
+  "data": [
+    {
+      "type": "action",
+      "slug": "test-tenant-action",
+      "title": "Тестовая акция арендатора",
+      "image": "/images/home/news/colins.jpg",
+      "date": "2026-10-01",
+      "period": { "from": "2026-10-01", "to": "2026-10-31" },
+      "source": { "kind": "tenant", "name": "Тестовый магазин", "slug": "test-shop" },
+      "url": "/news/test-tenant-action"
+    }
+  ]
+}

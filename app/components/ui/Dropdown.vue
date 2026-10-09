@@ -4,6 +4,7 @@ export type UiDropdownVariant = 'light' | 'white'
 export interface UiDropdownOption {
   value: string
   label: string
+  count?: number
 }
 
 defineOptions({ inheritAttrs: false })
@@ -269,6 +270,7 @@ onBeforeUnmount(() => {
           @mouseenter="activeIndex = index"
         >
           {{ option.label }}
+          <span v-if="option.count != null" :class="$style.optionCount">{{ option.count }}</span>
         </li>
       </ul>
     </div>
@@ -428,6 +430,10 @@ onBeforeUnmount(() => {
 }
 
 .option {
+  display: flex;
+  gap: var(--fs-space-2);
+  align-items: baseline;
+  justify-content: space-between;
   min-width: 0;
   margin: 0;
   @include fs-text-lg;
@@ -439,6 +445,10 @@ onBeforeUnmount(() => {
   &[data-active='true'] {
     color: var(--fs-color-black);
   }
+}
+
+.optionCount {
+  flex-shrink: 0;
 }
 
 .error {

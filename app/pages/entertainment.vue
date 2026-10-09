@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { entertainmentCatalogItems } from '~/data/entertainmentCatalogItems'
-
 const { label } = getSiteNavItem('/entertainment')
 
 const breadcrumbItems = computed(() => [
@@ -19,7 +17,9 @@ const {
   floorOptions,
   searchOptions,
   filteredItems,
-} = useCatalogFilters(entertainmentCatalogItems)
+} = useCatalogFilters('entertainment')
+
+await useCatalog('entertainment')
 </script>
 
 <template>

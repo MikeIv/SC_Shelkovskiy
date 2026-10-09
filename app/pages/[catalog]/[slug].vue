@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { getTenantDetailBySlug } from '~/data/tenantDetails'
 import { isTenantCatalog, tenantCatalogPath } from '#shared/utils/tenantPath'
+import type { TenantDetail } from '#shared/types/tenantDetail'
 
 const route = useRoute()
 const catalogParam = String(route.params.catalog ?? '')
@@ -14,30 +14,34 @@ if (!isTenantCatalog(catalogParam)) {
 }
 
 const catalog = catalogParam
-const item = getTenantDetailBySlug(catalog, slug)
+const { label: catalogLabel } = getSiteNavItem(tenantCatalogPath(catalog))
+const item = ref<TenantDetail | null>(null)
 
-if (!item) {
+const breadcrumbItems = computed(() => [
+  { label: 'Главная', to: '/' },
+  { label: catalogLabel, to: tenantCatalogPath(catalog) },
+  { label: item.value?.title ?? '' },
+])
+
+useSeoMeta({
+  title: () => item.value?.seo?.title || item.value?.title,
+  description: () => item.value?.seo?.description || undefined,
+  ogImage: () => item.value?.seo?.ogImage || undefined,
+})
+
+const loaded = await useTenant(catalog, slug)
+item.value = loaded.item.value
+
+if (!item.value || item.value.catalog !== catalog) {
   throw createError({
     statusCode: 404,
     statusMessage: 'Страница не найдена',
   })
 }
-
-const { label: catalogLabel } = getSiteNavItem(tenantCatalogPath(catalog))
-
-const breadcrumbItems = computed(() => [
-  { label: 'Главная', to: '/' },
-  { label: catalogLabel, to: tenantCatalogPath(catalog) },
-  { label: item.title },
-])
-
-useSeoMeta({
-  title: item.title,
-})
 </script>
 
 <template>
-  <LayoutInnerPage>
+  <LayoutInnerPage v-if="item">
     <template #lead>
       <UiBreadcrumbs :items="breadcrumbItems" />
     </template>

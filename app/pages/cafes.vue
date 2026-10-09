@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { cafesCatalogItems } from '~/data/cafesCatalogItems'
-
 const { label } = getSiteNavItem('/cafes')
 
 const breadcrumbItems = computed(() => [
@@ -17,14 +15,17 @@ const {
   breakfastOnly,
   businessLunchOnly,
   viewMode,
+  showBreakfast,
+  showBusinessLunch,
   categoryOptions,
   floorOptions,
   searchOptions,
   filteredItems,
-} = useCatalogFilters(cafesCatalogItems, {
+} = useCatalogFilters('cafes', {
   categoryPlaceholder: 'Тип кухни',
-  withCafeFilters: true,
 })
+
+await useCatalog('cafes')
 </script>
 
 <template>
@@ -45,6 +46,8 @@ const {
       variant="cafes"
       :category-options="categoryOptions"
       :floor-options="floorOptions"
+      :show-breakfast="showBreakfast"
+      :show-business-lunch="showBusinessLunch"
       :search-options="searchOptions"
     />
 

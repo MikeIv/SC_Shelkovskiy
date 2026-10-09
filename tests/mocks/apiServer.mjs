@@ -29,7 +29,8 @@ function json(res, status, payload) {
 const INVALID_HOME = { data: { slides: 'oops' } }
 
 const server = createServer((req, res) => {
-  const { pathname } = new URL(req.url ?? '/', `http://127.0.0.1:${PORT}`)
+  const url = new URL(req.url ?? '/', `http://127.0.0.1:${PORT}`)
+  const { pathname } = url
 
   if (pathname === '/__health') {
     return json(res, 200, { ok: true, scenario: SCENARIO })
@@ -48,6 +49,20 @@ const server = createServer((req, res) => {
 
   if (pathname === '/api/v1/forms/feedback' && req.method === 'POST') {
     return json(res, 201, { data: { ok: true } })
+  }
+
+  if (pathname === '/api/v1/tenants') {
+    const type = url.searchParams.get('type')
+    if (type === 'shops') return json(res, 200, fixture('tenants.shops.json'))
+    return json(res, 200, { data: [], meta: { filters: { categories: [], floors: [] } } })
+  }
+
+  if (pathname === '/api/v1/tenants/test-shop') {
+    return json(res, 200, fixture('tenant.json'))
+  }
+
+  if (pathname === '/api/v1/feed') {
+    return json(res, 200, fixture('tenant.feed.json'))
   }
 
   return json(res, 404, { message: 'Not found' })

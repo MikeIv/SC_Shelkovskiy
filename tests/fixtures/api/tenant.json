@@ -1,0 +1,31 @@
+{
+  "data": {
+    "id": 1,
+    "slug": "test-shop",
+    "name": "Тестовый магазин",
+    "type": "shops",
+    "category": { "slug": "odezhda", "name": "Одежда" },
+    "floor": { "id": 1, "label": "1", "name": "1 этаж" },
+    "podium": "101",
+    "logo": "/images/home/brands/zolotoy.png",
+    "image": "/images/tenant/befree/gallery-1.jpg",
+    "status": "none",
+    "tags": ["action"],
+    "breakfast": false,
+    "business_lunch": false,
+    "url": "/shops/test-shop",
+    "gallery": ["/images/tenant/befree/gallery-1.jpg"],
+    "phone": "+7 (495) 730-10-86",
+    "website": null,
+    "about": "<p>Описание тестового магазина</p>",
+    "assortment": null,
+    "working_hours": [],
+    "map_url": "/map?tenant=test-shop",
+    "seo": {
+      "title": "Тестовый магазин",
+      "description": "Описание тестового магазина",
+      "keywords": null,
+      "og_image": null
+    }
+  }
+}

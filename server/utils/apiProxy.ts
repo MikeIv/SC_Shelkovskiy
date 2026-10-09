@@ -1,15 +1,16 @@
 import { isError } from 'h3'
+import type { H3Event } from 'h3'
 import type { ApiEnvelope } from '#shared/types/api'
 
 export type ApiProxyOptions<Dto, Data> = {
   /** Имя обработчика в кэше Nitro. */
   name: string
   /** Ключ кэша: данные ручки общие для всех пользователей. */
-  key: string
+  key: string | ((event: H3Event) => string)
   /** Время жизни кэша, секунды. */
   ttl: number
   /** Путь upstream относительно `runtimeConfig.apiUpstream`. */
-  path: string
+  path: string | ((event: H3Event) => string)
   /** Имя ручки для текста ошибки. */
   label: string
   /** Проверка формы ответа до маппинга. */
@@ -27,9 +28,10 @@ export function defineApiProxy<Dto, Data>(options: ApiProxyOptions<Dto, Data>) {
   const { name, key, ttl, path, label, isValid, map } = options
 
   return defineCachedEventHandler(
-    async (event) => {
+    async (event: H3Event) => {
       try {
-        const dto = await apiFetch(event)<Dto>(path)
+        const requestPath = typeof path === 'function' ? path(event) : path
+        const dto = await apiFetch(event)<Dto>(requestPath)
 
         if (!isValid(dto)) {
           throw createError({
@@ -55,12 +57,12 @@ export function defineApiProxy<Dto, Data>(options: ApiProxyOptions<Dto, Data>) {
     {
       maxAge: ttl,
       name,
-      getKey: () => key,
+      getKey: (event: H3Event) => (typeof key === 'function' ? key(event) : key),
     },
   )
 }
 
-function upstreamStatus(error: unknown): number {
+export function upstreamStatus(error: unknown): number {
   if (typeof error !== 'object' || error === null) return 502
 
   const record = error as { statusCode?: unknown; status?: unknown }
