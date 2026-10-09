@@ -1,16 +1,15 @@
-import { isError } from 'h3'
-import type { H3Event } from 'h3'
+import type { ApiEvent } from './apiEvent'
 import type { ApiEnvelope } from '#shared/types/api'
 
 export type ApiProxyOptions<Dto, Data> = {
   /** Имя обработчика в кэше Nitro. */
   name: string
   /** Ключ кэша: данные ручки общие для всех пользователей. */
-  key: string | ((event: H3Event) => string)
+  key: string | ((event: ApiEvent) => string)
   /** Время жизни кэша, секунды. */
   ttl: number
   /** Путь upstream относительно `runtimeConfig.apiUpstream`. */
-  path: string | ((event: H3Event) => string)
+  path: string | ((event: ApiEvent) => string)
   /** Имя ручки для текста ошибки. */
   label: string
   /** Проверка формы ответа до маппинга. */
@@ -21,14 +20,15 @@ export type ApiProxyOptions<Dto, Data> = {
 
 /**
  * Кэширующий прокси к Laravel: один запрос на TTL, маппинг на сервере, наружу — статус
- * без тела upstream. `apiFetch`, `defineCachedEventHandler` и `createError` — глобали Nitro;
- * вызываются без импорта, потому что серверные тесты подменяют их через `vi.stubGlobal`.
+ * без тела upstream. `apiFetch`, `defineCachedEventHandler`, `createError` и `isError` —
+ * глобали Nitro; вызываются без импорта, потому что серверные тесты подменяют их
+ * через `vi.stubGlobal`.
  */
 export function defineApiProxy<Dto, Data>(options: ApiProxyOptions<Dto, Data>) {
   const { name, key, ttl, path, label, isValid, map } = options
 
   return defineCachedEventHandler(
-    async (event: H3Event) => {
+    async (event: ApiEvent) => {
       try {
         const requestPath = typeof path === 'function' ? path(event) : path
         const dto = await apiFetch(event)<Dto>(requestPath)
@@ -57,7 +57,7 @@ export function defineApiProxy<Dto, Data>(options: ApiProxyOptions<Dto, Data>) {
     {
       maxAge: ttl,
       name,
-      getKey: (event: H3Event) => (typeof key === 'function' ? key(event) : key),
+      getKey: (event: ApiEvent) => (typeof key === 'function' ? key(event) : key),
     },
   )
 }

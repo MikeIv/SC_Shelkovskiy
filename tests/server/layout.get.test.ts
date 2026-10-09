@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { createError } from 'h3'
+import { createError, isError } from 'h3'
 import type { LayoutData } from '#shared/types/layout'
 import type { LayoutResponseDto } from '#shared/types/dto/layout'
 
@@ -43,6 +43,7 @@ async function loadLayoutHandler(apiFetchImpl: () => unknown): Promise<LayoutHan
     return handler
   })
   vi.stubGlobal('createError', createError)
+  vi.stubGlobal('isError', isError)
   vi.stubGlobal('apiFetch', apiFetchImpl)
 
   const module = await import('../../server/api/layout.get')

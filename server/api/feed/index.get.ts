@@ -1,8 +1,8 @@
-import type { H3Event } from 'h3'
 import type { FeedListResponseDto } from '#shared/types/dto/feed'
 import type { NewsFilterTab, NewsListData } from '#shared/types/news'
 import { isNewsFilterTab } from '#shared/utils/newsTag'
 import { mapFeedList } from '#shared/utils/mappers/news'
+import type { ApiEvent } from '../../utils/apiEvent'
 import { isListPayload } from '../../utils/apiPayload'
 import { readApiNumber } from '../../utils/apiQuery'
 import { defineApiProxy } from '../../utils/apiProxy'
@@ -41,7 +41,7 @@ type FeedQuery = {
   perPage: number
 }
 
-function readFeedQuery(event: H3Event): FeedQuery {
+function readFeedQuery(event: ApiEvent): FeedQuery {
   const query = getQuery(event)
 
   return {

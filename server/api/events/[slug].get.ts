@@ -1,9 +1,8 @@
-import { isError } from 'h3'
-import type { H3Event } from 'h3'
 import type { EventItemResponseDto } from '#shared/types/dto/events'
 import type { ApiEnvelope } from '#shared/types/api'
 import type { EventDetailItem } from '#shared/types/events'
 import { mapEventDetail } from '#shared/utils/mappers/events'
+import type { ApiEvent } from '../../utils/apiEvent'
 import { isItemPayload } from '../../utils/apiPayload'
 import { upstreamStatus } from '../../utils/apiProxy'
 import { readApiSlug } from '../../utils/apiQuery'
@@ -12,7 +11,7 @@ const EVENT_CACHE_SECONDS = 300
 
 /** Карточка мероприятия: `when`, место, HTML `text`, программа и `seo`. */
 export default defineCachedEventHandler(
-  async (event: H3Event) => {
+  async (event: ApiEvent) => {
     const slug = readApiSlug(event)
 
     if (!slug) {
@@ -55,6 +54,6 @@ export default defineCachedEventHandler(
   {
     maxAge: EVENT_CACHE_SECONDS,
     name: 'api-event',
-    getKey: (event: H3Event) => `event:${readApiSlug(event)}`,
+    getKey: (event: ApiEvent) => `event:${readApiSlug(event)}`,
   },
 )

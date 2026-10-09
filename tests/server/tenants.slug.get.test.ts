@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { createError } from 'h3'
+import { createError, isError } from 'h3'
 import type { TenantDetail } from '#shared/types/tenantDetail'
 
 type CacheOptions = {
@@ -67,6 +67,7 @@ async function loadHandler(
     return handler
   })
   vi.stubGlobal('createError', createError)
+  vi.stubGlobal('isError', isError)
   vi.stubGlobal('getRouterParam', () => 'test-shop')
   vi.stubGlobal('apiFetch', () => (path: string) => {
     requested.push(path)

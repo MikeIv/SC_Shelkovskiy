@@ -1,8 +1,8 @@
-import type { H3Event } from 'h3'
 import type { CatalogListData } from '#shared/types/catalog'
 import type { TenantsListResponseDto } from '#shared/types/dto/tenants'
 import { mapTenantsList } from '#shared/utils/mappers/tenants'
 import { isTenantCatalog } from '#shared/utils/tenantPath'
+import type { ApiEvent } from '../../utils/apiEvent'
 import { defineApiProxy } from '../../utils/apiProxy'
 
 const TENANTS_CACHE_SECONDS = 300
@@ -32,7 +32,7 @@ export default defineApiProxy<TenantsListResponseDto, CatalogListData>({
   map: mapTenantsList,
 })
 
-function catalogQuery(event: H3Event): string {
+function catalogQuery(event: ApiEvent): string {
   const type = getQuery(event).type
   return typeof type === 'string' ? type : ''
 }

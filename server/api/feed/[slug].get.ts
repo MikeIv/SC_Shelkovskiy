@@ -1,10 +1,9 @@
-import { isError } from 'h3'
-import type { H3Event } from 'h3'
 import type { ApiEnvelope } from '#shared/types/api'
 import type { NewsCardItem, NewsDetailData, NewsDetailItem } from '#shared/types/news'
 import { mapHomeFeed } from '#shared/utils/mappers/home'
 import { mapNewsDetail } from '#shared/utils/mappers/news'
 import { newsRelatedKind } from '#shared/utils/newsTag'
+import type { ApiEvent } from '../../utils/apiEvent'
 import { isItemPayload, isListPayload } from '../../utils/apiPayload'
 import { upstreamStatus } from '../../utils/apiProxy'
 import { readApiSlug } from '../../utils/apiQuery'
@@ -17,7 +16,7 @@ const RELATED_LIMIT = 4
  * (`/feed?exclude={slug}`): для новостей — всё, кроме СМИ, для акций и СМИ — свой `type`.
  */
 export default defineCachedEventHandler(
-  async (event: H3Event) => {
+  async (event: ApiEvent) => {
     const slug = readApiSlug(event)
 
     if (!slug) {
@@ -62,12 +61,12 @@ export default defineCachedEventHandler(
   {
     maxAge: FEED_ITEM_CACHE_SECONDS,
     name: 'api-feed-item',
-    getKey: (event: H3Event) => `feed:${readApiSlug(event)}`,
+    getKey: (event: ApiEvent) => `feed:${readApiSlug(event)}`,
   },
 )
 
 /** Сбой связанных не роняет детальную: секция просто не выводится. */
-async function loadRelated(event: H3Event, item: NewsDetailItem): Promise<NewsCardItem[]> {
+async function loadRelated(event: ApiEvent, item: NewsDetailItem): Promise<NewsCardItem[]> {
   const kind = newsRelatedKind(item.tagVariant)
 
   try {

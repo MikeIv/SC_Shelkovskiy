@@ -1,4 +1,4 @@
-import type { H3Event } from 'h3'
+import type { ApiEvent } from './apiEvent'
 
 /**
  * Числовой query-параметр серверных ручек. Не распознан или вне границ — 400,
@@ -26,7 +26,7 @@ export function readApiNumber(
 }
 
 /** Slug из роута: параметр всегда строка, отсутствие отдаём пустой строкой (ручка ответит 400). */
-export function readApiSlug(event: H3Event): string {
+export function readApiSlug(event: ApiEvent): string {
   const slug = getRouterParam(event, 'slug')
 
   return typeof slug === 'string' ? slug : ''

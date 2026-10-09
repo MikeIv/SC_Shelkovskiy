@@ -1,4 +1,4 @@
-import type { H3Event } from 'h3'
+import type { ApiEvent } from './apiEvent'
 import { basicAuthorization } from '#shared/utils/basicAuthorization'
 import { normalizeApiBaseUrl } from '#shared/utils/normalizeApiBaseUrl'
 
@@ -47,7 +47,7 @@ export function buildApiFetchOptions(config: ApiRuntimeConfig): ApiFetchOptions 
  * HTTP-клиент Nitro к Laravel. База и Basic auth — из приватного `runtimeConfig`,
  * не из `public.apiBase`. В лог пишется только статус, без тела и заголовков.
  */
-export function apiFetch(event?: H3Event) {
+export function apiFetch(event?: ApiEvent) {
   const config = event ? useRuntimeConfig(event) : useRuntimeConfig()
 
   return $fetch.create({

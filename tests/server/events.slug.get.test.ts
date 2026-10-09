@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { createError } from 'h3'
+import { createError, isError } from 'h3'
 import type { EventDetailItem } from '#shared/types/events'
 
 type CacheOptions = {
@@ -45,6 +45,7 @@ async function loadHandler(
     return handler
   })
   vi.stubGlobal('createError', createError)
+  vi.stubGlobal('isError', isError)
   vi.stubGlobal('getRouterParam', () => 'concert')
   vi.stubGlobal('apiFetch', () => (path: string) => {
     requestedPath = path

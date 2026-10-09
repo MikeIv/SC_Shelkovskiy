@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { createError } from 'h3'
+import { createError, isError } from 'h3'
 import type { CatalogListData } from '#shared/types/catalog'
 
 type CacheOptions = {
@@ -50,6 +50,7 @@ async function loadHandler(apiFetchImpl: (path: string) => unknown): Promise<Ten
     return handler
   })
   vi.stubGlobal('createError', createError)
+  vi.stubGlobal('isError', isError)
   vi.stubGlobal('getQuery', () => ({ type: 'shops' }))
   vi.stubGlobal('apiFetch', () => (path: string) => {
     requestedPath = path

@@ -1,11 +1,11 @@
-import type { H3Event } from 'h3'
+import type { ApiEvent } from './apiEvent'
 import { normalizeApiBaseUrl } from '#shared/utils/normalizeApiBaseUrl'
 
 /**
  * HTTP-клиент из Nitro к внешнему API с тем же `public.apiBase`, что на клиенте.
  * Передавайте `event` в обработчиках, если позже понадобится проксировать заголовки / cookies.
  */
-export function serverApi(event?: H3Event) {
+export function serverApi(event?: ApiEvent) {
   const config = event ? useRuntimeConfig(event) : useRuntimeConfig()
   const baseURL = normalizeApiBaseUrl(config.public.apiBase)
 

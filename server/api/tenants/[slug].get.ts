@@ -1,10 +1,9 @@
-import { isError } from 'h3'
-import type { H3Event } from 'h3'
 import type { ApiEnvelope } from '#shared/types/api'
 import type { NewsCardItem } from '#shared/types/news'
 import type { TenantDetail } from '#shared/types/tenantDetail'
 import { mapHomeFeed } from '#shared/utils/mappers/home'
 import { mapTenantDetail } from '#shared/utils/mappers/tenants'
+import type { ApiEvent } from '../../utils/apiEvent'
 import { isItemPayload, isListPayload } from '../../utils/apiPayload'
 import { upstreamStatus } from '../../utils/apiProxy'
 import { readApiSlug } from '../../utils/apiQuery'
@@ -16,7 +15,7 @@ const TENANT_CACHE_SECONDS = 300
  * Сбой ленты не роняет карточку: блок новостей просто пустой.
  */
 export default defineCachedEventHandler(
-  async (event: H3Event) => {
+  async (event: ApiEvent) => {
     const slug = readApiSlug(event)
 
     if (!slug) {
@@ -62,11 +61,11 @@ export default defineCachedEventHandler(
   {
     maxAge: TENANT_CACHE_SECONDS,
     name: 'api-tenant',
-    getKey: (event: H3Event) => `tenant:${readApiSlug(event)}`,
+    getKey: (event: ApiEvent) => `tenant:${readApiSlug(event)}`,
   },
 )
 
-async function loadTenantNews(event: H3Event, slug: string): Promise<NewsCardItem[]> {
+async function loadTenantNews(event: ApiEvent, slug: string): Promise<NewsCardItem[]> {
   try {
     const dto = await apiFetch(event)<unknown>('/feed', {
       query: { tenant: slug, limit: 50 },

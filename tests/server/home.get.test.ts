@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { createError } from 'h3'
+import { createError, isError } from 'h3'
 import type { HomePageData } from '#shared/types/home'
 import type { HomeResponseDto } from '#shared/types/dto/home'
 
@@ -74,8 +74,8 @@ const validDto: HomeResponseDto = {
 let cacheOptions: CacheOptions | undefined
 
 /**
- * Nitro-глобали (`defineCachedEventHandler`, `apiFetch`, `createError`) в тесте мокаются,
- * поэтому обработчик загружается динамически после подстановки — и заново на каждый кейс.
+ * Nitro-глобали (`defineCachedEventHandler`, `apiFetch`, `createError`, `isError`) в тесте
+ * мокаются, поэтому обработчик загружается динамически после подстановки — и заново на каждый кейс.
  */
 async function loadHomeHandler(apiFetchImpl: () => unknown): Promise<HomeHandler> {
   vi.resetModules()
@@ -86,6 +86,7 @@ async function loadHomeHandler(apiFetchImpl: () => unknown): Promise<HomeHandler
     return handler
   })
   vi.stubGlobal('createError', createError)
+  vi.stubGlobal('isError', isError)
   vi.stubGlobal('apiFetch', apiFetchImpl)
 
   const module = await import('../../server/api/home.get')

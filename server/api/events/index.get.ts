@@ -1,7 +1,7 @@
-import type { H3Event } from 'h3'
 import type { EventsListResponseDto } from '#shared/types/dto/events'
 import type { EventsListData } from '#shared/types/events'
 import { mapEventsList } from '#shared/utils/mappers/events'
+import type { ApiEvent } from '../../utils/apiEvent'
 import { isListPayload } from '../../utils/apiPayload'
 import { readApiNumber } from '../../utils/apiQuery'
 import { defineApiProxy } from '../../utils/apiProxy'
@@ -29,7 +29,7 @@ export default defineApiProxy<EventsListResponseDto, EventsListData>({
   map: mapEventsList,
 })
 
-function readEventsQuery(event: H3Event): { page: number; perPage: number } {
+function readEventsQuery(event: ApiEvent): { page: number; perPage: number } {
   const query = getQuery(event)
 
   return {
