@@ -10,7 +10,7 @@ interface ShareMenuItem {
 }
 
 const items = [
-  { id: 'max', label: 'Max', icon: 'local:max' },
+  { id: 'max', label: 'Max', icon: 'local:social-max' },
   { id: 'vk', label: 'Вконтакте', icon: 'local:social-vk' },
   { id: 'ok', label: 'Одноклассники', icon: 'local:odnoklassniki' },
   { id: 'copy', label: 'Скопировать ссылку', icon: 'local:copy' },

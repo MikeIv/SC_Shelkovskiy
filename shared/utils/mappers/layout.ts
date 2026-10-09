@@ -20,14 +20,18 @@ const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
 
 /**
  * Сети с локальным глифом: иконка красится `currentColor` и меняет цвет на hover.
- * Дзена в коллекции нет — он остаётся картинкой с бэкенда (`iconSrc`).
+ * Цвет бренда задаём только там, где он читается на чёрном подвале; MAX и Дзен
+ * остаются на цвете по умолчанию (`--fs-color-beige`) — как в макете.
+ * Остальные сети приходят картинкой с бэкенда (`iconSrc`).
  */
 const KNOWN_SOCIALS: Record<string, Pick<LayoutSocial, 'icon' | 'hoverColor'>> = {
   вконтакте: { icon: 'local:social-vk', hoverColor: '#0077ff' },
   vk: { icon: 'local:social-vk', hoverColor: '#0077ff' },
   telegram: { icon: 'local:social-telegram', hoverColor: '#2aabee' },
   rutube: { icon: 'local:social-rutube', hoverColor: 'var(--fs-color-coral)' },
-  max: { icon: 'local:max' },
+  max: { icon: 'local:social-max' },
+  дзен: { icon: 'local:social-dzen' },
+  dzen: { icon: 'local:social-dzen' },
   сайт: { icon: 'local:social-globe', hoverColor: 'var(--fs-color-beige)' },
 }
 

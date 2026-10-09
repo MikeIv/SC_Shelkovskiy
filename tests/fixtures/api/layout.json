@@ -15,8 +15,23 @@
     },
     "socials": [
       {
+        "name": "Вконтакте",
+        "url": "https://vk.com/trc_schelkovsky",
+        "icon": "/images/layout/hours-mall.png"
+      },
+      {
         "name": "Dzen",
         "url": "https://dzen.ru/id/test",
+        "icon": "/images/layout/hours-mall.png"
+      },
+      {
+        "name": "Max",
+        "url": "https://max.ru/trc_schelkovsky",
+        "icon": "/images/layout/hours-mall.png"
+      },
+      {
+        "name": "Threads",
+        "url": "https://threads.net/@trc",
         "icon": "/images/layout/hours-mall.png"
       }
     ],

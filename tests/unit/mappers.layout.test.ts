@@ -94,13 +94,13 @@ describe('mapLayout', () => {
       {
         label: 'Dzen',
         href: 'https://dzen.ru/id/1',
-        icon: null,
-        iconSrc: 'https://cdn.example/dzen.svg',
+        icon: 'local:social-dzen',
+        iconSrc: null,
       },
     ])
   })
 
-  it('сажает MAX на локальную иконку, а незнакомую сеть — на картинку с бэкенда', () => {
+  it('сажает MAX и Дзен на локальные иконки без цвета бренда, а незнакомую сеть — на картинку', () => {
     const mapped = mapLayout({
       ...emptyDto,
       data: {
@@ -112,17 +112,25 @@ describe('mapLayout', () => {
             icon: 'https://cdn.example/max.svg',
           },
           { name: 'Дзен', url: 'https://dzen.ru/id/1', icon: 'https://cdn.example/dzen.svg' },
+          { name: 'Threads', url: 'https://threads.net/@trc', icon: 'https://cdn.example/t.svg' },
         ],
       },
     })
 
+    /** `hoverColor` не проставляем: у обеих иконок ховер как у MAX — цвет подвала по умолчанию. */
     expect(mapped.socials).toEqual([
-      { label: 'Max', href: 'https://max.ru/trc_schelkovsky', icon: 'local:max', iconSrc: null },
       {
-        label: 'Дзен',
-        href: 'https://dzen.ru/id/1',
+        label: 'Max',
+        href: 'https://max.ru/trc_schelkovsky',
+        icon: 'local:social-max',
+        iconSrc: null,
+      },
+      { label: 'Дзен', href: 'https://dzen.ru/id/1', icon: 'local:social-dzen', iconSrc: null },
+      {
+        label: 'Threads',
+        href: 'https://threads.net/@trc',
         icon: null,
-        iconSrc: 'https://cdn.example/dzen.svg',
+        iconSrc: 'https://cdn.example/t.svg',
       },
     ])
   })
