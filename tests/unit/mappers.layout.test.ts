@@ -100,6 +100,33 @@ describe('mapLayout', () => {
     ])
   })
 
+  it('сажает MAX на локальную иконку, а незнакомую сеть — на картинку с бэкенда', () => {
+    const mapped = mapLayout({
+      ...emptyDto,
+      data: {
+        ...emptyDto.data,
+        socials: [
+          {
+            name: 'Max',
+            url: 'https://max.ru/trc_schelkovsky',
+            icon: 'https://cdn.example/max.svg',
+          },
+          { name: 'Дзен', url: 'https://dzen.ru/id/1', icon: 'https://cdn.example/dzen.svg' },
+        ],
+      },
+    })
+
+    expect(mapped.socials).toEqual([
+      { label: 'Max', href: 'https://max.ru/trc_schelkovsky', icon: 'local:max', iconSrc: null },
+      {
+        label: 'Дзен',
+        href: 'https://dzen.ru/id/1',
+        icon: null,
+        iconSrc: 'https://cdn.example/dzen.svg',
+      },
+    ])
+  })
+
   it('собирает неделю по day 1…7 и пропускает чужие объекты', () => {
     const mapped = mapLayout({
       ...emptyDto,
@@ -191,6 +218,31 @@ describe('resolveLayoutView', () => {
     expect(view.contacts.address).toBe('Адрес мока')
     expect(view.hours.week).toHaveLength(7)
     expect(view.hours.tenants[0]?.name).toBe('Мок')
+  })
+
+  it('добирает из мока ссылки на приложения, которых нет на стенде', () => {
+    const fallbackWithApps: LayoutData = {
+      ...fallback,
+      apps: [
+        { id: 'app-store', label: 'App Store', href: '#app-store' },
+        { id: 'google-play', label: 'Google Play', href: '#google-play' },
+        { id: 'rustore', label: 'RuStore', href: '#rustore' },
+      ],
+    }
+
+    const api = mapLayout({
+      ...emptyDto,
+      data: {
+        ...emptyDto.data,
+        apps: { app_store: 'https://apps.apple.com/app/id1', google_play: null, rustore: null },
+      },
+    })
+
+    expect(resolveLayoutView(api, fallbackWithApps).apps).toEqual([
+      { id: 'app-store', label: 'App Store', href: 'https://apps.apple.com/app/id1' },
+      { id: 'google-play', label: 'Google Play', href: '#google-play' },
+      { id: 'rustore', label: 'RuStore', href: '#rustore' },
+    ])
   })
 })
 

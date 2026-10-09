@@ -18,14 +18,15 @@ const TIME = /^\d{2}:\d{2}$/
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
 
 /**
- * Локальные глифы есть не у всех сетей стенда (Дзен, MAX).
- * Известные имена оставляем на `local:*`, чтобы hover в вёрстке не сломался.
+ * Сети с локальным глифом: иконка красится `currentColor` и меняет цвет на hover.
+ * Дзена в коллекции нет — он остаётся картинкой с бэкенда (`iconSrc`).
  */
 const KNOWN_SOCIALS: Record<string, Pick<LayoutSocial, 'icon' | 'hoverColor'>> = {
   вконтакте: { icon: 'local:social-vk', hoverColor: '#0077ff' },
   vk: { icon: 'local:social-vk', hoverColor: '#0077ff' },
   telegram: { icon: 'local:social-telegram', hoverColor: '#2aabee' },
   rutube: { icon: 'local:social-rutube', hoverColor: 'var(--fs-color-coral)' },
+  max: { icon: 'local:max' },
   сайт: { icon: 'local:social-globe', hoverColor: 'var(--fs-color-beige)' },
 }
 

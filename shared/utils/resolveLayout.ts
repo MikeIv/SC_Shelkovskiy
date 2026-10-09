@@ -1,4 +1,4 @@
-import type { LayoutCtaMax, LayoutData, LayoutDayHours } from '#shared/types/layout'
+import type { LayoutAppLink, LayoutCtaMax, LayoutData, LayoutDayHours } from '#shared/types/layout'
 
 /**
  * Пустые куски ответа не затирают вёрстку: соцсети со стенда остаются,
@@ -24,7 +24,7 @@ export function resolveLayoutView(api: LayoutData, fallback: LayoutData): Layout
       tenants: api.hours.tenants.length ? api.hours.tenants : fallback.hours.tenants,
     },
     socials: api.socials.length ? api.socials : fallback.socials,
-    apps: api.apps.length ? api.apps : fallback.apps,
+    apps: mergeApps(api.apps, fallback.apps),
     ctaMax: mergeCta(api.ctaMax, fallback.ctaMax),
   }
 }
@@ -34,6 +34,25 @@ function isCompleteWeek(week: readonly LayoutDayHours[]): boolean {
 
   const indexes = new Set(week.map((day) => day.index))
   return indexes.size === 7 && [...indexes].every((index) => index >= 0 && index <= 6)
+}
+
+/**
+ * Ссылки на приложения мержим по `id`: незаполненное поле стенда (`app_store` = null)
+ * оставляет кнопку на моке, а не убирает её со страницы.
+ */
+function mergeApps(
+  api: readonly LayoutAppLink[],
+  fallback: readonly LayoutAppLink[],
+): LayoutAppLink[] {
+  const fromApi = new Map(api.map((link) => [link.id, link]))
+  const merged = fallback.map((link) => fromApi.get(link.id) ?? link)
+  const mergedIds = new Set(merged.map((link) => link.id))
+
+  for (const link of api) {
+    if (!mergedIds.has(link.id)) merged.push(link)
+  }
+
+  return merged
 }
 
 function mergeCta(api: LayoutCtaMax | null, fallback: LayoutCtaMax | null): LayoutCtaMax | null {

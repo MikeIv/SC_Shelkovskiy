@@ -9,9 +9,14 @@ import { staticLayoutData } from '~/utils/staticLayout'
  * Имя не `useLayout`: так называется встроенный composable Nuxt.
  */
 export async function useSiteLayout() {
+  /**
+   * Стор резолвим до `await`: после него теряется контекст инъекции, и `useStore()`
+   * опирается на глобальную активную Pinia, которую `@pinia/nuxt` снимает в `app:rendered`
+   * любого параллельного SSR-запроса — рендер падает 500 на всех страницах.
+   */
+  const store = useLayoutStore()
   const fallbackData = staticLayoutData()
   const result = await useApiFetch<ApiEnvelope<LayoutData>>('/api/layout')
-  const store = useLayoutStore()
 
   const isFallback = computed(() => result.error.value != null || result.data.value == null)
 
