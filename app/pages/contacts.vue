@@ -1,10 +1,23 @@
 <script setup lang="ts">
 import {
-  contactsDepartments,
   contactsFeedback,
-  contactsHours,
   contactsPage,
 } from '~/data/contactsPage'
+import { groupWeekRanges } from '#shared/utils/groupWeekRanges'
+
+const layout = useLayoutStore()
+
+const content = computed(() => ({
+  ...contactsPage,
+  address: layout.contacts.address,
+  metroLabel: layout.contacts.metro,
+  phone: layout.contacts.phone,
+  phoneHref: layout.contacts.phoneHref,
+  email: layout.contacts.email,
+  emailHref: layout.contacts.emailHref,
+}))
+
+const hours = computed(() => groupWeekRanges(layout.hours.week))
 
 const pageTitle = contactsPage.title
 
@@ -23,9 +36,9 @@ useSeoMeta({
     <UiBreadcrumbs :items="breadcrumbItems" />
 
     <ContactsContent
-      :content="contactsPage"
-      :hours="contactsHours"
-      :departments="contactsDepartments"
+      :content="content"
+      :hours="hours"
+      :departments="layout.contacts.departments"
       :feedback="contactsFeedback"
     />
   </div>

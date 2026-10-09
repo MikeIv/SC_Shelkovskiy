@@ -1,0 +1,35 @@
+{
+  "data": {
+    "contacts": {
+      "address": null,
+      "metro": null,
+      "phone": null,
+      "email": null,
+      "departments": []
+    },
+    "hours": {
+      "timezone": "Europe/Moscow",
+      "week": [],
+      "exceptions": [],
+      "tenants": []
+    },
+    "socials": [
+      {
+        "name": "Dzen",
+        "url": "https://dzen.ru/id/test",
+        "icon": "/images/layout/hours-mall.png"
+      }
+    ],
+    "apps": {
+      "app_store": null,
+      "google_play": null,
+      "rustore": null
+    },
+    "cta_max": {
+      "url": null,
+      "title": null,
+      "description": null,
+      "image": null
+    }
+  }
+}

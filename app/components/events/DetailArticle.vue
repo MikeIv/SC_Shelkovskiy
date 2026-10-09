@@ -1,12 +1,27 @@
 <script setup lang="ts">
-import type { EventDetailItem } from '#shared/types/events'
+import type { EventDetailItem, EventRegisterPopup } from '#shared/types/events'
 import { eventsRegisterPopup } from '~/data/eventsDetails'
 
 defineProps<{
   item: EventDetailItem
 }>()
 
+const layout = useLayoutStore()
 const isRegisterOpen = ref(false)
+
+const registerPopup = computed<EventRegisterPopup>(() => {
+  const cta = layout.ctaMax
+  if (!cta?.url) return eventsRegisterPopup
+
+  return {
+    ...eventsRegisterPopup,
+    title: cta.title || eventsRegisterPopup.title,
+    description: cta.description || eventsRegisterPopup.description,
+    ctaHref: cta.url,
+    imageSrc: cta.imageSrc || eventsRegisterPopup.imageSrc,
+    imageAlt: cta.imageAlt || eventsRegisterPopup.imageAlt,
+  }
+})
 </script>
 
 <template>
@@ -117,7 +132,7 @@ const isRegisterOpen = ref(false)
   <EventsRegisterModal
     v-if="item.register"
     :open="isRegisterOpen"
-    :content="eventsRegisterPopup"
+    :content="registerPopup"
     @close="isRegisterOpen = false"
   />
 </template>

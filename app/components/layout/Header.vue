@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mallHoursTodayLabel } from '~/data/mallHours'
+import { layoutTodayLabel } from '#shared/utils/layoutHours'
 import { siteNavItems, siteNavUnderline } from '~/utils/siteNav'
 
 export type LayoutHeaderVariant = 'white' | 'black'
@@ -15,7 +15,8 @@ const props = withDefaults(
   },
 )
 
-const hoursLabel = computed(() => mallHoursTodayLabel())
+const layout = useLayoutStore()
+const hoursLabel = computed(() => layoutTodayLabel(layout.hours))
 const hoursOpen = ref(false)
 const hoursBtnRef = ref<HTMLButtonElement | null>(null)
 const menuOpen = ref(false)

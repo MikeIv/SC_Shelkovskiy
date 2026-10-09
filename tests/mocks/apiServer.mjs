@@ -35,6 +35,10 @@ const server = createServer((req, res) => {
     return json(res, 200, { ok: true, scenario: SCENARIO })
   }
 
+  if (pathname === '/api/v1/layout') {
+    return json(res, 200, fixture('layout.json'))
+  }
+
   if (pathname === '/api/v1/home') {
     if (SCENARIO === 'error') return json(res, 500, { message: 'Mock upstream failure' })
     if (SCENARIO === 'invalid') return json(res, 200, INVALID_HOME)

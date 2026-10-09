@@ -5,7 +5,6 @@ import type {
   ContactsHoursRange,
   ContactsPageContent,
 } from '#shared/types/contacts'
-import { footerSocialLinks } from '~/utils/siteFooter'
 
 const { content, hours, departments, feedback } = defineProps<{
   content: ContactsPageContent
@@ -14,6 +13,7 @@ const { content, hours, departments, feedback } = defineProps<{
   feedback: ContactsFeedbackContent
 }>()
 
+const layout = useLayoutStore()
 const isFeedbackOpen = ref(false)
 
 const labels = {
@@ -88,23 +88,8 @@ const labels = {
           <div :class="[$style.block, $style.social]">
             <span :class="$style.label">{{ labels.social }}</span>
             <ul :class="$style.socialList">
-              <li v-for="item in footerSocialLinks" :key="item.label">
-                <a
-                  :class="$style.socialLink"
-                  :href="item.href"
-                  :aria-label="item.label"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  :style="item.hoverColor
-                    ? { '--social-hover': item.hoverColor }
-                    : undefined"
-                >
-                  <UIcon
-                    :name="item.icon"
-                    :class="$style.socialIcon"
-                    aria-hidden="true"
-                  />
-                </a>
+              <li v-for="item in layout.socials" :key="item.href">
+                <LayoutSocialLink :item="item" />
               </li>
             </ul>
           </div>
@@ -382,35 +367,6 @@ $metro-blue: #007ac6;
   margin: 0;
   padding: 0;
   list-style: none;
-}
-
-.socialLink {
-  display: block;
-  line-height: 0;
-  color: var(--fs-color-black);
-  border-radius: 50%;
-  transition: color 0.2s ease;
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
-
-  &:hover {
-    color: var(--social-hover, var(--fs-color-beige));
-  }
-
-  &:focus-visible {
-    color: var(--social-hover, var(--fs-color-beige));
-    outline: rem(2) solid var(--fs-color-black);
-    outline-offset: rem(2);
-  }
-}
-
-.socialIcon {
-  display: block;
-  width: rem(44);
-  height: rem(44);
-  color: inherit;
 }
 
 .divider {

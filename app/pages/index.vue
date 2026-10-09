@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { mallOpenHours } from '~/data/mallHours'
 import { siteDescription, siteName, siteOgImage, siteUrl } from '~/data/siteMeta'
 import { homeBrandRows } from '~/data/homeBrandItems'
 import { homeCinemaItems } from '~/data/homeCinemaItems'
@@ -7,12 +6,13 @@ import { homeGalleryItems } from '~/data/homeGalleryItems'
 import { homeLoyaltyItems } from '~/data/homeLoyaltyItems'
 import { homeNewsItems } from '~/data/homeNewsItems'
 import { homeShopCategories } from '~/data/homeShopCategories'
-import { footerContacts, footerSocialLinks } from '~/utils/siteFooter'
+import { footerContacts } from '~/utils/siteFooter'
 
 definePageMeta({
   headerOverlay: true,
 })
 
+const layout = useLayoutStore()
 const { data: homeIntro } = await useHome()
 
 /** Корневой URL площадки (rutube.ru/) — не профиль центра, в sameAs не публикуем. */
@@ -26,7 +26,7 @@ function hasSocialProfilePath(href: string): boolean {
   }
 }
 
-const schemaDayByLabel: Record<(typeof mallOpenHours)[number]['label'], string> = {
+const schemaDayByLabel: Record<string, string> = {
   Пн: 'Monday',
   Вт: 'Tuesday',
   Ср: 'Wednesday',
@@ -36,31 +36,37 @@ const schemaDayByLabel: Record<(typeof mallOpenHours)[number]['label'], string> 
   Вс: 'Sunday',
 }
 
-const jsonLd = {
+const jsonLd = computed(() => ({
   '@context': 'https://schema.org',
   '@type': 'ShoppingCenter',
   name: siteName,
   description: siteDescription,
   url: siteUrl,
-  telephone: footerContacts.phone,
-  email: footerContacts.email,
-  address: {
-    '@type': 'PostalAddress',
-    streetAddress: 'Щёлковское шоссе, 75',
-    addressLocality: 'Москва',
-    postalCode: '107207',
-    addressCountry: 'RU',
-  },
-  openingHoursSpecification: mallOpenHours.map((day) => ({
+  telephone: layout.contacts.phone,
+  email: layout.contacts.email,
+  address: layout.contacts.address === footerContacts.address
+    ? {
+        '@type': 'PostalAddress',
+        streetAddress: 'Щёлковское шоссе, 75',
+        addressLocality: 'Москва',
+        postalCode: '107207',
+        addressCountry: 'RU',
+      }
+    : {
+        '@type': 'PostalAddress',
+        streetAddress: layout.contacts.address,
+        addressCountry: 'RU',
+      },
+  openingHoursSpecification: layout.hours.week.map((day) => ({
     '@type': 'OpeningHoursSpecification',
-    dayOfWeek: schemaDayByLabel[day.label],
+    dayOfWeek: schemaDayByLabel[day.label] ?? day.label,
     opens: day.open,
     closes: day.close,
   })),
-  sameAs: footerSocialLinks
+  sameAs: layout.socials
     .filter((link) => link.label !== 'Сайт' && hasSocialProfilePath(link.href))
     .map((link) => link.href),
-}
+}))
 
 useSeoMeta({
   title: siteName,
@@ -74,15 +80,15 @@ useSeoMeta({
   twitterImage: siteOgImage,
 })
 
-useHead({
+useHead(() => ({
   link: [{ rel: 'canonical', href: siteUrl }],
   script: [
     {
       type: 'application/ld+json',
-      innerHTML: JSON.stringify(jsonLd),
+      innerHTML: JSON.stringify(jsonLd.value),
     },
   ],
-})
+}))
 </script>
 
 <template>

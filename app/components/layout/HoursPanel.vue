@@ -1,16 +1,5 @@
 <script setup lang="ts">
-import { mallHoursTodayIndex, mallOpenHours } from '~/data/mallHours'
-
-interface HoursInterval {
-  label: string
-  open: string
-  close: string
-}
-
-interface HoursTenant {
-  name: string
-  ranges: HoursInterval[]
-}
+import { layoutDisplayWeek, layoutTodayIndex } from '#shared/utils/layoutHours'
 
 withDefaults(
   defineProps<{
@@ -27,31 +16,10 @@ const titleId = useId()
 /** Обход Nuxt `virtual:public` + Vite HMR (`?t=&path` → `/&/images/...`). */
 const hoursMallSrc = ['', 'images', 'layout', 'hours-mall.png'].join('/')
 
-const mallDays: HoursInterval[] = [...mallOpenHours]
-
-const tenants: HoursTenant[] = [
-  {
-    name: 'Перекресток',
-    ranges: [{ label: 'Пн-Вс', open: '07:00', close: '23:00' }],
-  },
-  {
-    name: 'КиноОККО',
-    ranges: [{ label: 'Пн-Вс', open: '10:00', close: '02:00' }],
-  },
-  {
-    name: 'Аптека Доктор Столетов',
-    ranges: [{ label: 'Пн-Вс', open: '09:00', close: '23:00' }],
-  },
-  {
-    name: 'World class',
-    ranges: [
-      { label: 'Пн-Пт', open: '07:00', close: '00:00' },
-      { label: 'Сб-Вс', open: '09:00', close: '00:00' },
-    ],
-  },
-]
-
-const todayIndex = computed(() => mallHoursTodayIndex())
+const layout = useLayoutStore()
+const mallDays = computed(() => layoutDisplayWeek(layout.hours))
+const tenants = computed(() => layout.hours.tenants)
+const todayIndex = computed(() => layoutTodayIndex(layout.hours))
 </script>
 
 <template>

@@ -2,6 +2,7 @@
 import { NuxtLink } from '#components'
 import type { FooterNavItem } from '~/utils/siteFooter'
 
+const layout = useLayoutStore()
 const email = ref('')
 const consent = ref(false)
 const newsletterStatus = ref<'idle' | 'need-consent' | 'soon'>('idle')
@@ -32,7 +33,7 @@ function onNewsletterSubmit() {
             <UiLogo aria-hidden="true" />
           </NuxtLink>
           <p :class="$style.address">
-            {{ footerContacts.address }}
+            {{ layout.contacts.address }}
           </p>
         </div>
 
@@ -127,30 +128,15 @@ function onNewsletterSubmit() {
         </section>
 
         <div :class="$style.contact">
-          <a :class="$style.contactLink" :href="footerContacts.phoneHref">
-            {{ footerContacts.phone }}
+          <a :class="$style.contactLink" :href="layout.contacts.phoneHref">
+            {{ layout.contacts.phone }}
           </a>
-          <a :class="$style.contactLink" :href="footerContacts.emailHref">
-            {{ footerContacts.email }}
+          <a :class="$style.contactLink" :href="layout.contacts.emailHref">
+            {{ layout.contacts.email }}
           </a>
           <ul :class="$style.socialList">
-            <li v-for="item in footerSocialLinks" :key="item.label">
-              <a
-                :class="$style.socialLink"
-                :href="item.href"
-                :aria-label="item.label"
-                rel="noopener noreferrer"
-                target="_blank"
-                :style="item.hoverColor
-                  ? { '--social-hover': item.hoverColor }
-                  : undefined"
-              >
-                <UIcon
-                  :name="item.icon"
-                  :class="$style.socialIcon"
-                  aria-hidden="true"
-                />
-              </a>
+            <li v-for="item in layout.socials" :key="item.href">
+              <LayoutSocialLink :item="item" />
             </li>
           </ul>
         </div>
@@ -343,35 +329,6 @@ function onNewsletterSubmit() {
   margin: 0;
   padding: 0;
   list-style: none;
-}
-
-.socialLink {
-  display: block;
-  flex-shrink: 0;
-  color: var(--fs-color-black);
-  border-radius: 50%;
-  transition: color 0.2s ease;
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
-
-  &:hover {
-    color: var(--social-hover, var(--fs-color-beige));
-  }
-
-  &:focus-visible {
-    color: var(--social-hover, var(--fs-color-beige));
-    outline: rem(2) solid var(--fs-color-black);
-    outline-offset: rem(2);
-  }
-}
-
-.socialIcon {
-  display: block;
-  width: rem(44);
-  height: rem(44);
-  color: inherit;
 }
 
 .newsletter {

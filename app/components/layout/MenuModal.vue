@@ -77,7 +77,8 @@ const mobileSecondary = [
   { label: 'Контакты', to: '/contacts' },
 ] as const
 
-const addressLine = 'Москва, Щёлковское шоссе, 75'
+const layout = useLayoutStore()
+const addressLine = computed(() => layout.contacts.address)
 
 function isDesktopViewport(): boolean {
   return window.matchMedia(DESKTOP_MQ).matches
@@ -398,34 +399,24 @@ onBeforeUnmount(() => {
             <p :class="$style.address">
               <span :class="$style.addressMobile">{{ addressLine }}</span>
               <span :class="$style.addressDesk">
-                Москва,<br>
-                Щёлковское шоссе, 75
+                <template v-if="addressLine === footerContacts.address">
+                  Москва,<br>
+                  Щёлковское шоссе, 75
+                </template>
+                <template v-else>
+                  {{ addressLine }}
+                </template>
               </span>
             </p>
-            <a :class="$style.contactLink" :href="footerContacts.phoneHref">
-              {{ footerContacts.phone }}
+            <a :class="$style.contactLink" :href="layout.contacts.phoneHref">
+              {{ layout.contacts.phone }}
             </a>
-            <a :class="$style.contactLink" :href="footerContacts.emailHref">
-              {{ footerContacts.email }}
+            <a :class="$style.contactLink" :href="layout.contacts.emailHref">
+              {{ layout.contacts.email }}
             </a>
             <ul :class="$style.socialList">
-              <li v-for="item in footerSocialLinks" :key="item.label">
-                <a
-                  :class="$style.socialLink"
-                  :href="item.href"
-                  :aria-label="item.label"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  :style="item.hoverColor
-                    ? { '--social-hover': item.hoverColor }
-                    : undefined"
-                >
-                  <UIcon
-                    :name="item.icon"
-                    :class="$style.socialIcon"
-                    aria-hidden="true"
-                  />
-                </a>
+              <li v-for="item in layout.socials" :key="item.href">
+                <LayoutSocialLink :item="item" />
               </li>
             </ul>
           </div>
@@ -971,34 +962,4 @@ $menu-media-duration: 0.55s;
   }
 }
 
-.socialLink {
-  display: block;
-  flex-shrink: 0;
-  color: var(--fs-color-black);
-  border-radius: 50%;
-  transition: color 0.2s ease;
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
-
-  &:focus-visible {
-    color: var(--social-hover, var(--fs-color-beige));
-    outline: rem(2) solid var(--fs-color-black);
-    outline-offset: rem(2);
-  }
-
-  @media (hover: hover) {
-    &:hover {
-      color: var(--social-hover, var(--fs-color-beige));
-    }
-  }
-}
-
-.socialIcon {
-  display: block;
-  width: rem(44);
-  height: rem(44);
-  color: inherit;
-}
 </style>

@@ -13,6 +13,17 @@ import {
   loyaltyStoreLinks,
 } from '~/data/loyaltyPage'
 
+const layout = useLayoutStore()
+
+const storeLinks = computed(() =>
+  loyaltyStoreLinks.flatMap((link) => {
+    const fromApi = layout.apps.find((app) => app.id === link.id)
+    if (!fromApi) return []
+
+    return [{ ...link, href: fromApi.href, label: fromApi.label }]
+  }),
+)
+
 const pageTitle = 'Программа лояльности'
 
 const breadcrumbItems = [
@@ -29,7 +40,7 @@ useSeoMeta({
   <div :class="$style.root">
     <LoyaltyHero
       v-bind="loyaltyHero"
-      :store-links="loyaltyStoreLinks"
+      :store-links="storeLinks"
       :breadcrumbs="breadcrumbItems"
     />
 
@@ -41,7 +52,7 @@ useSeoMeta({
       <LoyaltyJoin
         v-bind="loyaltyJoin"
         :steps="loyaltyJoinSteps"
-        :store-links="loyaltyStoreLinks"
+        :store-links="storeLinks"
       />
     </div>
 
@@ -57,7 +68,7 @@ useSeoMeta({
       />
       <LoyaltyCta
         v-bind="loyaltyCta"
-        :store-links="loyaltyStoreLinks"
+        :store-links="storeLinks"
       />
     </div>
   </div>

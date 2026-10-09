@@ -1,7 +1,6 @@
 import type {
   ContactsDepartment,
   ContactsFeedbackContent,
-  ContactsHoursRange,
   ContactsPageContent,
 } from '#shared/types/contacts'
 import { footerContacts } from '~/utils/siteFooter'
@@ -34,19 +33,6 @@ export const contactsFeedback = {
   ],
   patternSrc: '/images/contacts/feedback-pattern.svg',
 } as const satisfies ContactsFeedbackContent
-
-export const contactsHours: ContactsHoursRange[] = [
-  {
-    id: 'weekdays-sun',
-    days: 'ПН-ЧТ, ВС',
-    time: '10:00 - 22:00',
-  },
-  {
-    id: 'fri-sat',
-    days: 'ПТ-СБ',
-    time: '10:00 - 23:00',
-  },
-]
 
 export const contactsDepartments: ContactsDepartment[] = [
   {
