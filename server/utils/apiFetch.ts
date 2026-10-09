@@ -1,3 +1,6 @@
+import type { ApiRequest, RawApiClient } from '#shared/api/request'
+import { asApiRequest } from '#shared/api/request'
+import { withThrottleRetry } from '#shared/api/throttle'
 import type { ApiEvent } from './apiEvent'
 import { basicAuthorization } from '#shared/utils/basicAuthorization'
 import { normalizeApiBaseUrl } from '#shared/utils/normalizeApiBaseUrl'
@@ -46,16 +49,22 @@ export function buildApiFetchOptions(config: ApiRuntimeConfig): ApiFetchOptions 
 /**
  * HTTP-клиент Nitro к Laravel. База и Basic auth — из приватного `runtimeConfig`,
  * не из `public.apiBase`. В лог пишется только статус, без тела и заголовков.
+ *
+ * Наружу — простой контракт {@link ApiRequest}: `$fetch` типизирован маршрутами Nitro,
+ * а пути к Laravel у нас динамические (см. {@link RawApiClient}). Лимит API ждём окном:
+ * пререндер обходит сотни страниц и без этого упирается в 429.
  */
-export function apiFetch(event?: ApiEvent) {
+export function apiFetch(event?: ApiEvent): ApiRequest {
   const config = event ? useRuntimeConfig(event) : useRuntimeConfig()
 
-  return $fetch.create({
+  const client = $fetch.create({
     ...buildApiFetchOptions(config),
     onResponseError(ctx) {
       if (import.meta.dev) {
         console.error('[apiFetch]', String(ctx.request), ctx.response.status)
       }
     },
-  })
+  }) as unknown as RawApiClient
+
+  return withThrottleRetry(asApiRequest(client))
 }

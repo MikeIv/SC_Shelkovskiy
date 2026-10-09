@@ -112,6 +112,16 @@ describe('server/api/feed/index.get', () => {
     expect(requestedPath).toBe('')
   })
 
+  it('битые параметры не роняют расчёт ключа кэша', async () => {
+    const handler = await loadHandler()
+
+    query = { type: 'mall' }
+
+    expect(() => cacheOptions?.getKey?.({})).not.toThrow()
+    expect(cacheOptions?.getKey?.({})).toBe('api-feed:invalid')
+    await expect(handler({})).rejects.toMatchObject({ statusCode: 400 })
+  })
+
   it('502, если data не массив', async () => {
     const handler = await loadHandler(() => ({ data: {} }))
 

@@ -1,74 +1,80 @@
-import type { ApiEvent } from './apiEvent'
+import type { ApiEndpoint, ApiQuery } from '#shared/api/endpoints'
+import { apiErrorStatus, isApiContractError } from '#shared/api/errors'
 import type { ApiEnvelope } from '#shared/types/api'
+import type { ApiEvent } from './apiEvent'
 
-export type ApiProxyOptions<Dto, Data> = {
-  /** Имя обработчика в кэше Nitro. */
-  name: string
-  /** Ключ кэша: данные ручки общие для всех пользователей. */
-  key: string | ((event: ApiEvent) => string)
-  /** Время жизни кэша, секунды. */
-  ttl: number
-  /** Путь upstream относительно `runtimeConfig.apiUpstream`. */
-  path: string | ((event: ApiEvent) => string)
-  /** Имя ручки для текста ошибки. */
-  label: string
-  /** Проверка формы ответа до маппинга. */
-  isValid: (value: unknown) => value is Dto
-  /** DTO → UI-тип: браузер получает наш контракт, а не ответ Laravel. */
-  map: (dto: Dto) => Data
+/**
+ * Источники входа серверной ручки: `query` и `slug` из события Nitro.
+ * У индексных ручек slug не читаем — у них нет параметра пути.
+ */
+export type ApiInputReaders = {
+  query?: (event: ApiEvent) => ApiQuery
+  slug?: (event: ApiEvent) => string
 }
 
 /**
- * Кэширующий прокси к Laravel: один запрос на TTL, маппинг на сервере, наружу — статус
- * без тела upstream. `apiFetch`, `defineCachedEventHandler`, `createError` и `isError` —
- * глобали Nitro; вызываются без импорта, потому что серверные тесты подменяют их
- * через `vi.stubGlobal`.
+ * Кэширующий прокси ручки. Контракт живёт в `shared/api/endpoints` и общий с клиентом,
+ * поэтому здесь только транспорт, кэш Nitro и перевод ошибок контракта в `createError`.
+ *
+ * `apiFetch`, `defineCachedEventHandler`, `createError` и `isError` — глобали Nitro;
+ * вызываются без импорта, потому что серверные тесты подменяют их через `vi.stubGlobal`.
  */
-export function defineApiProxy<Dto, Data>(options: ApiProxyOptions<Dto, Data>) {
-  const { name, key, ttl, path, label, isValid, map } = options
+export function defineApiProxy<Params, Data>(
+  endpoint: ApiEndpoint<Params, Data>,
+  readers: ApiInputReaders = {},
+) {
+  const readInput = (event: ApiEvent) => ({
+    query: readers.query ? readers.query(event) : {},
+    slug: readers.slug ? readers.slug(event) : undefined,
+  })
 
   return defineCachedEventHandler(
     async (event: ApiEvent) => {
       try {
-        const requestPath = typeof path === 'function' ? path(event) : path
-        const dto = await apiFetch(event)<Dto>(requestPath)
+        const params = endpoint.params(readInput(event))
+        const request = apiFetch(event)
 
-        if (!isValid(dto)) {
-          throw createError({
-            statusCode: 502,
-            statusMessage: `${label} API payload is invalid`,
-          })
-        }
-
-        const body: ApiEnvelope<Data> = {
-          data: map(dto),
-        }
+        const data = await endpoint.load(request, params)
+        const body: ApiEnvelope<Data> = { data }
 
         return body
       } catch (error) {
-        if (isError(error)) throw error
-
-        throw createError({
-          statusCode: upstreamStatus(error),
-          statusMessage: `${label} API request failed`,
-        })
+        throw toApiError(error, endpoint.label)
       }
     },
     {
-      maxAge: ttl,
-      name,
-      getKey: (event: ApiEvent) => (typeof key === 'function' ? key(event) : key),
+      maxAge: endpoint.cache.ttl,
+      name: endpoint.cache.name,
+      /**
+       * Ключ кэша считается по параметрам, но битые параметры здесь не роняем: `getKey`
+       * выполняется до обработчика, и ошибка контракта превратилась бы в 500.
+       * Ручка всё равно ответит 400 — до кэша дело не доходит.
+       */
+      getKey: (event: ApiEvent) => {
+        try {
+          return endpoint.key(endpoint.params(readInput(event)))
+        } catch {
+          return `${endpoint.cache.name}:invalid`
+        }
+      },
     },
   )
 }
 
-export function upstreamStatus(error: unknown): number {
-  if (typeof error !== 'object' || error === null) return 502
+/**
+ * Наружу — статус без тела upstream: ошибка контракта отдаёт свой код и текст,
+ * h3-ошибка (например, 503 без настроенного upstream) проходит как есть,
+ * всё остальное становится 502.
+ */
+export function toApiError(error: unknown, label: string): unknown {
+  if (isApiContractError(error)) {
+    return createError({ statusCode: error.statusCode, statusMessage: error.message })
+  }
 
-  const record = error as { statusCode?: unknown; status?: unknown }
-  const status = record.statusCode ?? record.status
+  if (isError(error)) return error
 
-  if (typeof status === 'number' && status >= 400 && status <= 599) return status
-
-  return 502
+  return createError({
+    statusCode: apiErrorStatus(error),
+    statusMessage: `${label} API request failed`,
+  })
 }

@@ -27,9 +27,20 @@ function fixture(name) {
   return payload
 }
 
+/**
+ * CORS как у боевого Laravel после настройки `config/cors.php`: в прямом режиме
+ * (статический стенд) браузер ходит в API напрямую, без прокси Nitro.
+ */
+const CORS_HEADERS = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-methods': 'GET,POST,OPTIONS',
+  'access-control-allow-headers': 'content-type,accept',
+}
+
 function json(res, status, payload) {
   const body = JSON.stringify(payload)
   res.writeHead(status, {
+    ...CORS_HEADERS,
     'content-type': 'application/json; charset=utf-8',
     'content-length': Buffer.byteLength(body),
   })
@@ -86,6 +97,12 @@ function feedListFixture(url) {
 const server = createServer((req, res) => {
   const url = new URL(req.url ?? '/', `http://127.0.0.1:${PORT}`)
   const { pathname } = url
+
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204, CORS_HEADERS)
+
+    return res.end()
+  }
 
   if (pathname === '/__health') {
     return json(res, 200, { ok: true, scenario: SCENARIO })

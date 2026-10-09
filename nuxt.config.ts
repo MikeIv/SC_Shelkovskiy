@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { API_IMAGE_HOST } from './shared/utils/apiImageHost'
+import { isDirectApiBase } from './shared/api/directBase'
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -8,6 +9,12 @@ const yandexMapsApikey = process.env.NUXT_PUBLIC_YANDEX_MAPS_APIKEY?.trim() ?? '
 
 /** Хост стенда: IPX тянет `/storage` только с этого домена и с Basic из рантайм-env. */
 const apiImageHost = API_IMAGE_HOST
+
+/**
+ * Прямой режим данных: абсолютный `NUXT_PUBLIC_API_BASE` — признак статического хостинга.
+ * Серверного ipx там нет (`/_ipx/...` отдал бы index.html), поэтому картинки идут с API как есть.
+ */
+const directApiBase = isDirectApiBase(process.env.NUXT_PUBLIC_API_BASE)
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
@@ -104,8 +111,9 @@ export default defineNuxtConfig({
     apiAuth: '',
     /**
      * `headers` намеренно пустой: Basic для ipx приходит только из рантайма
-     * (`NUXT_IPX_HTTP_FETCH_OPTIONS_HEADERS_AUTHORIZATION`), иначе секрет вшивается
-     * в серверный бандл и ротация кредов требует пересборки.
+     * (`NUXT_IPX_HTTP_FETCH_OPTIONS_HEADERS='{"Authorization":"Basic …"}'`), иначе секрет
+     * вшивается в серверный бандл и ротация кредов требует пересборки. Вложенное имя
+     * (`…_HEADERS_AUTHORIZATION`) не сработает: Nitro применяет env лишь к существующим ключам.
      */
     ipx: {
       http: {
@@ -121,7 +129,7 @@ export default defineNuxtConfig({
   },
 
   image: {
-    provider: 'ipx',
+    provider: directApiBase ? 'none' : 'ipx',
     domains: [apiImageHost],
     format: ['webp'],
   },

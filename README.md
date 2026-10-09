@@ -7,7 +7,7 @@
 ## Старт
 
 1. **`pnpm install`**
-2. **`cp .env.example .env`**: задайте **`NUXT_PUBLIC_API_BASE`**, если фронт ходит на отдельный API (иначе оставьте пустым — относительные пути к текущему origin).
+2. **`cp .env.example .env`**: задайте **`NUXT_PUBLIC_API_BASE`**, если фронт ходит на отдельный API (иначе оставьте пустым — относительные пути к текущему origin). Режимы — в разделе [HTTP API](#http-api).
 3. **`pnpm dev`** — [http://localhost:3000](http://localhost:3000)
 
 ## Требования
@@ -72,11 +72,22 @@ pnpm approve-builds --all
 
 Сервер Nitro — в **`server/`** (`api/`, `routes/`, `middleware/`, `plugins/`, `utils/`).
 
-## HTTP API (каркас)
+## HTTP API
 
-- База запросов: **`runtimeConfig.public.apiBase`** ← **`NUXT_PUBLIC_API_BASE`** ([`.env.example`](.env.example)).
-- Клиент: **`useApi()`** (`$fetch` с `baseURL`) и **`useApiFetch()`** (полный URL = `apiBase` + путь, без `baseURL` в опциях `useFetch`) — [`app/composables/useApi.ts`](app/composables/useApi.ts).
-- Сервер: **`serverApi(event?)`** — [`server/utils/serverApi.ts`](server/utils/serverApi.ts); URL — [`shared/utils/normalizeApiBaseUrl.ts`](shared/utils/normalizeApiBaseUrl.ts) (`normalizeApiBaseUrl`, `joinApiUrl`).
+Режим данных задаёт **`runtimeConfig.public.apiBase`** ← **`NUXT_PUBLIC_API_BASE`** ([`.env.example`](.env.example)):
+
+| `NUXT_PUBLIC_API_BASE`  | Режим  | Кто ходит в Laravel          | Basic                         | CORS         |
+| ----------------------- | ------ | ---------------------------- | ----------------------------- | ------------ |
+| пусто или относительный | прокси | ручки Nitro `/api/*`         | да, только на сервере         | не нужен     |
+| абсолютный URL API      | прямой | браузер и пререндер напрямую | нет — секрет попал бы в бандл | нужен на API |
+
+Прямой режим — для статического хостинга стенда (devdeployer отдаёт только `.output/public`,
+серверных ручек там нет); ipx в нём отключается, картинки идут с API как есть.
+
+- Контракт ручек общий для обоих режимов — [`shared/api/endpoints.ts`](shared/api/endpoints.ts): путь у Laravel, проверка `query`/`slug`, проверка формы ответа, маппинг DTO → UI. Транспорты: [`server/api/*`](server/api) (Nitro) и [`shared/api/direct.ts`](shared/api/direct.ts) (клиент).
+- Лимит API (429 + `Retry-After`, у стенда 120 запросов в минуту на IP) — [`shared/api/throttle.ts`](shared/api/throttle.ts): серверные запросы ждут окно лимита, иначе пререндер сотен страниц падает.
+- Клиент: **`useApi()`** (`$fetch` с `baseURL`) и **`useApiFetch()`** — [`app/composables/useApi.ts`](app/composables/useApi.ts); тип ответа для обоих режимов — `ApiEnvelope<UI-тип>`.
+- Сервер: **`serverApi(event?)`** — [`server/utils/serverApi.ts`](server/utils/serverApi.ts); **`apiFetch(event?)`** — [`server/utils/apiFetch.ts`](server/utils/apiFetch.ts). URL — [`shared/utils/normalizeApiBaseUrl.ts`](shared/utils/normalizeApiBaseUrl.ts) (`normalizeApiBaseUrl`, `joinApiUrl`).
 - Типизация `public.apiBase` — [`types/nuxt-public.d.ts`](types/nuxt-public.d.ts). Приватные ключи `runtimeConfig` добавляйте в `nuxt.config` и отдельное расширение `RuntimeConfig` в `types/`.
 
 ## Документация
