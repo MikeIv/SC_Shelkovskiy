@@ -17,6 +17,12 @@
     "stylelint:fix": "stylelint \"**/*.{vue,css}\" --fix --allow-empty-input",
     "lint:all": "eslint . && pnpm format:check && stylelint \"**/*.{vue,css}\" --allow-empty-input",
     "typecheck": "nuxt typecheck",
+    "test": "pnpm test:unit && pnpm test:component",
+    "test:unit": "vitest run --project node",
+    "test:component": "vitest run --project nuxt",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "verify": "pnpm lint:all && pnpm typecheck"
   },
   "dependencies": {
@@ -38,10 +44,14 @@
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.15.2",
+    "@nuxt/test-utils": "^4.3.3",
+    "@playwright/test": "^1.64.0",
     "@types/node": "^25.7.0",
+    "@vue/test-utils": "^2.5.1",
     "eslint": "^10.3.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
+    "happy-dom": "^20.14.5",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.4",
     "postcss": "^8.5.14",
@@ -53,6 +63,7 @@
     "stylelint-config-recommended-vue": "^1.6.1",
     "stylelint-order": "^8.1.1",
     "typescript": "~5.8.3",
+    "vitest": "^5.0.3",
     "vue-tsc": "^3.2.8"
   }
 }

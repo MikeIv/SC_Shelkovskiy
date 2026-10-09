@@ -1,0 +1,29 @@
+{
+  "data": {
+    "slides": [
+      {
+        "id": 901,
+        "title": "Тестовый слайд с заголовком",
+        "description": "Описание тестового слайда",
+        "image": "/images/home/intro-1.png",
+        "image_mobile": "/images/home/intro-1-mobile.jpg",
+        "video": null,
+        "url": "/events/test-event"
+      },
+      {
+        "id": 902,
+        "title": null,
+        "description": null,
+        "image": "/images/home/intro-2.png",
+        "image_mobile": null,
+        "video": null,
+        "url": null
+      }
+    ],
+    "feed": [],
+    "brands": [],
+    "categories": [],
+    "gallery": [],
+    "video_url": null
+  }
+}

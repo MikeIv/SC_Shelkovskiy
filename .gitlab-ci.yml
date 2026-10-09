@@ -7,6 +7,7 @@ include:
 
 stages:
   - verify
+  - test
   - build
   - deploy
 
@@ -30,6 +31,16 @@ verify:
   script:
     - pnpm verify
 
+test:
+  extends: .nodejs
+  stage: test
+  script:
+    - pnpm exec playwright install --with-deps chromium
+    - pnpm test
+    - pnpm test:e2e
+  needs:
+    - verify
+
 build:
   extends: .nodejs
   stage: build
@@ -37,6 +48,7 @@ build:
     - pnpm build
   needs:
     - verify
+    - test
 
 deploy develop:
   stage: deploy
