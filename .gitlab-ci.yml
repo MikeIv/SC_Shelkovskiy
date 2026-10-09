@@ -1,6 +1,3 @@
-# Quality gate + DevOps deploy (marlenuscom/devdeployer).
-# Dev URL: GitLab → Operate → Environments после успешного deploy develop.
-
 include:
   - project: marlenuscom/devdeployer
     file: 'template.gitlab-ci.yml'
@@ -41,8 +38,15 @@ test:
   needs:
     - verify
 
+.nuxt_api:
+  variables:
+    NUXT_PUBLIC_API_BASE: https://schelkovsky-backend-main.grandfs-develop.ru/api/v1
+    NUXT_REQUIRE_API_SOURCE: '1'
+
 build:
-  extends: .nodejs
+  extends:
+    - .nodejs
+    - .nuxt_api
   stage: build
   script:
     - pnpm build
@@ -52,9 +56,11 @@ build:
 
 deploy develop:
   stage: deploy
+  extends:
+    - .start
+    - .nuxt_api
   variables:
     PROJECT_TYPE: nuxt
-  extends: .start
   rules:
     - if: $CI_COMMIT_REF_PROTECTED == "true"
 
