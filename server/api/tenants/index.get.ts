@@ -3,6 +3,7 @@ import type { TenantsListResponseDto } from '#shared/types/dto/tenants'
 import { mapTenantsList } from '#shared/utils/mappers/tenants'
 import { isTenantCatalog } from '#shared/utils/tenantPath'
 import type { ApiEvent } from '../../utils/apiEvent'
+import { readApiQuery } from '../../utils/apiQuery'
 import { defineApiProxy } from '../../utils/apiProxy'
 
 const TENANTS_CACHE_SECONDS = 300
@@ -33,7 +34,7 @@ export default defineApiProxy<TenantsListResponseDto, CatalogListData>({
 })
 
 function catalogQuery(event: ApiEvent): string {
-  const type = getQuery(event).type
+  const type = readApiQuery(event).type
   return typeof type === 'string' ? type : ''
 }
 

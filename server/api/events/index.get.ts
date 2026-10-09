@@ -3,7 +3,7 @@ import type { EventsListData } from '#shared/types/events'
 import { mapEventsList } from '#shared/utils/mappers/events'
 import type { ApiEvent } from '../../utils/apiEvent'
 import { isListPayload } from '../../utils/apiPayload'
-import { readApiNumber } from '../../utils/apiQuery'
+import { readApiNumber, readApiQuery } from '../../utils/apiQuery'
 import { defineApiProxy } from '../../utils/apiProxy'
 
 const EVENTS_CACHE_SECONDS = 60
@@ -30,7 +30,7 @@ export default defineApiProxy<EventsListResponseDto, EventsListData>({
 })
 
 function readEventsQuery(event: ApiEvent): { page: number; perPage: number } {
-  const query = getQuery(event)
+  const query = readApiQuery(event)
 
   return {
     page: readApiNumber(query.page, 1, 1, Number.MAX_SAFE_INTEGER, 'Events page is invalid'),

@@ -4,7 +4,7 @@ import { isNewsFilterTab } from '#shared/utils/newsTag'
 import { mapFeedList } from '#shared/utils/mappers/news'
 import type { ApiEvent } from '../../utils/apiEvent'
 import { isListPayload } from '../../utils/apiPayload'
-import { readApiNumber } from '../../utils/apiQuery'
+import { readApiNumber, readApiQuery } from '../../utils/apiQuery'
 import { defineApiProxy } from '../../utils/apiProxy'
 
 const FEED_CACHE_SECONDS = 60
@@ -42,7 +42,7 @@ type FeedQuery = {
 }
 
 function readFeedQuery(event: ApiEvent): FeedQuery {
-  const query = getQuery(event)
+  const query = readApiQuery(event)
 
   return {
     type: readType(query.type),
