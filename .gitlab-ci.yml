@@ -44,11 +44,6 @@ test:
 build:
   extends: .nodejs
   stage: build
-  # Стенд отдаёт только `.output/public` (nuxt_template.conf без сервера Nitro), поэтому
-  # `/api/*` там не существует и данные на страницы кладёт сборка. Без абсолютного
-  # NUXT_PUBLIC_API_BASE сборка считается моковой и уезжает на стенд пустой витриной.
-  variables:
-    NUXT_PUBLIC_API_BASE: https://schelkovsky-backend-main.grandfs-develop.ru/api/v1
   script:
     - pnpm build
   needs:
