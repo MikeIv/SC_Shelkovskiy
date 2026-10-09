@@ -34,7 +34,7 @@ function fixture(name) {
 const CORS_HEADERS = {
   'access-control-allow-origin': '*',
   'access-control-allow-methods': 'GET,POST,OPTIONS',
-  'access-control-allow-headers': 'content-type,accept',
+  'access-control-allow-headers': 'content-type,accept,x-mock-fresh',
 }
 
 function json(res, status, payload) {
@@ -116,6 +116,8 @@ const server = createServer((req, res) => {
     if (SCENARIO === 'error') return json(res, 500, { message: 'Mock upstream failure' })
     if (SCENARIO === 'invalid') return json(res, 200, INVALID_HOME)
     if (SCENARIO === 'empty') return json(res, 200, fixture('home.empty.json'))
+    /** Проверка ревалидации: с этим заголовком отдаём «свежую» главную — данные из админки. */
+    if (req.headers['x-mock-fresh']) return json(res, 200, fixture('home.fresh.json'))
     return json(res, 200, fixture('home.json'))
   }
 

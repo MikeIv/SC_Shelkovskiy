@@ -14,7 +14,7 @@ const MOCK_API = 'http://127.0.0.1:4788/api/v1'
 const carousel = 'section[aria-roledescription="carousel"]'
 
 test.describe('Прямой режим данных', () => {
-  test('SSR отдаёт данные из API, а браузер не ходит в свои ручки', async ({ page }) => {
+  test('загрузка дотягивает актуальные данные из API, ручек Nitro нет', async ({ page }) => {
     const apiCalls: string[] = []
     const ownApiCalls: string[] = []
 
@@ -31,9 +31,38 @@ test.describe('Прямой режим данных', () => {
     await expect(page.locator(carousel)).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Тестовая акция' })).toBeVisible()
 
-    /** Данные пришли из пейлоада: ручек Nitro у статического стенда нет и запросов к ним нет. */
-    expect(apiCalls).toEqual([])
+    /**
+     * Данные сборки отрисованы сразу, но после гидратации страница дотягивает актуальное:
+     * правка в админке видна без пересборки статики. Своих ручек у стенда нет.
+     */
+    await expect.poll(() => apiCalls, { timeout: 15_000 }).toContain('/api/v1/home')
+    await expect.poll(() => apiCalls, { timeout: 15_000 }).toContain('/api/v1/layout')
     expect(ownApiCalls).toEqual([])
+  })
+
+  test('правка в админке видна без пересборки: страница дотягивает данные сама', async ({
+    page,
+  }) => {
+    /**
+     * Свежая фикстура отличается заголовком ленты: серверный рендер берёт данные сборки,
+     * а браузерный запрос — обновлённые, поэтому видно, что страница сходила в API сама.
+     */
+    await page.route(`${MOCK_API}/home`, (route) =>
+      route.continue({ headers: { ...route.request().headers(), 'x-mock-fresh': '1' } }),
+    )
+
+    const response = await page.goto('/')
+
+    /** Первый кадр — данные сборки (их же видят поисковики и мессенджеры). */
+    expect(await response?.text()).toContain('Тестовая акция')
+
+    /** Дальше страница обновила ленту сама — сборка для этого не нужна. */
+    await expect(page.getByRole('heading', { name: 'Акция из админки' })).toBeVisible({
+      timeout: 20_000,
+    })
+    await expect(page.getByRole('heading', { name: 'Тестовая акция' })).toHaveCount(0, {
+      timeout: 20_000,
+    })
   })
 
   test('картинки идут с API как есть: ipx в прямом режиме выключен', async ({ page }) => {

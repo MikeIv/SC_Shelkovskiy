@@ -83,6 +83,10 @@ pnpm approve-builds --all
 
 Прямой режим — для статического хостинга стенда (devdeployer отдаёт только `.output/public`,
 серверных ручек там нет); ipx в нём отключается, картинки идут с API как есть.
+Правила API ([общие правила](https://schelkovsky-backend-main.grandfs-develop.ru/docs)):
+база `{BACKEND}/api/v1`, авторизации нет, `Accept: application/json`, вход по CORS —
+`CORS разрешён только доменам из FRONTEND_URLS на бэкенде`. Значит origin стенда должен быть
+в `FRONTEND_URLS`, иначе браузер отклонит ответ.
 
 - Контракт ручек общий для обоих режимов — [`shared/api/endpoints.ts`](shared/api/endpoints.ts): путь у Laravel, проверка `query`/`slug`, проверка формы ответа, маппинг DTO → UI. Транспорты: [`server/api/*`](server/api) (Nitro) и [`shared/api/direct.ts`](shared/api/direct.ts) (клиент).
 - Лимит API (429 + `Retry-After`, у стенда 120 запросов в минуту на IP) — [`shared/api/throttle.ts`](shared/api/throttle.ts): серверные запросы ждут окно лимита, иначе пререндер сотен страниц падает.

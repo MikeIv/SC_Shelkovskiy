@@ -33,6 +33,12 @@ function createApiClient(): RawApiClient {
 
   return $fetch.create({
     baseURL: normalizeApiBaseUrl(config.public.apiBase),
+    /**
+     * `Accept: application/json` — правило API: без него Laravel отвечает редиректом
+     * вместо ошибки валидации. Ставим на транспорт, чтобы прямой режим не зависел от того,
+     * какой `Accept` подставит `useFetch`.
+     */
+    headers: { Accept: 'application/json' },
     onResponseError(ctx) {
       if (import.meta.dev) {
         console.error('[useApi]', String(ctx.request), ctx.response.status, ctx.response._data)
@@ -99,15 +105,59 @@ export function useApiFetch<T = unknown>(
    */
   const request = createTransport()
 
-  return useAsyncData<T>(
+  /**
+   * Пейлоад сборки читаем через захваченный `nuxtApp`: значение нужно и вне контекста setup —
+   * после сбоя запроса, когда `useNuxtApp()` уже недоступен.
+   */
+  const nuxtApp = useNuxtApp()
+  const prerendered = <Dto>(key: string): Dto | undefined => {
+    const payloadData: unknown = nuxtApp.payload.data
+
+    if (typeof payloadData !== 'object' || payloadData === null) return undefined
+
+    return (payloadData as Record<string, Dto | undefined>)[key]
+  }
+
+  const asyncData = useAsyncData<T>(
     route,
     async () => {
       try {
         return await loadDirect<T>(route.value, request)
       } catch (error) {
+        /**
+         * Статика без сервера: неудачная ревалидация не должна подменять показанное моками.
+         * Данные сборки уже отрисованы и остаются запасным вариантом (нет CORS, API лежит).
+         */
+        const built = prerendered<T>(route.value)
+
+        if (built != null) return built
+
         throw createError(apiErrorInfo(error))
       }
     },
-    { lazy: options?.lazy, server: options?.server, immediate: options?.immediate },
+    {
+      lazy: options?.lazy,
+      server: options?.server,
+      immediate: options?.immediate,
+      /**
+       * Статика без сервера: кэш отдаём только на первый кадр гидратации — там данные сборки.
+       * Поэтому `refresh` после неё и клиентские переходы всегда идут в API: правка в админке
+       * видна без деплоя.
+       */
+      getCachedData: (key, app, context) =>
+        app.isHydrating && context.cause === 'initial' ? prerendered<T>(key) : undefined,
+    },
   ) as AsyncData<T, FetchError | null>
+
+  /**
+   * Гидратация показывает данные сборки, поэтому актуальное дотягиваем сразу после неё:
+   * правки в админке видны без пересборки статики.
+   */
+  if (import.meta.client && getCurrentInstance() && options?.immediate !== false) {
+    onMounted(() => {
+      void asyncData.refresh()
+    })
+  }
+
+  return asyncData
 }

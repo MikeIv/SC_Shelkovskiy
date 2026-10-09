@@ -16,6 +16,24 @@ const apiImageHost = API_IMAGE_HOST
  */
 const directApiBase = isDirectApiBase(process.env.NUXT_PUBLIC_API_BASE)
 
+/**
+ * Источника данных нет — сборка уедет на стенд с моками и без единого запроса к Laravel.
+ * Ошибка тихая: страницы отрендерятся, а прокси-ручки `/api/*` на статике отдадут index.html
+ * с кодом 200. Поэтому конфигурацию проверяем до сборки, а не после деплоя.
+ */
+if (!directApiBase && !process.env.NUXT_API_UPSTREAM?.trim()) {
+  const message = [
+    'Источник данных не задан: NUXT_PUBLIC_API_BASE пуст, а NUXT_API_UPSTREAM не определён.',
+    'Прямой режим (статический стенд): NUXT_PUBLIC_API_BASE=https://<хост API>/api/v1',
+    'Прокси-режим (нужен запущенный сервер Nitro): NUXT_API_UPSTREAM=https://<хост API>/api/v1 и NUXT_API_AUTH=<login:password>',
+  ].join(' ')
+
+  /** Локальной сборке моки допустимы, в CI это всегда уехавшая на стенд пустая витрина. */
+  if (process.env.CI) throw new Error(message)
+
+  console.warn(`[nuxt.config] ${message}`)
+}
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
 
