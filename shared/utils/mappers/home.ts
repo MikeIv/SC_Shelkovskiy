@@ -1,6 +1,7 @@
 import type { HomeGalleryAlbum, HomeIntroSlide, HomePageData } from '#shared/types/home'
 import type { NewsCardItem, NewsTagVariant } from '#shared/types/news'
 import type { HomeResponseDto, HomeSlideDto } from '#shared/types/dto/home'
+import { asRecord, sitePath, text } from '#shared/utils/apiRecord'
 import { formatApiDate } from '#shared/utils/formatApiDate'
 import { formatApiPeriodUntil } from '#shared/utils/formatApiPeriod'
 import { resolveAlt } from '#shared/utils/resolveAlt'
@@ -78,7 +79,7 @@ function mapHomeIntroSlide(slide: HomeSlideDto): HomeIntroSlide | undefined {
   }
 }
 
-function mapFeedItem(item: unknown): NewsCardItem | undefined {
+export function mapFeedItem(item: unknown): NewsCardItem | undefined {
   const record = asRecord(item)
   if (!record) return undefined
 
@@ -139,20 +140,4 @@ function mapGalleryItem(item: unknown): HomeGalleryAlbum | undefined {
 function photoCountOf(value: unknown): number {
   if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) return 0
   return Math.floor(value)
-}
-
-function asRecord(value: unknown): Record<string, unknown> | undefined {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) return undefined
-  return value as Record<string, unknown>
-}
-
-function text(value: unknown): string {
-  return typeof value === 'string' ? value.trim() : ''
-}
-
-/** В карточку попадает только путь сайта. Внешний URL из CMS не становится ссылкой. */
-function sitePath(value: unknown): string {
-  const path = text(value)
-  if (!path.startsWith('/') || path.startsWith('//')) return ''
-  return path
 }

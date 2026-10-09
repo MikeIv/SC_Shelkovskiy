@@ -1,0 +1,38 @@
+{
+  "data": [
+    {
+      "type": "action",
+      "slug": "test-action-one",
+      "title": "Тестовая акция магазина",
+      "image": "/images/home/news/colins.jpg",
+      "date": "2026-10-01",
+      "period": {
+        "from": "2026-10-01",
+        "to": "2026-10-31"
+      },
+      "source": {
+        "kind": "tenant",
+        "name": "Тестовый магазин",
+        "slug": "test-shop"
+      },
+      "url": "/news/test-action-one"
+    },
+    {
+      "type": "action",
+      "slug": "test-action-two",
+      "title": "Тестовая акция фудкорта",
+      "image": "/images/home/news/colins.jpg",
+      "date": "2026-10-02",
+      "period": {
+        "from": "2026-10-02",
+        "to": "2026-10-20"
+      },
+      "source": {
+        "kind": "tenant",
+        "name": "Тестовый магазин",
+        "slug": "test-shop"
+      },
+      "url": "/news/test-action-two"
+    }
+  ]
+}

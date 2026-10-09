@@ -5,7 +5,9 @@ import type { NewsCardItem } from '#shared/types/news'
 import type { TenantDetail } from '#shared/types/tenantDetail'
 import { mapHomeFeed } from '#shared/utils/mappers/home'
 import { mapTenantDetail } from '#shared/utils/mappers/tenants'
+import { isItemPayload, isListPayload } from '../../utils/apiPayload'
 import { upstreamStatus } from '../../utils/apiProxy'
+import { readApiSlug } from '../../utils/apiQuery'
 
 const TENANT_CACHE_SECONDS = 300
 
@@ -15,7 +17,7 @@ const TENANT_CACHE_SECONDS = 300
  */
 export default defineCachedEventHandler(
   async (event: H3Event) => {
-    const slug = readSlug(event)
+    const slug = readApiSlug(event)
 
     if (!slug) {
       throw createError({
@@ -30,7 +32,7 @@ export default defineCachedEventHandler(
         loadTenantNews(event, slug),
       ])
 
-      if (!isTenantPayload(dto)) {
+      if (!isItemPayload(dto)) {
         throw createError({
           statusCode: 502,
           statusMessage: 'Tenant API payload is invalid',
@@ -60,7 +62,7 @@ export default defineCachedEventHandler(
   {
     maxAge: TENANT_CACHE_SECONDS,
     name: 'api-tenant',
-    getKey: (event: H3Event) => `tenant:${readSlug(event)}`,
+    getKey: (event: H3Event) => `tenant:${readApiSlug(event)}`,
   },
 )
 
@@ -70,26 +72,10 @@ async function loadTenantNews(event: H3Event, slug: string): Promise<NewsCardIte
       query: { tenant: slug, limit: 50 },
     })
 
-    if (!isFeedPayload(dto)) return []
+    if (!isListPayload(dto)) return []
 
     return mapHomeFeed(dto.data)
   } catch {
     return []
   }
-}
-
-function readSlug(event: H3Event): string {
-  const slug = getRouterParam(event, 'slug')
-  return typeof slug === 'string' ? slug : ''
-}
-
-function isTenantPayload(value: unknown): value is { data: unknown } {
-  if (typeof value !== 'object' || value === null || !('data' in value)) return false
-  const data = value.data
-  return typeof data === 'object' && data !== null && !Array.isArray(data)
-}
-
-function isFeedPayload(value: unknown): value is { data: unknown[] } {
-  if (typeof value !== 'object' || value === null || !('data' in value)) return false
-  return Array.isArray(value.data)
 }

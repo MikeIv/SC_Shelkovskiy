@@ -1,15 +1,10 @@
 import type { NewsCardItem } from '#shared/types/news'
+import type { ApiSeo } from '#shared/types/seo'
 import type { TenantStatus } from '#shared/types/catalog'
 
 export type TenantCatalog = 'shops' | 'cafes' | 'services' | 'entertainment'
 
-/** `seo` карточки арендатора. Пустые строки — поля, которых не было в ответе. */
-export type TenantSeo = {
-  title: string
-  description: string
-  keywords: string
-  ogImage: string
-}
+export type TenantSeo = ApiSeo
 
 /**
  * Карточка описания арендатора.

@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { eventsAfishaItems } from '~/data/eventsItems'
-
 const { label } = getSiteNavItem('/events')
 
-const breadcrumbItems = computed(() => [
-  { label: 'Главная', to: '/' },
-  { label },
-])
+const breadcrumbItems = computed(() => [{ label: 'Главная', to: '/' }, { label }])
+
+const { items } = await useEvents()
 </script>
 
 <template>
@@ -15,6 +12,6 @@ const breadcrumbItems = computed(() => [
       <UiBreadcrumbs :items="breadcrumbItems" />
     </template>
 
-    <EventsList :items="eventsAfishaItems" />
+    <EventsList :items="items" />
   </LayoutInnerPage>
 </template>

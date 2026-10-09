@@ -7,6 +7,10 @@ const props = defineProps<{
 }>()
 
 const linkTarget = computed(() => props.item.to ?? getEventDetailPath(props.item.id))
+
+/** Картинки API (`/storage/…` стенда) идут через ipx: прямой запрос к хранилищу без Basic не отдаётся. */
+const mediaSrc = useMediaSrc()
+const cardImage = computed(() => mediaSrc(props.item.imageSrc, 960))
 </script>
 
 <template>
@@ -30,9 +34,9 @@ const linkTarget = computed(() => props.item.to ?? getEventDetailPath(props.item
 
     <div :class="$style.media">
       <img
-        v-if="item.imageSrc"
+        v-if="cardImage"
         :class="$style.image"
-        :src="item.imageSrc"
+        :src="cardImage"
         :alt="item.imageAlt"
         width="504"
         height="334"

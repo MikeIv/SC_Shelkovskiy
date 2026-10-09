@@ -1,0 +1,25 @@
+{
+  "data": {
+    "type": "action",
+    "slug": "test-action-one",
+    "title": "Тестовая акция магазина",
+    "image": "/images/home/news/colins.jpg",
+    "date": "2026-10-01",
+    "period": { "from": "2026-10-01", "to": "2026-10-31" },
+    "source": { "kind": "tenant", "name": "Тестовый магазин", "slug": "test-shop" },
+    "url": "/news/test-action-one",
+    "published_at": "2026-09-28",
+    "gallery": [],
+    "text": "<p>Условия тестовой акции.</p>",
+    "tenant": {
+      "slug": "test-shop",
+      "name": "Тестовый магазин",
+      "logo": "/images/home/brands/zolotoy.png",
+      "floor": "1 этаж",
+      "map_url": "/map?tenant=test-shop"
+    },
+    "video": null,
+    "source_url": null,
+    "seo": { "title": null, "description": null, "keywords": null, "og_image": null }
+  }
+}

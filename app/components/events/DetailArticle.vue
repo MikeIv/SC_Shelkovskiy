@@ -2,12 +2,16 @@
 import type { EventDetailItem, EventRegisterPopup } from '#shared/types/events'
 import { eventsRegisterPopup } from '~/data/eventsDetails'
 
-defineProps<{
+const props = defineProps<{
   item: EventDetailItem
 }>()
 
 const layout = useLayoutStore()
 const isRegisterOpen = ref(false)
+
+/** Картинки API (`/storage/…` стенда) идут через ipx: прямой запрос к хранилищу без Basic не отдаётся. */
+const mediaSrc = useMediaSrc()
+const imageSrc = computed(() => mediaSrc(props.item.imageSrc, 1536))
 
 const registerPopup = computed<EventRegisterPopup>(() => {
   const cta = layout.ctaMax
@@ -18,7 +22,7 @@ const registerPopup = computed<EventRegisterPopup>(() => {
     title: cta.title || eventsRegisterPopup.title,
     description: cta.description || eventsRegisterPopup.description,
     ctaHref: cta.url,
-    imageSrc: cta.imageSrc || eventsRegisterPopup.imageSrc,
+    imageSrc: cta.imageSrc ? mediaSrc(cta.imageSrc, 480) : eventsRegisterPopup.imageSrc,
     imageAlt: cta.imageAlt || eventsRegisterPopup.imageAlt,
   }
 })
@@ -32,7 +36,7 @@ const registerPopup = computed<EventRegisterPopup>(() => {
         <time
           v-if="item.publishedAt"
           :class="$style.date"
-          :datetime="item.publishedAt"
+          :datetime="item.publishedAtIso ?? item.publishedAt"
         >
           {{ item.publishedAt }}
         </time>
@@ -69,8 +73,11 @@ const registerPopup = computed<EventRegisterPopup>(() => {
           </UiButton>
         </div>
 
+        <!-- eslint-disable-next-line vue/no-v-html -- HTML из CMS прошёл sanitizeApiHtml: script/style сняты, из атрибутов остаётся только безопасный href -->
+        <div v-if="item.bodyHtml" :class="$style.body" v-html="item.bodyHtml" />
+
         <div
-          v-if="item.paragraphs.length"
+          v-else-if="item.paragraphs.length"
           :class="$style.paragraphs"
         >
           <p
@@ -110,9 +117,9 @@ const registerPopup = computed<EventRegisterPopup>(() => {
 
       <div :class="$style.media">
         <img
-          v-if="item.imageSrc"
+          v-if="imageSrc"
           :class="$style.image"
-          :src="item.imageSrc"
+          :src="imageSrc"
           :alt="item.imageAlt || item.title"
           width="768"
           height="512"
@@ -264,6 +271,41 @@ const registerPopup = computed<EventRegisterPopup>(() => {
   p {
     margin: 0;
     @include fs-text-lg;
+    color: var(--fs-color-black);
+  }
+}
+
+/* Текст из CMS: теги приходят оттуда, поэтому типографику задаём здесь. */
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-2);
+
+  p,
+  li {
+    margin: 0;
+    @include fs-text-lg;
+    color: var(--fs-color-black);
+  }
+
+  ul,
+  ol {
+    display: flex;
+    flex-direction: column;
+    gap: rem(12);
+    margin: 0;
+    padding-left: rem(20);
+  }
+
+  h2,
+  h3 {
+    margin: 0;
+    @include fs-text-lg;
+    font-weight: 700;
+    color: var(--fs-color-black);
+  }
+
+  a {
     color: var(--fs-color-black);
   }
 }

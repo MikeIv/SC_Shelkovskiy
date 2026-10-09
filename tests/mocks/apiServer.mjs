@@ -12,8 +12,19 @@ import { readFileSync } from 'node:fs'
 const PORT = Number(process.env.MOCK_API_PORT ?? 4788)
 const SCENARIO = process.env.MOCK_API_SCENARIO ?? 'default'
 
+/** Фикстуры читаются один раз за процесс: пул ленты запрашивается на каждую страницу. */
+const FIXTURES = new Map()
+
 function fixture(name) {
-  return JSON.parse(readFileSync(new URL(`../fixtures/api/${name}`, import.meta.url), 'utf8'))
+  const cached = FIXTURES.get(name)
+  if (cached) return cached
+
+  const payload = JSON.parse(
+    readFileSync(new URL(`../fixtures/api/${name}`, import.meta.url), 'utf8'),
+  )
+  FIXTURES.set(name, payload)
+
+  return payload
 }
 
 function json(res, status, payload) {
@@ -27,6 +38,50 @@ function json(res, status, payload) {
 
 /** Битый payload: прокси обязан ответить 502, а не отдать мусор на клиент. */
 const INVALID_HOME = { data: { slides: 'oops' } }
+
+/** Детальные ленты: неизвестный slug отдаёт 404, как стенд. */
+const FEED_DETAILS = {
+  'test-news-one': 'feed.detail.news.json',
+  'test-action-one': 'feed.detail.action.json',
+}
+
+/** Детальные афиши: каждый slug списка открывается, как на стенде. */
+const EVENT_DETAILS = {
+  'test-event-one': 'event.json',
+  'test-event-two': 'event.two.json',
+}
+
+/** Пул записей вкладки: фикстуры — это записи, а не страницы, страницы считает мок. */
+function feedPool(type) {
+  if (type === 'action') return fixture('feed.action.json').data
+  if (type === 'smi') return fixture('feed.smi.json').data
+
+  /** Без `type` живой `/feed` отдаёт новости и акции, СМИ — только с `type=smi`. */
+  if (!type) return [...fixture('feed.news.json').data, ...fixture('feed.action.json').data]
+
+  return fixture('feed.news.json').data
+}
+
+/** Страница ленты по `page`/`per_page` с `meta` Laravel и вычетом `exclude`. */
+function feedListFixture(url) {
+  const type = url.searchParams.get('type')
+  const page = Number(url.searchParams.get('page') ?? '1')
+  const perPage = Number(url.searchParams.get('per_page') ?? '12')
+  const exclude = url.searchParams.get('exclude')
+
+  const pool = feedPool(type).filter((item) => item.slug !== exclude)
+  const start = (page - 1) * perPage
+
+  return {
+    data: pool.slice(start, start + perPage),
+    meta: {
+      current_page: page,
+      last_page: Math.max(1, Math.ceil(pool.length / perPage)),
+      per_page: perPage,
+      total: pool.length,
+    },
+  }
+}
 
 const server = createServer((req, res) => {
   const url = new URL(req.url ?? '/', `http://127.0.0.1:${PORT}`)
@@ -62,7 +117,26 @@ const server = createServer((req, res) => {
   }
 
   if (pathname === '/api/v1/feed') {
-    return json(res, 200, fixture('tenant.feed.json'))
+    if (url.searchParams.get('tenant')) return json(res, 200, fixture('tenant.feed.json'))
+    return json(res, 200, feedListFixture(url))
+  }
+
+  if (pathname.startsWith('/api/v1/feed/')) {
+    const slug = decodeURIComponent(pathname.slice('/api/v1/feed/'.length))
+    const detail = FEED_DETAILS[slug]
+    if (!detail) return json(res, 404, { message: 'Not found' })
+    return json(res, 200, fixture(detail))
+  }
+
+  if (pathname === '/api/v1/events') {
+    return json(res, 200, fixture('events.json'))
+  }
+
+  if (pathname.startsWith('/api/v1/events/')) {
+    const slug = decodeURIComponent(pathname.slice('/api/v1/events/'.length))
+    const detail = EVENT_DETAILS[slug]
+    if (!detail) return json(res, 404, { message: 'Not found' })
+    return json(res, 200, fixture(detail))
   }
 
   return json(res, 404, { message: 'Not found' })

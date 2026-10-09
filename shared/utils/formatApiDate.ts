@@ -1,4 +1,4 @@
-const MONTHS_GENITIVE = [
+export const MONTHS_GENITIVE = [
   'января',
   'февраля',
   'марта',

@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import { getEventDetailBySlug } from '~/data/eventsDetails'
-
 const route = useRoute()
 const { label: eventsListLabel } = getSiteNavItem('/events')
 
 const slug = String(route.params.slug ?? '')
-const item = getEventDetailBySlug(slug)
+const { item } = await useEvent(slug)
 
-if (!item) {
+if (!item.value) {
   throw createError({
     statusCode: 404,
     statusMessage: 'Страница не найдена',
@@ -17,16 +15,18 @@ if (!item) {
 const breadcrumbItems = computed(() => [
   { label: 'Главная', to: '/' },
   { label: eventsListLabel, to: '/events' },
-  { label: item.title },
+  { label: item.value?.title ?? '' },
 ])
 
 useSeoMeta({
-  title: item.title,
+  title: () => item.value?.seo?.title || item.value?.title,
+  description: () => item.value?.seo?.description || undefined,
+  ogImage: () => item.value?.seo?.ogImage || undefined,
 })
 </script>
 
 <template>
-  <LayoutInnerPage>
+  <LayoutInnerPage v-if="item">
     <template #lead>
       <UiBreadcrumbs :items="breadcrumbItems" />
     </template>

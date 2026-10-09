@@ -88,7 +88,7 @@ const galleryImages = computed(() =>
       <h2 id="tenant-about-title" :class="$style.aboutTitle">
         {{ item.aboutTitle || 'О бренде' }}
       </h2>
-      <!-- eslint-disable-next-line vue/no-v-html -- HTML очищен на бэкенде, маппер снимает script и инлайн-стили -->
+      <!-- eslint-disable-next-line vue/no-v-html -- HTML из CMS прошёл sanitizeApiHtml: script/style сняты, из атрибутов остаётся только безопасный href -->
       <div :class="$style.aboutText" v-html="item.about" />
     </section>
   </article>

@@ -10,6 +10,7 @@ import type {
   LayoutHoursTenant,
   LayoutSocial,
 } from '#shared/types/layout'
+import { asRecord, text } from '#shared/utils/apiRecord'
 import { resolveAlt } from '#shared/utils/resolveAlt'
 
 const DAY_LABELS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'] as const
@@ -247,15 +248,6 @@ function arrayField(record: Record<string, unknown>, keys: readonly string[]): u
   }
 
   return []
-}
-
-function asRecord(value: unknown): Record<string, unknown> | undefined {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) return undefined
-  return value as Record<string, unknown>
-}
-
-function text(value: unknown): string {
-  return typeof value === 'string' ? value.trim() : ''
 }
 
 function phoneHref(phone: string): string {

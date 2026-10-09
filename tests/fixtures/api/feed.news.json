@@ -1,0 +1,161 @@
+{
+  "data": [
+    {
+      "type": "news",
+      "slug": "test-news-one",
+      "title": "Тестовая новость о зимней коллекции",
+      "image": "/images/home/news/colins.jpg",
+      "date": "2026-09-30",
+      "source": {
+        "name": "ТРЦ «Щёлковский»",
+        "kind": "mall"
+      },
+      "url": "/news/test-news-one"
+    },
+    {
+      "type": "news",
+      "slug": "test-news-two",
+      "title": "Тестовая новость про фудкорт",
+      "image": "/images/home/news/colins.jpg",
+      "date": "2026-10-01",
+      "source": {
+        "kind": "tenant",
+        "name": "Тестовый магазин",
+        "slug": "test-shop"
+      },
+      "url": "/news/test-news-two"
+    },
+    {
+      "type": "news",
+      "slug": "test-news-three",
+      "title": "Тестовая новость №3",
+      "image": "/images/home/news/colins.jpg",
+      "date": "2026-10-02",
+      "source": {
+        "name": "ТРЦ «Щёлковский»",
+        "kind": "mall"
+      },
+      "url": "/news/test-news-three"
+    },
+    {
+      "type": "news",
+      "slug": "test-news-four",
+      "title": "Тестовая новость №4",
+      "image": "/images/home/news/colins.jpg",
+      "date": "2026-10-03",
+      "source": {
+        "name": "ТРЦ «Щёлковский»",
+        "kind": "mall"
+      },
+      "url": "/news/test-news-four"
+    },
+    {
+      "type": "news",
+      "slug": "test-news-five",
+      "title": "Тестовая новость №5",
+      "image": "/images/home/news/colins.jpg",
+      "date": "2026-10-04",
+      "source": {
+        "name": "ТРЦ «Щёлковский»",
+        "kind": "mall"
+      },
+      "url": "/news/test-news-five"
+    },
+    {
+      "type": "news",
+      "slug": "test-news-six",
+      "title": "Тестовая новость №6",
+      "image": "/images/home/news/colins.jpg",
+      "date": "2026-10-05",
+      "source": {
+        "name": "ТРЦ «Щёлковский»",
+        "kind": "mall"
+      },
+      "url": "/news/test-news-six"
+    },
+    {
+      "type": "news",
+      "slug": "test-news-seven",
+      "title": "Тестовая новость №7",
+      "image": "/images/home/news/colins.jpg",
+      "date": "2026-10-06",
+      "source": {
+        "name": "ТРЦ «Щёлковский»",
+        "kind": "mall"
+      },
+      "url": "/news/test-news-seven"
+    },
+    {
+      "type": "news",
+      "slug": "test-news-eight",
+      "title": "Тестовая новость №8",
+      "image": "/images/home/news/colins.jpg",
+      "date": "2026-10-07",
+      "source": {
+        "name": "ТРЦ «Щёлковский»",
+        "kind": "mall"
+      },
+      "url": "/news/test-news-eight"
+    },
+    {
+      "type": "news",
+      "slug": "test-news-nine",
+      "title": "Тестовая новость №9",
+      "image": "/images/home/news/colins.jpg",
+      "date": "2026-10-08",
+      "source": {
+        "name": "ТРЦ «Щёлковский»",
+        "kind": "mall"
+      },
+      "url": "/news/test-news-nine"
+    },
+    {
+      "type": "news",
+      "slug": "test-news-ten",
+      "title": "Тестовая новость №10",
+      "image": "/images/home/news/colins.jpg",
+      "date": "2026-10-09",
+      "source": {
+        "name": "ТРЦ «Щёлковский»",
+        "kind": "mall"
+      },
+      "url": "/news/test-news-ten"
+    },
+    {
+      "type": "news",
+      "slug": "test-news-eleven",
+      "title": "Тестовая новость №11",
+      "image": "/images/home/news/colins.jpg",
+      "date": "2026-10-10",
+      "source": {
+        "name": "ТРЦ «Щёлковский»",
+        "kind": "mall"
+      },
+      "url": "/news/test-news-eleven"
+    },
+    {
+      "type": "news",
+      "slug": "test-news-twelve",
+      "title": "Тестовая новость №12",
+      "image": "/images/home/news/colins.jpg",
+      "date": "2026-10-11",
+      "source": {
+        "name": "ТРЦ «Щёлковский»",
+        "kind": "mall"
+      },
+      "url": "/news/test-news-twelve"
+    },
+    {
+      "type": "news",
+      "slug": "test-news-thirteen",
+      "title": "Тестовая новость с последней страницы",
+      "image": "/images/home/news/colins.jpg",
+      "date": "2026-10-12",
+      "source": {
+        "name": "ТРЦ «Щёлковский»",
+        "kind": "mall"
+      },
+      "url": "/news/test-news-thirteen"
+    }
+  ]
+}

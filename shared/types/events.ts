@@ -1,3 +1,6 @@
+import type { ApiListMeta } from '#shared/types/api'
+import type { ApiSeo } from '#shared/types/seo'
+
 export type EventAfishaDate = {
   day: string
   month: string
@@ -33,9 +36,23 @@ export type EventRegisterPopup = {
 export type EventDetailItem = EventAfishaItem & {
   /** Дата публикации на детали. */
   publishedAt?: string
+  /** Та же дата в ISO — для `<time datetime>`, роботов и скринридеров. */
+  publishedAtIso?: string
   when: string
   location?: string
   paragraphs: string[]
   program?: EventProgramItem[]
   register?: boolean
+  /**
+   * Текст мероприятия из API — HTML из CMS, очищенный маппером.
+   * Мок отдаёт `paragraphs`, поэтому в UI два варианта вывода.
+   */
+  bodyHtml?: string
+  seo?: ApiSeo | null
+}
+
+/** Ответ прокси `/api/events`: афиша и пагинация Laravel. */
+export type EventsListData = {
+  items: EventAfishaItem[]
+  meta: ApiListMeta | null
 }

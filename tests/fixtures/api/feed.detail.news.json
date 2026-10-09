@@ -1,0 +1,30 @@
+{
+  "data": {
+    "type": "news",
+    "slug": "test-news-one",
+    "title": "Тестовая новость о зимней коллекции",
+    "image": "/images/home/news/colins.jpg",
+    "date": "2026-09-30",
+    "period": null,
+    "source": { "kind": "tenant", "name": "Тестовый магазин", "slug": "test-shop" },
+    "url": "/news/test-news-one",
+    "published_at": "2026-09-30",
+    "gallery": ["/images/home/news/colins.jpg"],
+    "text": "<p>Первый абзац тестового текста.</p><script>alert('xss')</script><p style=\"color: red\">Второй абзац тестового текста.</p>",
+    "tenant": {
+      "slug": "test-shop",
+      "name": "Тестовый магазин",
+      "logo": "/images/home/brands/zolotoy.png",
+      "floor": "1 этаж",
+      "map_url": "/map?tenant=test-shop"
+    },
+    "video": null,
+    "source_url": null,
+    "seo": {
+      "title": "Тестовая новость — SEO",
+      "description": "Описание тестовой новости",
+      "keywords": null,
+      "og_image": "/images/home/news/colins.jpg"
+    }
+  }
+}

@@ -1,9 +1,18 @@
 <script setup lang="ts">
 import type { NewsDetailItem } from '#shared/types/news'
 
-defineProps<{
+const props = defineProps<{
   item: NewsDetailItem
 }>()
+
+/** Картинки API (`/storage/…` стенда) идут через ipx: прямой запрос к хранилищу без Basic не отдаётся. */
+const mediaSrc = useMediaSrc()
+const galleryImages = computed(() =>
+  (props.item.gallery ?? []).map((src) => mediaSrc(src, 1536)),
+)
+const tenantLogoSrc = computed(() =>
+  props.item.tenant?.logoSrc ? mediaSrc(props.item.tenant.logoSrc, 480) : '',
+)
 </script>
 
 <template>
@@ -21,7 +30,7 @@ defineProps<{
         <time
           v-else
           :class="$style.date"
-          :datetime="item.publishedAt ?? item.date"
+          :datetime="item.publishedAtIso ?? item.date"
         >
           {{ item.publishedAt ?? item.date }}
         </time>
@@ -32,9 +41,9 @@ defineProps<{
 
     <div :class="$style.layout">
       <NewsDetailGallery
-        v-if="item.gallery?.length"
+        v-if="galleryImages.length"
         :class="$style.gallery"
-        :images="item.gallery"
+        :images="galleryImages"
         :alt="item.imageAlt || item.title"
       />
 
@@ -42,10 +51,10 @@ defineProps<{
         <div v-if="item.tenant" :class="$style.tenant">
           <div :class="$style.tenantLogo">
             <img
-              v-if="item.tenant.logoSrc"
+              v-if="tenantLogoSrc"
               :class="$style.tenantLogoImage"
-              :src="item.tenant.logoSrc"
-              :alt="item.tenant.logoAlt || item.category"
+              :src="tenantLogoSrc"
+              :alt="item.tenant?.logoAlt || item.category"
             >
             <UiLogo v-else :class="$style.tenantLogoFallback" />
           </div>
@@ -64,37 +73,42 @@ defineProps<{
         </div>
 
         <div :class="$style.article">
-          <div v-if="item.intro?.length" :class="$style.intro">
-            <p v-for="(paragraph, index) in item.intro" :key="index">
-              {{ paragraph }}
-            </p>
-          </div>
+          <!-- eslint-disable-next-line vue/no-v-html -- HTML из CMS прошёл sanitizeApiHtml: script/style сняты, из атрибутов остаётся только безопасный href -->
+          <div v-if="item.bodyHtml" :class="$style.body" v-html="item.bodyHtml" />
 
-          <section
-            v-for="(section, index) in item.sections"
-            :key="index"
-            :class="$style.section"
-          >
-            <h2 v-if="section.heading" :class="$style.sectionTitle">
-              {{ section.heading }}
-            </h2>
-
-            <ul v-if="section.list?.length" :class="$style.list">
-              <li v-for="(listItem, listIndex) in section.list" :key="listIndex">
-                {{ listItem }}
-              </li>
-            </ul>
-
-            <div v-if="section.paragraphs?.length" :class="$style.paragraphs">
-              <p v-for="(paragraph, paragraphIndex) in section.paragraphs" :key="paragraphIndex">
+          <template v-else>
+            <div v-if="item.intro?.length" :class="$style.intro">
+              <p v-for="(paragraph, index) in item.intro" :key="index">
                 {{ paragraph }}
               </p>
             </div>
 
-            <blockquote v-if="section.quote" :class="$style.quote">
-              {{ section.quote }}
-            </blockquote>
-          </section>
+            <section
+              v-for="(section, index) in item.sections"
+              :key="index"
+              :class="$style.section"
+            >
+              <h2 v-if="section.heading" :class="$style.sectionTitle">
+                {{ section.heading }}
+              </h2>
+
+              <ul v-if="section.list?.length" :class="$style.list">
+                <li v-for="(listItem, listIndex) in section.list" :key="listIndex">
+                  {{ listItem }}
+                </li>
+              </ul>
+
+              <div v-if="section.paragraphs?.length" :class="$style.paragraphs">
+                <p v-for="(paragraph, paragraphIndex) in section.paragraphs" :key="paragraphIndex">
+                  {{ paragraph }}
+                </p>
+              </div>
+
+              <blockquote v-if="section.quote" :class="$style.quote">
+                {{ section.quote }}
+              </blockquote>
+            </section>
+          </template>
 
           <UiShareMenu />
         </div>
@@ -264,6 +278,41 @@ defineProps<{
   p {
     margin: 0;
     @include fs-text-lg;
+    color: var(--fs-color-black);
+  }
+}
+
+/* Текст из CMS: теги приходят оттуда, поэтому типографику задаём здесь. */
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-2);
+
+  p,
+  li {
+    margin: 0;
+    @include fs-text-lg;
+    color: var(--fs-color-black);
+  }
+
+  ul,
+  ol {
+    display: flex;
+    flex-direction: column;
+    gap: rem(12);
+    margin: 0;
+    padding-left: rem(20);
+  }
+
+  h2,
+  h3 {
+    margin: 0;
+    @include fs-text-lg;
+    font-weight: 700;
+    color: var(--fs-color-black);
+  }
+
+  a {
     color: var(--fs-color-black);
   }
 }

@@ -1,0 +1,13 @@
+{
+  "data": [
+    {
+      "type": "smi",
+      "slug": "test-smi-one",
+      "title": "Тестовая публикация в СМИ",
+      "image": "/images/home/news/colins.jpg",
+      "date": "2026-09-25",
+      "source": { "kind": "media", "name": "Тестовое издание" },
+      "url": "/news/test-smi-one"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "data": {
+    "slug": "test-event-two",
+    "title": "Тестовый мастер-класс",
+    "tag": "Афиша",
+    "image": "/images/events/dva-izmereniya.png",
+    "starts_at": "2026-10-05",
+    "ends_at": null,
+    "preview_text": "Второе тестовое мероприятие.",
+    "url": "/events/test-event-two",
+    "time": null,
+    "location": "3 этаж",
+    "floor": "3",
+    "text": "<p>Описание тестового мастер-класса.</p>",
+    "gallery": [],
+    "program": [],
+    "show_subscribe_cta": false,
+    "published_at": "2026-09-25",
+    "seo": { "title": null, "description": null, "keywords": null, "og_image": null }
+  }
+}

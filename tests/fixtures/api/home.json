@@ -8,7 +8,7 @@
         "image": "/images/home/intro-1.png",
         "image_mobile": "/images/home/intro-1-mobile.jpg",
         "video": null,
-        "url": "/events/test-event"
+        "url": "/events/test-event-one"
       },
       {
         "id": 902,
@@ -23,23 +23,23 @@
     "feed": [
       {
         "type": "action",
-        "slug": "test-action",
+        "slug": "test-action-one",
         "title": "Тестовая акция",
         "image": "/images/home/news/colins.jpg",
         "date": "2026-10-01",
         "period": { "from": "2026-10-01", "to": "2026-10-31" },
         "source": { "kind": "tenant", "name": "COLIN’S", "slug": "colins" },
-        "url": "/news/test-action"
+        "url": "/news/test-action-one"
       },
       {
         "type": "news",
-        "slug": "test-news",
+        "slug": "test-news-one",
         "title": "Тестовая новость",
         "image": "/images/home/news/ekonika.jpg",
         "date": "2026-09-30",
         "period": null,
         "source": { "kind": "mall", "name": "ТРЦ «Щёлковский»" },
-        "url": "/news/test-news"
+        "url": "/news/test-news-one"
       }
     ],
     "brands": [],

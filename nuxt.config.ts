@@ -1,11 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { API_IMAGE_HOST } from './shared/utils/apiImageHost'
+
 const isDev = process.env.NODE_ENV === 'development'
 
 /** Без ключа модуль vue-yandex-maps падает в плагине (`createYmapsOptions`). */
 const yandexMapsApikey = process.env.NUXT_PUBLIC_YANDEX_MAPS_APIKEY?.trim() ?? ''
 
 /** Хост стенда: IPX тянет `/storage` только с этого домена и с Basic из рантайм-env. */
-const apiImageHost = 'schelkovsky-backend-main.grandfs-develop.ru'
+const apiImageHost = API_IMAGE_HOST
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
