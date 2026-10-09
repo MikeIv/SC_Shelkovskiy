@@ -17,9 +17,20 @@ const apiImageHost = API_IMAGE_HOST
 const directApiBase = isDirectApiBase(process.env.NUXT_PUBLIC_API_BASE)
 
 /**
+ * Команды, которые кладут данные в статику. Проверяем именно их, потому что этот же
+ * конфиг читают `nuxt prepare` (он идёт из `postinstall` при `pnpm install`) и `nuxt dev`:
+ * на подготовке окружения источника данных ещё нет по определению, и падать там нельзя.
+ */
+const BUILD_COMMAND = new Set(['build', 'generate'])
+
+/**
  * Источника данных нет — сборка уедет на стенд с моками и без единого запроса к Laravel.
  * Ошибка тихая: страницы отрендерятся, а прокси-ручки `/api/*` на статике отдадут index.html
  * с кодом 200. Поэтому конфигурацию проверяем до сборки, а не после деплоя.
+ *
+ * Требование включает `NUXT_REQUIRE_API_SOURCE` (его ставит job сборки), а не `CI`:
+ * `postinstall` тоже читает этот конфиг, и проверка, завязанная на `CI`, роняет установку
+ * зависимостей, а не сборку.
  */
 if (!directApiBase && !process.env.NUXT_API_UPSTREAM?.trim()) {
   const message = [
@@ -28,8 +39,10 @@ if (!directApiBase && !process.env.NUXT_API_UPSTREAM?.trim()) {
     'Прокси-режим (нужен запущенный сервер Nitro): NUXT_API_UPSTREAM=https://<хост API>/api/v1 и NUXT_API_AUTH=<login:password>',
   ].join(' ')
 
-  /** Локальной сборке моки допустимы, в CI это всегда уехавшая на стенд пустая витрина. */
-  if (process.env.CI) throw new Error(message)
+  /** Локально моки допустимы: падает только сборка, которой источник данных обязателен. */
+  if (process.env.NUXT_REQUIRE_API_SOURCE && BUILD_COMMAND.has(process.argv[2] ?? '')) {
+    throw new Error(message)
+  }
 
   console.warn(`[nuxt.config] ${message}`)
 }
