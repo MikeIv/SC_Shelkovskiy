@@ -7,7 +7,8 @@ import { markDemoData, unmarkDemoData } from '~/composables/useDemoData'
 /**
  * Детальная мероприятия.
  * 404 — страницы нет. Сбой API (5xx, таймаут, CORS) — демо-мероприятие, если slug в нём есть;
- * иначе ошибка с настоящим кодом, без подмены на 404.
+ * иначе ошибка с настоящим кодом, без подмены на 404. Отсутствие ответа ошибкой не считаем:
+ * до данных мероприятие пустое, а не битое.
  */
 export async function useEvent(slug: string) {
   const result = await useApiFetch<ApiEnvelope<EventDetailItem>>(
@@ -28,7 +29,15 @@ export async function useEvent(slug: string) {
 
       if (demo) return demo
 
-      throw createError(apiErrorInfo(result.error.value))
+      /**
+       * Ошибка без демо-мероприятия — наружу настоящий код. Пока ответа нет (данные сброшены,
+       * запрос в полёте), ошибки тоже нет: показывать нечего, но и падать не из-за чего.
+       */
+      const error = result.error.value
+
+      if (error == null) return null
+
+      throw createError(apiErrorInfo(error))
     }
 
     return result.data.value?.data ?? null

@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createError } from 'h3'
 import { mountSuspended, registerEndpoint } from '@nuxt/test-utils/runtime'
+import { nextTick } from 'vue'
 import { eventsAfishaItems } from '~/data/eventsItems'
 import { EventProbe, EventsProbe } from './support/EventsProbe'
 
@@ -59,6 +60,26 @@ describe('useEvent', () => {
     expect(wrapper.attributes('data-program')).toBe('1')
     expect(wrapper.attributes('data-register')).toBe('true')
     expect(wrapper.attributes('data-body')).toBe('<p>Текст из API</p>')
+  })
+
+  it('сброс данных оставляет детальную пустой, а не битой', async () => {
+    registerEndpoint('/api/events/concert', () => ({ data: detail }))
+
+    const wrapper = await mountSuspended(EventProbe, { props: { slug: 'concert' } })
+
+    expect(wrapper.attributes('data-title')).toBe('Концерт из API')
+
+    /**
+     * Соседний пробник при монтировании сбрасывает данные Nuxt: демо-мероприятия
+     * у `concert` нет, поэтому первый кадр обязан остаться пустым, а не битым.
+     */
+    registerEndpoint('/api/events/burova-dva-izmereniya', () => {
+      throw createError({ statusCode: 503, statusMessage: 'API upstream is not configured' })
+    })
+    await mountSuspended(EventProbe, { props: { slug: 'burova-dva-izmereniya' } })
+    await nextTick()
+
+    expect(wrapper.attributes('data-title')).toBe('')
   })
 
   it('404 не подменяет моком', async () => {

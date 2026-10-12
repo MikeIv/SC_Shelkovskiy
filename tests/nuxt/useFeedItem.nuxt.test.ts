@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createError } from 'h3'
 import { mountSuspended, registerEndpoint } from '@nuxt/test-utils/runtime'
+import { nextTick } from 'vue'
 import { FeedItemProbe } from './support/FeedProbe'
 
 const relatedCard = {
@@ -37,6 +38,28 @@ describe('useFeedItem', () => {
     expect(wrapper.attributes('data-body')).toBe('<p>Текст из API</p>')
     expect(wrapper.attributes('data-related')).toBe('1')
     expect(wrapper.attributes('data-kind')).toBe('news')
+  })
+
+  it('сброс данных оставляет запись пустой, а не битой', async () => {
+    registerEndpoint('/api/feed/winter', () => ({
+      data: { item: detail, related: [relatedCard] },
+    }))
+
+    const wrapper = await mountSuspended(FeedItemProbe, { props: { slug: 'winter' } })
+
+    expect(wrapper.attributes('data-title')).toBe('Из API')
+
+    /**
+     * Соседний пробник при монтировании сбрасывает данные Nuxt: демо-записи
+     * у `winter` нет, поэтому первый кадр обязан остаться пустым, а не битым.
+     */
+    registerEndpoint('/api/feed/gift-card', () => {
+      throw createError({ statusCode: 503, statusMessage: 'API upstream is not configured' })
+    })
+    await mountSuspended(FeedItemProbe, { props: { slug: 'gift-card' } })
+    await nextTick()
+
+    expect(wrapper.attributes('data-title')).toBe('')
   })
 
   it('404 не подменяет моком', async () => {
