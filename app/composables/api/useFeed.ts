@@ -3,6 +3,7 @@ import type { ApiEnvelope, ApiListMeta } from '#shared/types/api'
 import type { NewsCardItem, NewsFilterTab, NewsListData } from '#shared/types/news'
 import { newsRelatedKind } from '#shared/utils/newsTag'
 import { newsCatalogItems } from '~/data/newsCatalogItems'
+import { markDemoData, unmarkDemoData } from '~/composables/useDemoData'
 
 const PER_PAGE = 12
 
@@ -41,6 +42,24 @@ export async function useFeed(tab: Ref<NewsFilterTab>) {
     extra.value = []
     extraMeta.value = null
   })
+
+  /**
+   * Признак демо-данных: первая страница пришла из мока, а не из API. Источник включает
+   * вкладку, а прежнюю вкладку снимаем — иначе список источников копится за сессию.
+   */
+  const demoSource = ref<string | null>(null)
+
+  watch(
+    [isFallback, tab],
+    ([fallbackUsed, currentTab]) => {
+      if (demoSource.value) unmarkDemoData(demoSource.value)
+
+      demoSource.value = fallbackUsed ? `/api/feed?type=${currentTab}` : null
+
+      if (demoSource.value) markDemoData(demoSource.value)
+    },
+    { immediate: true },
+  )
 
   async function loadMore(): Promise<void> {
     const current = meta.value

@@ -28,11 +28,19 @@ export type ApiClient = ApiRequest
  *
  * Тип — {@link RawApiClient}: `$fetch` типизирован маршрутами Nitro, а пути здесь динамические.
  */
+/**
+ * Таймаут запроса в браузере. Серверный транспорт ограничен на стороне Nitro
+ * (`server/utils/apiFetch.ts`), а прямой режим идёт из браузера: без потолка обрыв сети
+ * оставляет `refresh` висеть, и страница навсегда остаётся в `pending`.
+ */
+const CLIENT_TIMEOUT_MS = 10_000
+
 function createApiClient(): RawApiClient {
   const config = useRuntimeConfig()
 
   return $fetch.create({
     baseURL: normalizeApiBaseUrl(config.public.apiBase),
+    timeout: CLIENT_TIMEOUT_MS,
     /**
      * `Accept: application/json` — правило API: без него Laravel отвечает редиректом
      * вместо ошибки валидации. Ставим на транспорт, чтобы прямой режим не зависел от того,
@@ -95,7 +103,10 @@ export function useApiFetch<T = unknown>(
   if (!isDirectApiBase(config.public.apiBase)) {
     const request = computed(() => joinApiUrl(config.public.apiBase, String(toValue(path))))
 
-    return useFetch(request, options) as AsyncData<T, FetchError | null>
+    return useFetch(request, { timeout: CLIENT_TIMEOUT_MS, ...options }) as AsyncData<
+      T,
+      FetchError | null
+    >
   }
 
   const route = computed(() => String(toValue(path)))

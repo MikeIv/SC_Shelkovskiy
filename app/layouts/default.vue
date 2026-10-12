@@ -47,6 +47,7 @@ const patternSide = computed<'left' | 'right' | null>(() => {
       <slot />
     </main>
     <LayoutFooter />
+    <UiDemoDataNotice />
   </div>
 </template>
 

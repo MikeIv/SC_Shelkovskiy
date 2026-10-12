@@ -1,5 +1,6 @@
 import type { AsyncData, UseFetchOptions } from 'nuxt/app'
 import type { FetchError } from 'ofetch'
+import { markDemoData, unmarkDemoData } from '~/composables/useDemoData'
 
 type UseApiDataResult<T> = {
   data: ComputedRef<T>
@@ -20,6 +21,7 @@ export function useApiData<T>(
 ): UseApiDataResult<T> {
   const result = useApiFetch<T>(path, options)
   const fallbackData = fallback()
+  const source = computed(() => `/api${String(toValue(path))}`)
 
   const isFallback = computed(() => result.error.value != null || result.data.value == null)
 
@@ -27,6 +29,19 @@ export function useApiData<T>(
     if (isFallback.value || result.data.value == null) return fallbackData
     return result.data.value
   })
+
+  /**
+   * Плашка «демо-данные»: видна, пока запрос не отдал данные. Императивный `refresh`
+   * после гидратации может вернуть ответ API — тогда признак снимается сам.
+   */
+  watch(
+    isFallback,
+    (fallbackUsed) => {
+      if (fallbackUsed) markDemoData(source.value)
+      else unmarkDemoData(source.value)
+    },
+    { immediate: true },
+  )
 
   return {
     data,

@@ -1,5 +1,6 @@
 import type { ApiEnvelope } from '#shared/types/api'
 import type { EventsListData } from '#shared/types/events'
+import { markDemoData, unmarkDemoData } from '~/composables/useDemoData'
 import { eventsAfishaItems } from '~/data/eventsItems'
 
 /** Максимум страницы на стенде; афиша небольшая, берём весь раздел одним запросом. */
@@ -23,6 +24,15 @@ export async function useEvents() {
 
     return result.data.value.data
   })
+
+  watch(
+    isFallback,
+    (fallbackUsed) => {
+      if (fallbackUsed) markDemoData('/api/events')
+      else unmarkDemoData('/api/events')
+    },
+    { immediate: true },
+  )
 
   return {
     data,

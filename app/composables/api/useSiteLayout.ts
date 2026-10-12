@@ -1,5 +1,6 @@
 import type { ApiEnvelope } from '#shared/types/api'
 import type { LayoutData } from '#shared/types/layout'
+import { markDemoData, unmarkDemoData } from '~/composables/useDemoData'
 import { resolveLayoutView } from '#shared/utils/resolveLayout'
 import { staticLayoutData } from '~/utils/staticLayout'
 
@@ -29,6 +30,18 @@ export async function useSiteLayout() {
     [data, isFallback],
     () => {
       store.apply(data.value, isFallback.value)
+
+      /** Пустые `contacts`/`hours` в живом ответе тоже дают демо-блок — это и есть подмена. */
+      const contacts = data.value.contacts
+      const hours = data.value.hours
+      const demoUsed =
+        isFallback.value ||
+        !contacts?.address ||
+        !contacts?.phone ||
+        (hours?.week?.length ?? 0) === 0
+
+      if (demoUsed) markDemoData('/api/layout')
+      else unmarkDemoData('/api/layout')
     },
     { immediate: true },
   )

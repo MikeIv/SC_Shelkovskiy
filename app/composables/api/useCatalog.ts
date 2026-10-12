@@ -1,6 +1,7 @@
 import type { ApiEnvelope } from '#shared/types/api'
 import type { CatalogListData } from '#shared/types/catalog'
 import type { TenantCatalog } from '#shared/types/tenantDetail'
+import { markDemoData, unmarkDemoData } from '~/composables/useDemoData'
 import { cafesCatalogItems } from '~/data/cafesCatalogItems'
 import { entertainmentCatalogItems } from '~/data/entertainmentCatalogItems'
 import { servicesCatalogItems } from '~/data/servicesCatalogItems'
@@ -20,6 +21,7 @@ const FALLBACK_ITEMS = {
 export async function useCatalog(catalog: TenantCatalog) {
   const store = useCatalogStore()
   const fallbackData = fallbackSection(catalog)
+  const source = `/api/tenants?type=${catalog}`
   const result = await useApiFetch<ApiEnvelope<CatalogListData>>(`/api/tenants?type=${catalog}`)
 
   const isFallback = computed(() => result.error.value != null || result.data.value == null)
@@ -33,6 +35,10 @@ export async function useCatalog(catalog: TenantCatalog) {
     [data, isFallback],
     () => {
       store.apply(catalog, data.value, isFallback.value)
+
+      /** Пустой успешный ответ — это данные API; демо считаем только подмену при сбое. */
+      if (isFallback.value) markDemoData(source)
+      else unmarkDemoData(source)
     },
     { immediate: true },
   )

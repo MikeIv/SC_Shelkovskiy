@@ -92,11 +92,20 @@ pnpm approve-builds --all
 (его ставит job `build` в [`.gitlab-ci.yml`](.gitlab-ci.yml)) роняет `nuxt build`, если нет ни
 абсолютного `NUXT_PUBLIC_API_BASE`, ни `NUXT_API_UPSTREAM`. На `nuxt prepare` (идёт из `postinstall`
 при `pnpm install`) и на `nuxt dev` проверка не срабатывает — там источника данных ещё нет.
+В том же режиме база проверяется запросом к `/home`: опечатка в хосте или пути (`/api` вместо
+`/api/v1`) роняет сборку вместо тихой подмены контентом из `~/data`.
+
+Когда API не отдал раздел и страница показала демо-контент, в углу появляется плашка
+«Демо-данные» — [`app/composables/useDemoData.ts`](app/composables/useDemoData.ts) и
+[`app/components/ui/DemoDataNotice.vue`](app/components/ui/DemoDataNotice.vue). Признак ставится
+только на клиенте: в статику он не попадает, а `refresh` после гидратации снимает его сам.
+404 от API остаётся 404 (страницы нет), а сбой API (5xx, таймаут, CORS) — это не «не найдено»:
+детальные composables подставляют демо-запись, если она есть, иначе показывают настоящий код ошибки.
 
 - Контракт ручек общий для обоих режимов — [`shared/api/endpoints.ts`](shared/api/endpoints.ts): путь у Laravel, проверка `query`/`slug`, проверка формы ответа, маппинг DTO → UI. Транспорты: [`server/api/*`](server/api) (Nitro) и [`shared/api/direct.ts`](shared/api/direct.ts) (клиент).
 - Лимит API (429 + `Retry-After`, у стенда 120 запросов в минуту на IP) — [`shared/api/throttle.ts`](shared/api/throttle.ts): серверные запросы ждут окно лимита, иначе пререндер сотен страниц падает.
 - Клиент: **`useApi()`** (`$fetch` с `baseURL`) и **`useApiFetch()`** — [`app/composables/useApi.ts`](app/composables/useApi.ts); тип ответа для обоих режимов — `ApiEnvelope<UI-тип>`.
-- Сервер: **`serverApi(event?)`** — [`server/utils/serverApi.ts`](server/utils/serverApi.ts); **`apiFetch(event?)`** — [`server/utils/apiFetch.ts`](server/utils/apiFetch.ts). URL — [`shared/utils/normalizeApiBaseUrl.ts`](shared/utils/normalizeApiBaseUrl.ts) (`normalizeApiBaseUrl`, `joinApiUrl`).
+- Сервер: **`serverApi(event?)`** — [`server/utils/serverApi.ts`](server/utils/serverApi.ts) (сейчас нигде не используется: ручки берут `apiFetch`); **`apiFetch(event?)`** — [`server/utils/apiFetch.ts`](server/utils/apiFetch.ts). URL — [`shared/utils/normalizeApiBaseUrl.ts`](shared/utils/normalizeApiBaseUrl.ts) (`normalizeApiBaseUrl`, `joinApiUrl`).
 - Типизация `public.apiBase` — [`types/nuxt-public.d.ts`](types/nuxt-public.d.ts). Приватные ключи `runtimeConfig` добавляйте в `nuxt.config` и отдельное расширение `RuntimeConfig` в `types/`.
 
 ## Документация

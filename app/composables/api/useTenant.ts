@@ -1,25 +1,48 @@
 import type { ApiEnvelope } from '#shared/types/api'
 import type { TenantCatalog, TenantDetail } from '#shared/types/tenantDetail'
+import { apiErrorInfo } from '#shared/api/errors'
 import { getTenantDetailBySlug } from '~/data/tenantDetails'
+import { markDemoData, unmarkDemoData } from '~/composables/useDemoData'
 
 /**
  * Карточка арендатора.
- * 404 с прокси — страницы нет. Любая другая ошибка (нет upstream) — мок, если slug в нём есть.
+ * 404 — страницы нет. Сбой API (5xx, таймаут, CORS) — демо-карточка раздела, если slug
+ * в ней есть; иначе отдаём ошибку с настоящим кодом. Маскировать сбой под 404 нельзя:
+ * недостающие slug'и бэкенд дорабатывает, и живая карточка не должна выглядеть исчезнувшей.
  */
 export async function useTenant(catalog: TenantCatalog, slug: string) {
   const result = await useApiFetch<ApiEnvelope<TenantDetail>>(
     `/api/tenants/${encodeURIComponent(slug)}`,
   )
 
-  const item = computed<TenantDetail | null>(() => {
-    if (result.error.value?.statusCode === 404) return null
+  const source = `/api/tenants/${slug}`
+  const isMissing = computed(() => result.error.value?.statusCode === 404)
+  const usesDemo = computed(
+    () => !isMissing.value && (result.error.value != null || result.data.value == null),
+  )
 
-    if (result.error.value != null || result.data.value == null) {
-      return getTenantDetailBySlug(catalog, slug) ?? null
+  const item = computed<TenantDetail | null>(() => {
+    if (isMissing.value) return null
+
+    if (usesDemo.value) {
+      const demo = getTenantDetailBySlug(catalog, slug)
+
+      if (demo) return demo
+
+      throw createError(apiErrorInfo(result.error.value))
     }
 
-    return result.data.value.data
+    return result.data.value?.data ?? null
   })
+
+  watch(
+    usesDemo,
+    (demoUsed) => {
+      if (demoUsed) markDemoData(source)
+      else unmarkDemoData(source)
+    },
+    { immediate: true },
+  )
 
   return {
     item,

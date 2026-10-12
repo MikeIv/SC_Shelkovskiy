@@ -1,34 +1,56 @@
 import type { ApiEnvelope } from '#shared/types/api'
 import type { NewsCardItem, NewsDetailData, NewsDetailItem } from '#shared/types/news'
+import { apiErrorInfo } from '#shared/api/errors'
 import { getNewsDetailBySlug, getRelatedNewsItems } from '~/data/newsDetails'
+import { markDemoData, unmarkDemoData } from '~/composables/useDemoData'
 
 /**
  * Детальная записи ленты и связанные материалы.
- * 404 с прокси — страницы нет. Любая другая ошибка (нет upstream) — мок, если slug в нём есть.
+ * 404 — страницы нет. Сбой API (5xx, таймаут, CORS) — демо-запись, если slug в ней есть;
+ * иначе ошибка с настоящим кодом, без подмены на 404.
  */
 export async function useFeedItem(slug: string) {
   const result = await useApiFetch<ApiEnvelope<NewsDetailData>>(
     `/api/feed/${encodeURIComponent(slug)}`,
   )
 
+  const source = `/api/feed/${slug}`
   const isMissing = computed(() => result.error.value?.statusCode === 404)
+  const usesDemo = computed(
+    () => !isMissing.value && (result.error.value != null || result.data.value == null),
+  )
+
+  const demoDetail = computed(() => getNewsDetailBySlug(slug) ?? null)
 
   const item = computed<NewsDetailItem | null>(() => {
     if (isMissing.value) return null
 
-    if (result.error.value != null || result.data.value == null) {
-      return getNewsDetailBySlug(slug) ?? null
+    if (usesDemo.value) {
+      const demo = demoDetail.value
+
+      if (demo) return demo
+
+      throw createError(apiErrorInfo(result.error.value))
     }
 
-    return result.data.value.data.item
+    return result.data.value?.data.item ?? null
   })
 
   const related = computed<NewsCardItem[]>(() => {
     if (isMissing.value) return []
 
-    if (result.error.value != null || result.data.value == null) return getRelatedNewsItems(slug)
-    return result.data.value.data.related
+    if (usesDemo.value) return getRelatedNewsItems(slug)
+    return result.data.value?.data.related ?? []
   })
+
+  watch(
+    usesDemo,
+    (demoUsed) => {
+      if (demoUsed) markDemoData(source)
+      else unmarkDemoData(source)
+    },
+    { immediate: true },
+  )
 
   return {
     item,

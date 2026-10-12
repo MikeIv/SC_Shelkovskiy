@@ -21,7 +21,8 @@ const directApiBase = isDirectApiBase(process.env.NUXT_PUBLIC_API_BASE)
  * конфиг читают `nuxt prepare` (он идёт из `postinstall` при `pnpm install`) и `nuxt dev`:
  * на подготовке окружения источника данных ещё нет по определению, и падать там нельзя.
  */
-const BUILD_COMMAND = new Set(['build', 'generate'])
+const BUILD_COMMAND = ['build', 'generate']
+const isBuildCommand = BUILD_COMMAND.some((command) => process.argv.includes(command))
 
 /**
  * Источника данных нет — сборка уедет на стенд с моками и без единого запроса к Laravel.
@@ -32,19 +33,56 @@ const BUILD_COMMAND = new Set(['build', 'generate'])
  * `postinstall` тоже читает этот конфиг, и проверка, завязанная на `CI`, роняет установку
  * зависимостей, а не сборку.
  */
-if (!directApiBase && !process.env.NUXT_API_UPSTREAM?.trim()) {
+if (!directApiBase && !process.env.NUXT_API_UPSTREAM?.trim() && isBuildCommand) {
   const message = [
     'Источник данных не задан: NUXT_PUBLIC_API_BASE пуст, а NUXT_API_UPSTREAM не определён.',
     'Прямой режим (статический стенд): NUXT_PUBLIC_API_BASE=https://<хост API>/api/v1',
     'Прокси-режим (нужен запущенный сервер Nitro): NUXT_API_UPSTREAM=https://<хост API>/api/v1 и NUXT_API_AUTH=<login:password>',
   ].join(' ')
 
-  /** Локально моки допустимы: падает только сборка, которой источник данных обязателен. */
-  if (process.env.NUXT_REQUIRE_API_SOURCE && BUILD_COMMAND.has(process.argv[2] ?? '')) {
-    throw new Error(message)
-  }
+  /** Локально моки допустимы (предупреждение), на стенде это всегда пустая витрина. */
+  if (process.env.NUXT_REQUIRE_API_SOURCE) throw new Error(message)
 
   console.warn(`[nuxt.config] ${message}`)
+}
+
+/**
+ * База API «на вид правильная»: абсолютный URL с версией пути. Без неё адрес вида
+ * `https://host/api` отвечает 404, и данные снова подменяются моками молча.
+ */
+const API_PATH_PATTERN = /^https?:\/\/[^/]+\/api\/v\d+\/?$/i
+
+/**
+ * Проверка базы запросом: делает сборку громкой при опечатке в хосте или пути.
+ * Корень базы (`/api/v1`) сам отдаёт 404, поэтому проверяем боевую ручку `/home`:
+ * битая база не пройдёт, а рабочий хост со сменившимся `/home` — пройдёт.
+ * Только там, где источник данных обязателен: сеть не должна ронять локальную сборку.
+ */
+async function assertApiBaseReachable(): Promise<void> {
+  const base = process.env.NUXT_PUBLIC_API_BASE?.trim()
+  if (!base) return
+
+  if (!API_PATH_PATTERN.test(base)) {
+    throw new Error(
+      `NUXT_PUBLIC_API_BASE не похож на базу API: «${base}». Ожидается https://<хост>/api/v1`,
+    )
+  }
+
+  const probe = `${base.replace(/\/+$/, '')}/home`
+
+  let status: number
+
+  try {
+    status = (await fetch(probe, { headers: { Accept: 'application/json' } })).status
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error)
+
+    throw new Error(`NUXT_PUBLIC_API_BASE недоступен: «${probe}» (${reason})`, { cause: error })
+  }
+
+  if (status === 404) {
+    throw new Error(`NUXT_PUBLIC_API_BASE отвечает 404: «${probe}». Проверьте хост и версию пути`)
+  }
 }
 
 export default defineNuxtConfig({
@@ -194,5 +232,26 @@ export default defineNuxtConfig({
 
   nitro: {
     compressPublicAssets: true,
+    prerender: {
+      /**
+       * Nuxt включает `failOnError: true` (в Nitro по умолчанию `false`), и тогда одна
+       * неудачная страница рвёт всю генерацию: 546 маршрутов против лимита API 120 запросов
+       * в минуту. Падать должен деплой при отсутствии источника данных, а не отдельная
+       * страница — её состояние видно в отчёте пререндера.
+       */
+      failOnError: false,
+    },
+  },
+
+  hooks: {
+    /**
+     * Проверяем адрес API запросом до рендера: сборка должна падать на опечатке в базе,
+     * а не выпускать витрину с моками. Только там, где источник обязателен.
+     */
+    async 'build:before'() {
+      if (!process.env.NUXT_REQUIRE_API_SOURCE || !directApiBase) return
+
+      await assertApiBaseReachable()
+    },
   },
 })
