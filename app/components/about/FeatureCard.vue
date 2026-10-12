@@ -46,18 +46,20 @@ const { feature } = defineProps<{
 .root {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-2);
+  gap: var(--fs-space-1);
   width: 100%;
   height: 100%;
+  min-height: rem(560);
   padding: var(--fs-space-2);
   overflow: clip;
   background-color: var(--fs-color-light);
-  border-radius: rem(32);
+  border-radius: rem(24);
 
   @include from-desktop {
     flex-direction: row;
     gap: var(--fs-space-3);
     align-items: stretch;
+    min-height: 0;
     padding: var(--fs-space-3);
     border-radius: rem(60);
   }
@@ -67,14 +69,13 @@ const { feature } = defineProps<{
   position: relative;
   flex-shrink: 0;
   width: 100%;
+  height: rem(286);
   overflow: clip;
   border-radius: rem(24);
-  aspect-ratio: 1 / 1;
 
   @include from-desktop {
     width: rem(382);
     height: rem(380);
-    aspect-ratio: auto;
     border-radius: rem(32);
   }
 }

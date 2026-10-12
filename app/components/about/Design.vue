@@ -60,7 +60,8 @@ const { title, description, stats, videoPosterSrc, videoPosterAlt } =
 .panel {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-5);
+  gap: var(--fs-space-4);
+  padding-top: rem(100);
   overflow: clip;
   background-color: var(--fs-color-light);
   border-radius: rem(32);
@@ -75,8 +76,8 @@ const { title, description, stats, videoPosterSrc, videoPosterAlt } =
 .top {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-5);
-  padding: var(--fs-space-5) var(--fs-grid-margin) 0;
+  gap: var(--fs-space-4);
+  padding: 0 var(--fs-grid-margin);
 
   @include from-desktop {
     flex-direction: row;
@@ -119,14 +120,15 @@ const { title, description, stats, videoPosterSrc, videoPosterAlt } =
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--fs-space-3) var(--fs-space-2);
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--fs-space-3);
   margin: 0;
   padding: 0;
   list-style: none;
 
   @include from-desktop {
     flex: 0 1 rem(702);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--fs-space-4) var(--fs-space-3);
   }
 }
@@ -151,12 +153,13 @@ const { title, description, stats, videoPosterSrc, videoPosterAlt } =
 .video {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  height: rem(400);
   overflow: clip;
   border-start-start-radius: rem(32);
   border-start-end-radius: rem(32);
 
   @include from-desktop {
+    height: auto;
     aspect-ratio: 1920 / 770;
     border-start-start-radius: rem(60);
     border-start-end-radius: rem(60);
@@ -178,8 +181,8 @@ const { title, description, stats, videoPosterSrc, videoPosterAlt } =
   display: flex;
   align-items: center;
   justify-content: center;
-  width: rem(72);
-  height: rem(72);
+  width: rem(50);
+  height: rem(50);
   margin: 0;
   padding: 0;
   color: var(--fs-color-white);

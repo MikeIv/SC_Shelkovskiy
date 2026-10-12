@@ -36,6 +36,7 @@ const visualVariant = computed<LayoutHeaderVariant>(() =>
 
 const headerRef = ref<HTMLElement | null>(null)
 const spacerHeight = ref(0)
+const HEADER_HEIGHT_VAR = '--fs-header-height'
 const MENU_HEADER_OFFSET_VAR = '--fs-menu-header-offset'
 let measureTimer = 0
 
@@ -47,26 +48,34 @@ function measureHeaderHeight(): number {
   return Math.round(headerRef.value.getBoundingClientRect().height) || 80
 }
 
-function syncMenuHeaderOffset(): void {
+function syncHeaderCssVars(heightPx: number): void {
   if (!import.meta.client) {
     return
   }
 
-  if (!menuOpen.value) {
-    document.documentElement.style.removeProperty(MENU_HEADER_OFFSET_VAR)
+  document.documentElement.style.setProperty(HEADER_HEIGHT_VAR, `${heightPx}px`)
+
+  if (menuOpen.value) {
+    document.documentElement.style.setProperty(
+      MENU_HEADER_OFFSET_VAR,
+      `${heightPx}px`,
+    )
     return
   }
 
-  document.documentElement.style.setProperty(
-    MENU_HEADER_OFFSET_VAR,
-    `${measureHeaderHeight()}px`,
-  )
+  document.documentElement.style.removeProperty(MENU_HEADER_OFFSET_VAR)
 }
 
 function measureSpacer(): void {
-  if (!import.meta.client || !headerRef.value || props.overlay) {
+  if (!import.meta.client || !headerRef.value) {
+    return
+  }
+
+  const heightPx = measureHeaderHeight()
+  syncHeaderCssVars(heightPx)
+
+  if (props.overlay) {
     spacerHeight.value = 0
-    syncMenuHeaderOffset()
     return
   }
 
@@ -78,14 +87,7 @@ function measureSpacer(): void {
     (menuOpen.value &&
       getComputedStyle(headerRef.value).position === 'fixed')
 
-  if (!takenOutOfFlow) {
-    spacerHeight.value = 0
-    syncMenuHeaderOffset()
-    return
-  }
-
-  spacerHeight.value = measureHeaderHeight()
-  syncMenuHeaderOffset()
+  spacerHeight.value = takenOutOfFlow ? heightPx : 0
 }
 
 function scheduleMeasureSpacer(): void {
@@ -138,6 +140,7 @@ function closeSearch(): void {
 
 watch(pinned, scheduleMeasureSpacer)
 watch(menuOpen, scheduleMeasureSpacer)
+watch(() => props.overlay, scheduleMeasureSpacer)
 
 onMounted(() => {
   scheduleMeasureSpacer()
@@ -148,6 +151,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', measureSpacer)
   window.clearTimeout(measureTimer)
   if (import.meta.client) {
+    document.documentElement.style.removeProperty(HEADER_HEIGHT_VAR)
     document.documentElement.style.removeProperty(MENU_HEADER_OFFSET_VAR)
   }
 })

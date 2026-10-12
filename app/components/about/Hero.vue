@@ -42,7 +42,7 @@ const { title, description, imageSrc, imageAlt, breadcrumbs } = defineProps<{
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: rem(560);
+  min-height: rem(750);
   overflow: clip;
   color: var(--fs-color-white);
   background-color: var(--fs-color-black);
@@ -84,7 +84,8 @@ const { title, description, imageSrc, imageAlt, breadcrumbs } = defineProps<{
   flex-direction: column;
   gap: var(--fs-space-4);
   justify-content: space-between;
-  padding: rem(140) var(--fs-grid-margin) var(--fs-space-4);
+  padding: calc(var(--fs-header-height) + var(--fs-space-3))
+    var(--fs-grid-margin) var(--fs-space-4);
 
   @include from-desktop {
     padding-inline: max(
@@ -99,7 +100,7 @@ const { title, description, imageSrc, imageAlt, breadcrumbs } = defineProps<{
 .copy {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-2);
+  gap: rem(12);
   max-width: rem(1335);
 }
 

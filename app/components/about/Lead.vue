@@ -30,10 +30,15 @@ const { title, description, watermarkSrc } = defineProps<{
 
 .root {
   position: relative;
-  padding-block: var(--fs-space-6) var(--fs-space-section);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: rem(620);
+  padding-block: var(--fs-space-6);
   overflow: clip;
 
   @include from-desktop {
+    min-height: 0;
     padding-block: var(--fs-space-section);
   }
 }
@@ -45,7 +50,6 @@ const { title, description, watermarkSrc } = defineProps<{
   width: min(100%, rem(900));
   height: auto;
   pointer-events: none;
-  opacity: 0.08;
   transform: translate(-50%, -45%);
 
   @include from-desktop {
@@ -58,7 +62,7 @@ const { title, description, watermarkSrc } = defineProps<{
   z-index: z('default');
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-2);
+  gap: rem(12);
   align-items: center;
   max-width: rem(1296);
   margin-inline: auto;

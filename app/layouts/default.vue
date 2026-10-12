@@ -69,8 +69,8 @@ const patternSide = computed<'left' | 'right' | null>(() => {
   padding-bottom: var(--fs-space-section);
 }
 
-/* Орнамент разделов: слева на каталоге, справа на карточке.
-   Кадр клипует выход за край и не создаёт горизонтальный скролл. */
+/* Орнамент разделов: Mob — крупный, смещён влево (Figma −194 / 374);
+   tablet+ — по центру вьюпорта. Кадр клипует выход за край. */
 .patternFrame {
   position: absolute;
   z-index: -1;
@@ -88,42 +88,42 @@ const patternSide = computed<'left' | 'right' | null>(() => {
 
   @include from-desktop {
     top: rem(-160);
-    height: rem(1280);
+    height: rem(1400);
   }
 }
 
 .pattern {
-  --pattern-offset: #{rem(-194)};
-
   position: absolute;
   top: 0;
-  left: var(--pattern-offset);
+  left: rem(-194);
   width: rem(374);
   height: rem(373);
-  background-color: var(--fs-color-beige);
-  opacity: 0.2;
+  background-color: var(--fs-color-ornament);
   mask: url('/images/home/categories/pattern.svg') center / contain no-repeat;
 
   @include from-tablet {
-    --pattern-offset: #{rem(-420)};
-
-    top: rem(-40);
-    width: rem(800);
-    height: rem(800);
+    top: 0;
+    left: 50%;
+    width: rem(725);
+    height: rem(723);
+    transform: translateX(-50%);
   }
 
   @include from-desktop {
-    --pattern-offset: #{rem(-560)};
-
-    top: rem(-80);
-    width: rem(1220);
-    height: rem(1220);
+    width: rem(1348);
+    height: rem(1344);
   }
 }
 
 .patternFrame[data-side='right'] .pattern {
-  right: var(--pattern-offset);
+  right: rem(-194);
   left: auto;
+
+  @include from-tablet {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 }
 
 .main:focus-visible {

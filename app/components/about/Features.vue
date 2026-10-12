@@ -90,7 +90,6 @@ const {
   height: auto;
   max-width: none;
   pointer-events: none;
-  opacity: 0.08;
 
   @include from-desktop {
     top: rem(-320);
