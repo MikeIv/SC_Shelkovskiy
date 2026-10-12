@@ -3,6 +3,7 @@ import type { ApiQuery, ApiRequest } from '#shared/api/endpoints'
 import {
   eventsEndpoint,
   feedEndpoint,
+  galleryAlbumEndpoint,
   tenantEndpoint,
   tenantsEndpoint,
 } from '#shared/api/endpoints'
@@ -90,6 +91,15 @@ describe('контракты ручек: параметры и путь у Larav
     expect(() => tenantEndpoint.params({ query: {} })).toThrow(ApiContractError)
     expect(tenantEndpoint.params({ query: {}, slug: 'test-shop' })).toEqual({ slug: 'test-shop' })
   })
+
+  it('альбом галереи: slug обязателен, путь у Laravel без query', () => {
+    expect(() => galleryAlbumEndpoint.params({ query: {} })).toThrow(ApiContractError)
+
+    const params = galleryAlbumEndpoint.params({ query: {}, slug: 'stars-time-party-2026' })
+
+    expect(galleryAlbumEndpoint.path(params)).toBe('/gallery/stars-time-party-2026')
+    expect(galleryAlbumEndpoint.key(params)).toBe('gallery:stars-time-party-2026')
+  })
 })
 
 describe('контракты ручек: загрузка и маппинг', () => {
@@ -116,6 +126,36 @@ describe('контракты ручек: загрузка и маппинг', ()
     const { request } = fakeRequest(() => ({ data: 'oops' }))
 
     await expect(tenantsEndpoint.load(request, { type: 'shops' })).rejects.toMatchObject({
+      statusCode: 502,
+    })
+  })
+
+  it('альбом галереи: маппит фото и отбрасывает видео', async () => {
+    const { request, calls } = fakeRequest(() => ({
+      data: {
+        slug: 'party',
+        title: 'Вечеринка',
+        date: '2026-05-30',
+        cover: '/storage/cover.jpg',
+        photos_count: 3,
+        has_video: true,
+        items: [
+          { type: 'image', src: '/storage/a.jpg', preview: null },
+          { type: 'video', src: 'https://rutube.ru/video/x/', preview: '/storage/poster.jpg' },
+        ],
+      },
+    }))
+
+    const album = await galleryAlbumEndpoint.load(request, { slug: 'party' })
+
+    expect(calls[0]?.path).toBe('/gallery/party')
+    expect(album).toMatchObject({ id: 'party', photoCount: 1, photos: ['/storage/a.jpg'] })
+  })
+
+  it('альбом галереи: невалидное тело — 502', async () => {
+    const { request } = fakeRequest(() => ({ data: 'oops' }))
+
+    await expect(galleryAlbumEndpoint.load(request, { slug: 'party' })).rejects.toMatchObject({
       statusCode: 502,
     })
   })

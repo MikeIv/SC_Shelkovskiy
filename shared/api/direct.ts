@@ -5,6 +5,7 @@ import {
   eventsEndpoint,
   feedEndpoint,
   feedItemEndpoint,
+  galleryAlbumEndpoint,
   homeEndpoint,
   layoutEndpoint,
   tenantEndpoint,
@@ -47,6 +48,7 @@ const ROUTE_PATTERNS: readonly RoutePattern[] = [
   routePattern(eventEndpoint),
   routePattern(feedEndpoint),
   routePattern(feedItemEndpoint),
+  routePattern(galleryAlbumEndpoint),
   routePattern(tenantsEndpoint),
   routePattern(tenantEndpoint),
 ]

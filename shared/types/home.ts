@@ -76,6 +76,8 @@ export type HomeGalleryAlbum = {
   imageSrc: string
   imageAlt: string
   photoCount: number
+  /** В альбоме есть видео: при `photoCount: 0` карточка помечается «Видео» и не открывает просмотрщик. */
+  hasVideo?: boolean
   /** Фото альбома для lightbox; без `to` карточка открывает просмотр. */
   photos?: string[]
   to?: string

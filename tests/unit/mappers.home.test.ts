@@ -211,6 +211,7 @@ describe('mapHomeGallery', () => {
 
     expect(album?.photoCount).toBe(0)
     expect(album).not.toHaveProperty('photos')
+    expect(album?.hasVideo).toBe(true)
   })
 
   it('пропускает альбом без обложки', () => {

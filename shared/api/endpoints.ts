@@ -1,10 +1,12 @@
 import type { CatalogListData } from '#shared/types/catalog'
 import type { EventItemResponseDto, EventsListResponseDto } from '#shared/types/dto/events'
 import type { FeedListResponseDto } from '#shared/types/dto/feed'
+import type { GalleryAlbumResponseDto } from '#shared/types/dto/gallery'
 import type { HomeResponseDto } from '#shared/types/dto/home'
 import type { LayoutResponseDto } from '#shared/types/dto/layout'
 import type { TenantsListResponseDto } from '#shared/types/dto/tenants'
 import type { EventDetailItem, EventsListData } from '#shared/types/events'
+import type { GalleryAlbum } from '#shared/types/gallery'
 import type { HomePageData } from '#shared/types/home'
 import type { LayoutData } from '#shared/types/layout'
 import type {
@@ -17,6 +19,7 @@ import type {
 import type { TenantCatalog, TenantDetail } from '#shared/types/tenantDetail'
 import { isNewsFilterTab, newsRelatedKind } from '#shared/utils/newsTag'
 import { mapEventDetail, mapEventsList } from '#shared/utils/mappers/events'
+import { mapGalleryAlbumDetail } from '#shared/utils/mappers/gallery'
 import { mapHome, mapHomeFeed } from '#shared/utils/mappers/home'
 import { mapLayout } from '#shared/utils/mappers/layout'
 import { mapFeedList, mapNewsDetail } from '#shared/utils/mappers/news'
@@ -192,6 +195,30 @@ export const eventEndpoint: ApiEndpoint<SlugParams, EventDetailItem> = {
     if (!item) throw invalidPayload('Events')
 
     return item
+  },
+}
+
+/**
+ * Альбом галереи `GET /gallery/{slug}`: фото для просмотрщика. Ручка `/home` отдаёт у альбома
+ * только обложку, поэтому секция галереи догружает набор по клику.
+ */
+export const galleryAlbumEndpoint: ApiEndpoint<SlugParams, GalleryAlbum> = {
+  route: '/api/gallery/:slug',
+  cache: { name: 'api-gallery-album', ttl: 300 },
+  label: 'Gallery',
+  params: ({ slug }) => ({ slug: readSlugParam(slug, 'Gallery slug is invalid') }),
+  key: ({ slug }) => `gallery:${slug}`,
+  path: ({ slug }) => `/gallery/${encodeURIComponent(slug)}`,
+  load: async (request, params) => {
+    const dto = await request<GalleryAlbumResponseDto>(galleryAlbumEndpoint.path(params))
+
+    if (!isItemPayload(dto)) throw invalidPayload('Gallery')
+
+    const album = mapGalleryAlbumDetail(dto.data)
+
+    if (!album) throw invalidPayload('Gallery')
+
+    return album
   },
 }
 

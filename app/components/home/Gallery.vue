@@ -17,16 +17,20 @@ const {
 
 const activeAlbum = ref<HomeGalleryAlbum | null>(null)
 const mediaSrc = useMediaSrc()
+const { photos: albumPhotos, pending: albumPending, loadPhotos } = useGalleryAlbum()
+
 const lightboxImages = computed(() =>
-  (activeAlbum.value?.photos ?? []).map((photo) => mediaSrc(photo, 1600)),
+  albumPhotos.value.map((photo) => mediaSrc(photo, 1600)),
 )
 
 function openAlbum(album: HomeGalleryAlbum): void {
-  if (!album.photos?.length) {
+  /** Фото нет — открывать нечего: у видео-альбома карточка не кликабельна. */
+  if (album.photoCount <= 0) {
     return
   }
 
   activeAlbum.value = album
+  void loadPhotos(album)
 }
 
 function closeLightbox(): void {
@@ -101,6 +105,7 @@ function closeLightbox(): void {
     <GalleryLightbox
       :open="activeAlbum !== null"
       :images="lightboxImages"
+      :pending="albumPending"
       :alt="activeAlbum?.imageAlt ?? ''"
       @close="closeLightbox"
     />

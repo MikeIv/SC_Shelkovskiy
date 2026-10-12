@@ -1,9 +1,14 @@
 <script setup lang="ts">
-const props = defineProps<{
-  open: boolean
-  images: string[]
-  alt: string
-}>()
+const props = withDefaults(
+  defineProps<{
+    open: boolean
+    images: string[]
+    alt: string
+    /** Набор ещё догружается: счётчик и стрелки раньше времени не показываем. */
+    pending?: boolean
+  }>(),
+  { pending: false },
+)
 
 const emit = defineEmits<{
   close: []
@@ -47,7 +52,8 @@ function onKeydown(event: KeyboardEvent): void {
     return
   }
 
-  if (!canNavigate.value) {
+  /** Пока набор догружается, стрелки клавиатуры ведут себя как кнопки: не листаем. */
+  if (props.pending || !canNavigate.value) {
     return
   }
 
@@ -128,6 +134,7 @@ onBeforeUnmount(() => {
       :class="$style.root"
       role="dialog"
       aria-modal="true"
+      :aria-busy="pending ? 'true' : undefined"
       :aria-labelledby="titleId"
     >
       <h2 :id="titleId" :class="$style.srOnly">
@@ -148,7 +155,7 @@ onBeforeUnmount(() => {
         <UiButtonArrow
           :class="$style.arrow"
           direction="left"
-          :disabled="!canNavigate"
+          :disabled="pending || !canNavigate"
           @click="goPrev"
         >
           Предыдущее фото
@@ -170,7 +177,7 @@ onBeforeUnmount(() => {
         <UiButtonArrow
           :class="$style.arrow"
           direction="right"
-          :disabled="!canNavigate"
+          :disabled="pending || !canNavigate"
           @click="goNext"
         >
           Следующее фото
@@ -178,7 +185,7 @@ onBeforeUnmount(() => {
       </div>
 
       <p
-        v-if="total"
+        v-if="total && !pending"
         :class="$style.counter"
         aria-live="polite"
       >

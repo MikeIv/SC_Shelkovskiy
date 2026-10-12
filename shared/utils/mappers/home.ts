@@ -133,6 +133,7 @@ function mapGalleryItem(item: unknown): HomeGalleryAlbum | undefined {
     imageSrc,
     imageAlt: resolveAlt(title),
     photoCount,
+    ...(record.has_video === true ? { hasVideo: true } : {}),
     ...(photoCount > 0 ? { photos: [imageSrc] } : {}),
   }
 }

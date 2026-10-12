@@ -10,6 +10,8 @@ const props = defineProps<{
   photoCount: number
   /** Принимаем из альбома, чтобы не утекало в DOM через attrs. */
   photos?: string[]
+  /** Альбом только с видео: фото нет, просмотрщик открывать нечем. */
+  hasVideo?: boolean
   to?: string
 }>()
 
@@ -22,6 +24,16 @@ const isLink = computed(() => Boolean(props.to))
 const mediaSrc = useMediaSrc()
 const coverSrc = computed(() => mediaSrc(props.imageSrc, 1536))
 
+/** Ссылка из CMS ведёт на страницу альбома; без неё открывать нечего, если в альбоме нет фото. */
+const isInteractive = computed(() => isLink.value || props.photoCount > 0)
+
+/** Бейдж показывает то, что реально откроется: число фото или метку видео-альбома. */
+const badgeLabel = computed(() => {
+  if (props.photoCount > 0) return `${props.photoCount} фото`
+
+  return props.hasVideo ? 'Видео' : ''
+})
+
 function onActivate(): void {
   if (!props.to) {
     emit('select')
@@ -33,6 +45,7 @@ function onActivate(): void {
   <article :id="id" :class="$style.root">
     <component
       :is="isLink ? NuxtLink : 'button'"
+      v-if="isInteractive"
       :class="$style.hit"
       v-bind="isLink ? { to: props.to } : { type: 'button' }"
       :aria-labelledby="titleId"
@@ -50,8 +63,8 @@ function onActivate(): void {
         decoding="async"
       >
 
-      <UiTag :class="$style.photoTag" variant="other">
-        {{ photoCount }} фото
+      <UiTag v-if="badgeLabel" :class="$style.photoTag" variant="other">
+        {{ badgeLabel }}
       </UiTag>
     </div>
 

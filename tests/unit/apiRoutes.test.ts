@@ -4,6 +4,7 @@ import { asApiRequest } from '#shared/api/request'
 import { loadDirectApi, resolveApiRoute } from '#shared/api/direct'
 import { isDirectApiBase } from '#shared/api/directBase'
 import type { ApiEnvelope } from '#shared/types/api'
+import type { GalleryAlbum } from '#shared/types/gallery'
 import type { HomePageData } from '#shared/types/home'
 import type { NewsDetailData } from '#shared/types/news'
 
@@ -96,6 +97,7 @@ describe('resolveApiRoute', () => {
     expect(resolveApiRoute('/api/events/concert')?.route).toBe('/api/events/:slug')
     expect(resolveApiRoute('/api/feed?type=smi')?.route).toBe('/api/feed')
     expect(resolveApiRoute('/api/feed/winter')?.route).toBe('/api/feed/:slug')
+    expect(resolveApiRoute('/api/gallery/stars-time-party-2026')?.route).toBe('/api/gallery/:slug')
     expect(resolveApiRoute('/api/tenants?type=shops')?.route).toBe('/api/tenants')
     expect(resolveApiRoute('/api/tenants/test-shop')?.route).toBe('/api/tenants/:slug')
   })
@@ -132,6 +134,35 @@ describe('loadDirectApi', () => {
     expect(calls[1]).toEqual({ path: '/feed', query: { exclude: 'winter', per_page: 4 } })
     expect(body.data.item).toMatchObject({ id: 'winter', title: 'Зимняя коллекция' })
     expect(body.data.related).toHaveLength(1)
+  })
+
+  it('альбом галереи в прямом режиме идёт в `/gallery/{slug}`', async () => {
+    const { request, calls } = fakeRequest(() => ({
+      data: {
+        slug: 'party',
+        title: 'Вечеринка',
+        date: '2026-05-30',
+        cover: '/storage/episode/cover.jpg',
+        photos_count: 2,
+        has_video: false,
+        items: [
+          { type: 'image', src: '/storage/media-gallery/a.jpg', preview: null },
+          { type: 'video', src: 'https://rutube.ru/video/x/', preview: '/storage/poster.jpg' },
+        ],
+      },
+    }))
+
+    const body = await loadDirectApi<ApiEnvelope<GalleryAlbum>>({
+      url: '/api/gallery/party',
+      request,
+    })
+
+    expect(calls[0]).toEqual({ path: '/gallery/party', query: undefined })
+    expect(body.data).toMatchObject({
+      id: 'party',
+      photoCount: 1,
+      photos: ['/storage/media-gallery/a.jpg'],
+    })
   })
 
   it('query поверх URL — для императивных вызовов («показать ещё»)', async () => {
