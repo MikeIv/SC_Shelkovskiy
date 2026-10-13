@@ -37,51 +37,53 @@ withDefaults(
     </div>
 
     <div :class="$style.illustration">
-      <template v-if="variant === 'loyalty'">
-        <img
-          v-if="shadowBackSrc"
-          :src="shadowBackSrc"
-          alt=""
-          :class="$style.shadowBack"
-          width="503"
-          height="356"
-          loading="lazy"
-          decoding="async"
-        >
-        <img
-          v-if="illustrationSrc"
-          :src="illustrationSrc"
-          :alt="illustrationAlt"
-          :class="$style.phones"
-          width="588"
-          height="588"
-          loading="lazy"
-          decoding="async"
-        >
-      </template>
+      <div :class="$style.stage">
+        <template v-if="variant === 'loyalty'">
+          <img
+            v-if="shadowBackSrc"
+            :src="shadowBackSrc"
+            alt=""
+            :class="$style.shadowBack"
+            width="503"
+            height="356"
+            loading="lazy"
+            decoding="async"
+          >
+          <img
+            v-if="illustrationSrc"
+            :src="illustrationSrc"
+            :alt="illustrationAlt"
+            :class="$style.phones"
+            width="588"
+            height="588"
+            loading="lazy"
+            decoding="async"
+          >
+        </template>
 
-      <template v-else>
-        <img
-          v-if="giftCardBackSrc"
-          :src="giftCardBackSrc"
-          alt=""
-          :class="$style.giftCardBack"
-          width="354"
-          height="246"
-          loading="lazy"
-          decoding="async"
-        >
-        <img
-          v-if="giftCardFrontSrc"
-          :src="giftCardFrontSrc"
-          :alt="illustrationAlt"
-          :class="$style.giftCardFront"
-          width="354"
-          height="289"
-          loading="lazy"
-          decoding="async"
-        >
-      </template>
+        <template v-else>
+          <img
+            v-if="giftCardBackSrc"
+            :src="giftCardBackSrc"
+            alt=""
+            :class="$style.giftCardBack"
+            width="354"
+            height="246"
+            loading="lazy"
+            decoding="async"
+          >
+          <img
+            v-if="giftCardFrontSrc"
+            :src="giftCardFrontSrc"
+            :alt="illustrationAlt"
+            :class="$style.giftCardFront"
+            width="354"
+            height="289"
+            loading="lazy"
+            decoding="async"
+          >
+        </template>
+      </div>
     </div>
   </article>
 </template>
@@ -102,10 +104,21 @@ $loyalty-hover-duration: 0.65s;
 
   &[data-variant='gift'] {
     border-radius: var(--fs-radius-pill);
+
+    /* Mob Figma 343×414: текст ниже и уже из‑за круга. */
+    .content {
+      top: rem(124);
+      width: min(calc(100% - rem(60)), rem(284));
+    }
   }
 
   @include from-desktop {
     height: rem(488);
+
+    &[data-variant='gift'] .content {
+      top: rem(56);
+      width: min(calc(100% - rem(48)), rem(632));
+    }
   }
 
   /* Раскрытие CTA только на устройствах с hover; на touch кнопка всегда видна. */
@@ -146,7 +159,7 @@ $loyalty-hover-duration: 0.65s;
   flex-direction: column;
   gap: rem(12);
   align-items: center;
-  width: min(calc(100% - rem(32)), rem(632));
+  width: min(calc(100% - rem(32)), rem(311));
   text-align: center;
   transform: translateX(-50%);
   transition:
@@ -179,10 +192,13 @@ $loyalty-hover-duration: 0.65s;
 .action {
   opacity: 1;
   visibility: visible;
-  margin-top: var(--fs-space-2);
   transition:
     opacity 0.45s ease,
     visibility 0.45s ease;
+
+  @include from-desktop {
+    margin-top: var(--fs-space-2);
+  }
 
   @media (hover: hover) {
     opacity: 0;
@@ -209,41 +225,82 @@ $loyalty-hover-duration: 0.65s;
   }
 }
 
+/* Mob: фиксированная сцена 343px — rem-позиции не плывут на широкой карточке. */
+.stage {
+  position: absolute;
+  inset-block: 0;
+  left: 50%;
+  width: rem(343);
+  max-width: 100%;
+  transform: translateX(-50%);
+
+  @include from-desktop {
+    inset: 0;
+    width: auto;
+    max-width: none;
+    transform: none;
+  }
+}
+
 .phones {
   position: absolute;
-  top: 10.66%;
-  left: 11.72%;
-  width: 76.56%;
+  top: rem(176);
+  left: rem(35);
+  width: rem(277);
   height: auto;
   object-fit: contain;
+
+  @include from-desktop {
+    top: 10.66%;
+    left: 11.72%;
+    width: 76.56%;
+  }
 }
 
 .shadowBack {
   position: absolute;
-  top: 58.1%;
-  left: 17.25%;
-  width: 65.53%;
+  top: rem(285);
+  left: rem(55);
+  width: rem(237);
   height: auto;
   object-fit: contain;
+
+  @include from-desktop {
+    top: 58.1%;
+    left: 17.25%;
+    width: 65.53%;
+  }
 }
 
 .giftCardBack {
   position: absolute;
-  top: 49.59%;
-  left: 44.79%;
-  width: 46.06%;
+  top: rem(263);
+  left: rem(139);
+  width: rem(171);
   height: auto;
   object-fit: contain;
   transform: rotate(-19.83deg);
+
+  @include from-desktop {
+    top: 49.59%;
+    left: 44.79%;
+    width: 46.06%;
+  }
 }
 
 .giftCardFront {
   position: absolute;
-  top: 34.63%;
-  left: 12.37%;
-  width: 46.02%;
+  top: rem(222);
+  left: 0;
+  width: rem(171);
   height: auto;
   object-fit: contain;
   transform: rotate(19.62deg);
+
+  @include from-desktop {
+    top: 34.63%;
+    left: 12.37%;
+    width: 46.02%;
+  }
 }
 </style>

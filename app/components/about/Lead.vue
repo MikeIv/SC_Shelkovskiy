@@ -63,14 +63,16 @@ const { title, description, watermarkSrc } = defineProps<{
   display: flex;
   flex-direction: column;
   gap: rem(12);
-  align-items: center;
+  align-items: flex-start;
   max-width: rem(1296);
   margin-inline: auto;
   padding-inline: var(--fs-grid-margin);
-  text-align: center;
+  text-align: left;
 
   @include from-desktop {
     gap: var(--fs-space-3);
+    align-items: center;
+    text-align: center;
   }
 }
 
