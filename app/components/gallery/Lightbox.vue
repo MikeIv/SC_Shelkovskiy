@@ -21,6 +21,7 @@ const titleId = useId()
 const total = computed(() => props.images.length)
 const currentImage = computed(() => props.images[currentIndex.value] ?? '')
 const canNavigate = computed(() => total.value > 1)
+const navDisabled = computed(() => props.pending || !canNavigate.value)
 
 let previousOverflow = ''
 let previousFocus: HTMLElement | null = null
@@ -153,9 +154,9 @@ onBeforeUnmount(() => {
 
       <div :class="$style.stage">
         <UiButtonArrow
-          :class="$style.arrow"
+          :class="$style.arrowSide"
           direction="left"
-          :disabled="pending || !canNavigate"
+          :disabled="navDisabled"
           @click="goPrev"
         >
           Предыдущее фото
@@ -175,23 +176,43 @@ onBeforeUnmount(() => {
         </div>
 
         <UiButtonArrow
-          :class="$style.arrow"
+          :class="$style.arrowSide"
           direction="right"
-          :disabled="pending || !canNavigate"
+          :disabled="navDisabled"
           @click="goNext"
         >
           Следующее фото
         </UiButtonArrow>
       </div>
 
-      <p
-        v-if="total && !pending"
-        :class="$style.counter"
-        aria-live="polite"
-      >
-        <span>{{ currentIndex + 1 }}</span>
-        <span :class="$style.counterTotal">/{{ total }}</span>
-      </p>
+      <div :class="$style.nav">
+        <UiButtonArrow
+          :class="$style.arrowNav"
+          direction="left"
+          :disabled="navDisabled"
+          @click="goPrev"
+        >
+          Предыдущее фото
+        </UiButtonArrow>
+
+        <p
+          v-if="total && !pending"
+          :class="$style.counter"
+          aria-live="polite"
+        >
+          <span>{{ currentIndex + 1 }}</span>
+          <span :class="$style.counterTotal">/{{ total }}</span>
+        </p>
+
+        <UiButtonArrow
+          :class="$style.arrowNav"
+          direction="right"
+          :disabled="navDisabled"
+          @click="goNext"
+        >
+          Следующее фото
+        </UiButtonArrow>
+      </div>
     </div>
   </Teleport>
 </template>
@@ -206,9 +227,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: var(--fs-space-3);
-  padding: var(--fs-space-5) var(--fs-grid-margin);
+  padding: rem(20) 0;
   background-color: var(--fs-color-white);
 
   @include from-desktop {
@@ -219,8 +238,8 @@ onBeforeUnmount(() => {
 
 .close {
   position: absolute;
-  top: var(--fs-space-2);
-  right: var(--fs-space-2);
+  top: rem(20);
+  right: var(--fs-grid-margin);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -234,6 +253,10 @@ onBeforeUnmount(() => {
   cursor: pointer;
   appearance: none;
   transition: color 0.2s ease;
+
+  @include from-tablet {
+    top: rem(24);
+  }
 
   @include from-desktop {
     top: rem(28);
@@ -263,27 +286,34 @@ onBeforeUnmount(() => {
 }
 
 .stage {
-  display: grid;
-  grid-template-columns: rem(44) minmax(0, 1fr) rem(44);
-  gap: var(--fs-space-1);
+  display: flex;
+  flex: 1;
   align-items: center;
+  justify-content: center;
   width: 100%;
   max-width: rem(1840);
   min-height: 0;
 
-  @include from-tablet {
-    grid-template-columns: rem(80) minmax(0, 1fr) rem(80);
-    gap: var(--fs-space-2);
-  }
-
   @include from-desktop {
+    display: grid;
     grid-template-columns: rem(100) minmax(0, 1fr) rem(100);
     gap: var(--fs-space-3);
   }
 }
 
-.arrow {
-  justify-self: center;
+.arrowSide {
+  display: none;
+
+  @include from-desktop {
+    display: inline-flex;
+    justify-self: center;
+  }
+}
+
+.arrowNav {
+  @include from-desktop {
+    display: none;
+  }
 }
 
 .frame {
@@ -292,7 +322,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   width: 100%;
   min-width: 0;
-  max-height: calc(100vh - rem(160));
+  max-height: 100%;
 
   @include from-desktop {
     max-height: calc(100vh - rem(200));
@@ -308,9 +338,24 @@ onBeforeUnmount(() => {
   object-fit: contain;
 }
 
+.nav {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--fs-space-2);
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding-inline: var(--fs-grid-margin);
+
+  @include from-desktop {
+    justify-content: center;
+    padding-inline: 0;
+  }
+}
+
 .counter {
   display: flex;
-  gap: var(--fs-space-1);
+  gap: rem(4);
   align-items: center;
   margin: 0;
   @include fs-h4;
