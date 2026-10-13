@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import type { HomeShopCategory } from '#shared/types/home'
 
+/** Совпадает с `from-desktop` (`variables/resolutions.scss`). */
+const DESKTOP_MQ = '(min-width: 1280px)'
+const REDUCED_MOTION_MQ = '(prefers-reduced-motion: reduce)'
+/** 1,5–2,5 с по замечанию дизайнера. */
+const CYCLE_MS = 2000
+
 const props = withDefaults(
   defineProps<{
     items: HomeShopCategory[]
@@ -13,11 +19,29 @@ const props = withDefaults(
   },
 )
 
+const rootRef = ref<HTMLElement | null>(null)
 const activeIndex = ref(0)
 const mediaSrc = useMediaSrc()
 const revealed = ref<number[]>([0])
+const isDesktop = ref(false)
+const prefersReducedMotion = ref(false)
+const pageHidden = ref(false)
+const inView = ref(true)
 
 const activeItem = computed(() => props.items[activeIndex.value])
+const canAutoplay = computed(
+  () =>
+    !isDesktop.value
+    && !prefersReducedMotion.value
+    && !pageHidden.value
+    && inView.value
+    && props.items.length > 1,
+)
+
+let cycleTimer: ReturnType<typeof setInterval> | null = null
+let desktopMedia: MediaQueryList | null = null
+let reducedMotionMedia: MediaQueryList | null = null
+let viewObserver: IntersectionObserver | null = null
 
 function isRevealed(index: number) {
   return revealed.value.includes(index)
@@ -30,15 +54,108 @@ function setActive(index: number) {
   }
 }
 
-function resetActive() {
-  activeIndex.value = 0
+function stopAutoplay() {
+  if (cycleTimer === null) {
+    return
+  }
+
+  clearInterval(cycleTimer)
+  cycleTimer = null
 }
+
+function startAutoplay() {
+  stopAutoplay()
+
+  if (!canAutoplay.value) {
+    return
+  }
+
+  cycleTimer = setInterval(() => {
+    setActive((activeIndex.value + 1) % props.items.length)
+  }, CYCLE_MS)
+}
+
+/** Hover/focus — только desktop; на моб/планшете крутит автоплей. */
+function onCategoryEnter(index: number) {
+  if (!isDesktop.value) {
+    return
+  }
+
+  setActive(index)
+}
+
+function onRootLeave() {
+  if (!isDesktop.value) {
+    return
+  }
+
+  setActive(0)
+}
+
+/** Клик: выбор категории; на моб/планшете — перезапуск цикла с выбранной. */
+function onCategorySelect(index: number) {
+  setActive(index)
+
+  if (canAutoplay.value) {
+    startAutoplay()
+  }
+}
+
+function onDesktopChange(event: MediaQueryListEvent) {
+  isDesktop.value = event.matches
+  startAutoplay()
+}
+
+function onReducedMotionChange(event: MediaQueryListEvent) {
+  prefersReducedMotion.value = event.matches
+  startAutoplay()
+}
+
+function onVisibilityChange() {
+  pageHidden.value = document.hidden
+  startAutoplay()
+}
+
+onMounted(() => {
+  desktopMedia = window.matchMedia(DESKTOP_MQ)
+  isDesktop.value = desktopMedia.matches
+  desktopMedia.addEventListener('change', onDesktopChange)
+
+  reducedMotionMedia = window.matchMedia(REDUCED_MOTION_MQ)
+  prefersReducedMotion.value = reducedMotionMedia.matches
+  reducedMotionMedia.addEventListener('change', onReducedMotionChange)
+
+  pageHidden.value = document.hidden
+  document.addEventListener('visibilitychange', onVisibilityChange)
+
+  if (rootRef.value) {
+    viewObserver = new IntersectionObserver(
+      ([entry]) => {
+        inView.value = entry?.isIntersecting ?? false
+        startAutoplay()
+      },
+      { threshold: 0.2 },
+    )
+    viewObserver.observe(rootRef.value)
+  }
+
+  startAutoplay()
+})
+
+onUnmounted(() => {
+  stopAutoplay()
+  viewObserver?.disconnect()
+  desktopMedia?.removeEventListener('change', onDesktopChange)
+  reducedMotionMedia?.removeEventListener('change', onReducedMotionChange)
+  document.removeEventListener('visibilitychange', onVisibilityChange)
+})
 </script>
 
 <template>
   <div
+    ref="rootRef"
     :class="$style.root"
-    @mouseleave="resetActive"
+    @mouseleave="onRootLeave"
   >
     <div
       :class="$style.pattern"
@@ -98,9 +215,9 @@ function resetActive() {
               activeIndex === index && $style.categoryActive,
             ]"
             :aria-pressed="activeIndex === index"
-            @mouseenter="setActive(index)"
-            @focus="setActive(index)"
-            @click="setActive(index)"
+            @mouseenter="onCategoryEnter(index)"
+            @focus="onCategoryEnter(index)"
+            @click="onCategorySelect(index)"
           >
             {{ item.title }}
           </button>
