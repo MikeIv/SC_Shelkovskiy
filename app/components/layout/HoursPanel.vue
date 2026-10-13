@@ -171,12 +171,6 @@ const todayIndex = computed(() => layoutTodayIndex(layout.hours))
     padding-inline: 0;
   }
 
-  .tenants {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--fs-space-4);
-  }
-
   .media {
     flex-shrink: 0;
   }
@@ -249,8 +243,9 @@ const todayIndex = computed(() => layoutTodayIndex(layout.hours))
 }
 
 .tenants {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--fs-space-4);
   margin: 0;
   padding: 0;
   list-style: none;
