@@ -43,10 +43,11 @@ const { title, description, items } = defineProps<{
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-4);
-  align-items: center;
+  align-items: flex-start;
 
   @include from-desktop {
     gap: rem(40);
+    align-items: center;
   }
 }
 
@@ -54,12 +55,14 @@ const { title, description, items } = defineProps<{
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-2);
-  align-items: center;
+  align-items: flex-start;
   max-width: rem(882);
-  text-align: center;
+  text-align: left;
 
   @include from-desktop {
     gap: var(--fs-space-3);
+    align-items: center;
+    text-align: center;
   }
 }
 
@@ -78,16 +81,17 @@ const { title, description, items } = defineProps<{
 .list {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--fs-space-4);
+  gap: var(--fs-space-3);
   width: 100%;
   margin: 0;
   padding: 0;
   list-style: none;
-  text-align: center;
+  text-align: left;
 
   @include from-tablet {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--fs-space-5);
+    text-align: center;
   }
 
   @include from-desktop {

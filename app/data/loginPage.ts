@@ -11,7 +11,6 @@ export const loginPage = {
     login: 'Такой логин не найден',
     password: 'Пароль неверный',
   },
-  watermarkSrc: '/images/login/watermark.svg',
 } as const
 
 export const loginRecoverTitle = {

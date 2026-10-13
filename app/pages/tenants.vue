@@ -27,15 +27,10 @@ useSeoMeta({
 
 <template>
   <div :class="$style.root">
-    <img
+    <div
       :class="$style.watermark"
-      :src="tenantsStats.watermarkSrc"
-      alt=""
-      width="1348"
-      height="1344"
       aria-hidden="true"
-      decoding="async"
-    >
+    />
 
     <TenantsHero
       v-bind="tenantsHero"
@@ -81,17 +76,26 @@ useSeoMeta({
 
 .watermark {
   position: absolute;
-  // Figma 580:33719 — центр 1920, top 488, 1348×1344.
-  top: rem(280);
+  top: rem(750);
   left: 50%;
-  width: min(140%, rem(720));
-  height: auto;
+  width: min(100%, rem(600));
+  height: min(100%, rem(600));
   pointer-events: none;
-  transform: translateX(-50%);
+  background-color: var(--fs-color-ornament);
+  mask: url('/images/ornament/pattern.svg') center / contain no-repeat;
+  transform: translate(-50%, -10%);
+
+  @include from-tablet {
+    top: rem(780);
+    width: rem(900);
+    height: rem(900);
+  }
 
   @include from-desktop {
     top: rem(488);
     width: rem(1348);
+    height: rem(1344);
+    transform: translateX(-50%);
   }
 }
 

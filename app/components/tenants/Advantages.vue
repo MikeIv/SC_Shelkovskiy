@@ -6,11 +6,16 @@ const { title, items } = defineProps<{
   items: TenantsAdvantage[]
 }>()
 
+/** Mobile accordion / desktop tabs — один выбранный пункт. */
 const activeId = ref(items[0]?.id ?? '')
 
 const activeItem = computed(
   () => items.find((item) => item.id === activeId.value) ?? items[0],
 )
+
+function toggle(id: string) {
+  activeId.value = activeId.value === id ? '' : id
+}
 
 onMounted(() => {
   for (const item of items) {
@@ -30,6 +35,60 @@ onMounted(() => {
       {{ title }}
     </h2>
 
+    <ul :class="$style.accordion">
+      <li
+        v-for="item in items"
+        :key="item.id"
+        :class="$style.accordionItem"
+      >
+        <button
+          type="button"
+          :class="$style.accordionTrigger"
+          :aria-expanded="activeId === item.id"
+          :aria-controls="`tenants-advantage-acc-${item.id}`"
+          @click="toggle(item.id)"
+        >
+          <span :class="$style.accordionTitle">{{ item.title }}</span>
+          <span :class="$style.iconWrap" aria-hidden="true">
+            <UIcon
+              name="local:arrow-down"
+              :class="[$style.icon, { [$style.iconOpen]: activeId === item.id }]"
+            />
+          </span>
+        </button>
+
+        <div
+          v-if="activeId === item.id"
+          :id="`tenants-advantage-acc-${item.id}`"
+          :class="$style.accordionPanel"
+        >
+          <ul :class="$style.points">
+            <li
+              v-for="(point, index) in item.points"
+              :key="`${item.id}-${index}`"
+              :class="$style.point"
+            >
+              <span :class="$style.bullet" aria-hidden="true" />
+              <p :class="$style.pointText">
+                {{ point }}
+              </p>
+            </li>
+          </ul>
+
+          <div :class="$style.media">
+            <img
+              :class="$style.image"
+              :src="item.imageSrc"
+              :alt="item.imageAlt"
+              width="1008"
+              height="1112"
+              decoding="async"
+            >
+          </div>
+        </div>
+      </li>
+    </ul>
+
     <div :class="$style.body">
       <div
         :class="$style.nav"
@@ -43,8 +102,8 @@ onMounted(() => {
           :class="$style.navItem"
           type="button"
           role="tab"
-          :aria-selected="item.id === activeId"
-          :tabindex="item.id === activeId ? 0 : -1"
+          :aria-selected="item.id === activeItem?.id"
+          :tabindex="item.id === activeItem?.id ? 0 : -1"
           :aria-controls="`tenants-advantage-panel-${item.id}`"
           @click="activeId = item.id"
         >
@@ -52,7 +111,7 @@ onMounted(() => {
         </button>
       </div>
 
-      <div :class="$style.media" aria-hidden="true">
+      <div :class="$style.mediaDesk" aria-hidden="true">
         <Transition
           :enter-active-class="$style.fadeEnterActive"
           :leave-active-class="$style.fadeLeaveActive"
@@ -125,10 +184,88 @@ onMounted(() => {
   overflow-wrap: break-word;
 }
 
-.body {
+.accordion {
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @include from-desktop {
+    display: none;
+  }
+}
+
+.accordionItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-2);
+  min-width: 0;
+}
+
+.accordionTrigger {
+  display: flex;
+  gap: rem(8);
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  text-align: left;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+
+  &:focus-visible {
+    outline: rem(2) solid var(--fs-color-black);
+    outline-offset: rem(4);
+    border-radius: rem(4);
+  }
+}
+
+.accordionTitle {
+  @include fs-h3;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.iconWrap {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: rem(32);
+  height: rem(32);
+}
+
+.icon {
+  width: rem(24);
+  height: rem(24);
+  color: var(--fs-color-black);
+  transition: transform 0.2s ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.iconOpen {
+  transform: rotate(180deg);
+}
+
+.accordionPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-2);
+  align-items: center;
+  min-width: 0;
+}
+
+.body {
+  display: none;
 
   @include from-desktop {
     display: grid;
@@ -178,19 +315,22 @@ onMounted(() => {
   }
 }
 
-.media {
+.media,
+.mediaDesk {
   position: relative;
-  align-self: center;
-  width: min(100%, rem(320));
-  aspect-ratio: 1;
   overflow: clip;
   border-radius: 50%;
+}
 
-  @include from-desktop {
-    width: rem(504);
-    height: rem(556);
-    aspect-ratio: auto;
-  }
+.media {
+  width: min(100%, rem(277));
+  aspect-ratio: 277 / 304;
+}
+
+.mediaDesk {
+  align-self: center;
+  width: rem(504);
+  height: rem(556);
 }
 
 .image {
@@ -217,6 +357,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: rem(12);
+  width: 100%;
   margin: 0;
   padding: 0;
   list-style: none;

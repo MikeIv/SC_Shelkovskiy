@@ -15,7 +15,6 @@ export const tenantsStats = {
   title: 'Цифры, которые говорят сами за себя',
   description:
     'Мы предлагаем арендаторам уникальную возможность стать частью востребованного пространства с гарантированным трафиком и высокой покупательской способностью аудитории.',
-  watermarkSrc: '/images/ornament/pattern.svg',
 } as const
 
 export const tenantsStatItems: TenantsStat[] = [

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { loginPage } from '~/data/loginPage'
-
 definePageMeta({
   layout: 'blank',
 })
@@ -38,15 +36,10 @@ function onResend(): void {
 
 <template>
   <div :class="$style.root">
-    <img
+    <div
       :class="$style.watermark"
-      :src="loginPage.watermarkSrc"
-      alt=""
-      width="1348"
-      height="1344"
       aria-hidden="true"
-      decoding="async"
-    >
+    />
 
     <LoginForm v-if="view === 'login'" @forgot="showForgot" />
     <LoginForgot
@@ -86,13 +79,21 @@ function onResend(): void {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: min(100%, rem(900));
-  height: auto;
+  width: min(100%, rem(600));
+  height: min(100%, rem(600));
   pointer-events: none;
+  background-color: var(--fs-color-ornament);
+  mask: url('/images/ornament/pattern.svg') center / contain no-repeat;
   transform: translate(-50%, -50%);
+
+  @include from-tablet {
+    width: rem(900);
+    height: rem(900);
+  }
 
   @include from-desktop {
     width: rem(1348);
+    height: rem(1344);
   }
 }
 </style>

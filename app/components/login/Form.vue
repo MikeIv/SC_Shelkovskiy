@@ -15,6 +15,10 @@ const errors = reactive({
   password: '',
 })
 
+const canSubmit = computed(
+  () => form.login.trim().length > 0 && form.password.trim().length > 0,
+)
+
 for (const field of ['login', 'password'] as const) {
   watch(
     () => form[field],
@@ -25,6 +29,10 @@ for (const field of ['login', 'password'] as const) {
 }
 
 function onSubmit(): void {
+  if (!canSubmit.value) {
+    return
+  }
+
   // Ошибки по макету до контракта API: любой submit показывает оба сообщения.
   Object.assign(errors, loginPage.fieldErrors)
 }
@@ -68,7 +76,7 @@ function onSubmit(): void {
       <LoginTextButton @click="emit('forgot')">
         {{ loginPage.forgotLabel }}
       </LoginTextButton>
-      <UiButton type="submit">
+      <UiButton type="submit" :disabled="!canSubmit">
         {{ loginPage.submitLabel }}
       </UiButton>
     </template>

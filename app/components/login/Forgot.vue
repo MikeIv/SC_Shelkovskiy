@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { isEmail } from '#shared/utils/isEmail'
 import { loginForgot } from '~/data/loginPage'
 
 const emit = defineEmits<{
@@ -7,9 +8,28 @@ const emit = defineEmits<{
 }>()
 
 const email = ref('')
+const error = ref('')
+
+const canSubmit = computed(() => isEmail(email.value))
+
+watch(email, () => {
+  error.value = ''
+})
 
 function onSubmit(): void {
-  emit('restore', email.value)
+  const value = email.value.trim()
+
+  if (!value) {
+    error.value = 'Обязательное поле'
+    return
+  }
+
+  if (!isEmail(value)) {
+    error.value = 'Некорректный email'
+    return
+  }
+
+  emit('restore', value)
 }
 </script>
 
@@ -32,12 +52,13 @@ function onSubmit(): void {
         autocomplete="email"
         :placeholder="loginForgot.emailPlaceholder"
         :label="loginForgot.emailPlaceholder"
+        :error="error"
         required
       />
     </template>
 
     <template #actions>
-      <UiButton type="submit">
+      <UiButton type="submit" :disabled="!canSubmit">
         {{ loginForgot.submitLabel }}
       </UiButton>
       <LoginTextButton @click="emit('cancel')">

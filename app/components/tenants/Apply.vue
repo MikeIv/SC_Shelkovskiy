@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { TenantsFormTab, TenantsTradeProfile } from '#shared/types/tenants'
+import { isEmail } from '#shared/utils/isEmail'
 
 const {
   title,
@@ -35,6 +36,9 @@ const {
   tradeProfiles: TenantsTradeProfile[]
 }>()
 
+const requiredError = 'Обязательное поле'
+const emailFormatError = 'Некорректный email'
+
 const activeTab = ref<TenantsFormTab>('lease')
 const form = reactive({
   fullName: '',
@@ -53,6 +57,12 @@ const form = reactive({
   areaOptimal: '',
   adsMessage: '',
 })
+const errors = reactive({
+  fullName: '',
+  phone: '',
+  email: '',
+  adsMessage: '',
+})
 const selectedProfiles = ref<string[]>([])
 const consent = ref(false)
 const fileName = ref('')
@@ -61,6 +71,33 @@ const fileInput = ref<HTMLInputElement | null>(null)
 const presentationTo = computed(() =>
   presentationHref && presentationHref !== '#' ? presentationHref : undefined,
 )
+
+const canSubmit = computed(() => {
+  const base =
+    form.fullName.trim().length > 0
+    && form.phone.trim().length > 0
+    && isEmail(form.email)
+    && consent.value
+
+  if (activeTab.value === 'ads') {
+    return base && form.adsMessage.trim().length > 0
+  }
+
+  return base
+})
+
+for (const field of ['fullName', 'phone', 'email', 'adsMessage'] as const) {
+  watch(
+    () => form[field],
+    () => {
+      errors[field] = ''
+    },
+  )
+}
+
+watch(activeTab, () => {
+  errors.adsMessage = ''
+})
 
 function isProfileSelected(id: string) {
   return selectedProfiles.value.includes(id)
@@ -94,7 +131,26 @@ function onFileChange(event: Event) {
   fileName.value = input.files?.[0]?.name ?? ''
 }
 
+function validate(): boolean {
+  errors.fullName = form.fullName.trim() ? '' : requiredError
+  errors.phone = form.phone.trim() ? '' : requiredError
+  errors.email = !form.email.trim()
+    ? requiredError
+    : isEmail(form.email)
+      ? ''
+      : emailFormatError
+  errors.adsMessage =
+    activeTab.value === 'ads' && !form.adsMessage.trim() ? requiredError : ''
+
+  return !errors.fullName && !errors.phone && !errors.email && !errors.adsMessage
+}
+
 function onSubmit() {
+  // Guard на Enter в поле при disabled submit в отдельных браузерах.
+  if (!validate() || !consent.value) {
+    return
+  }
+
   // Отправка появится после контракта API.
 }
 </script>
@@ -139,6 +195,8 @@ function onSubmit() {
               autocomplete="name"
               placeholder="ФИО"
               label="ФИО"
+              :error="errors.fullName"
+              required
             />
             <UiInput
               v-model="form.position"
@@ -157,6 +215,8 @@ function onSubmit() {
               autocomplete="tel"
               placeholder="Телефон"
               label="Телефон"
+              :error="errors.phone"
+              required
             />
             <UiInput
               v-model="form.email"
@@ -165,6 +225,8 @@ function onSubmit() {
               autocomplete="email"
               placeholder="Почта"
               label="Почта"
+              :error="errors.email"
+              required
             />
           </div>
 
@@ -312,6 +374,8 @@ function onSubmit() {
               rows="4"
               placeholder="Расскажите о формате и сроках размещения"
               label="Описание рекламной заявки"
+              :error="errors.adsMessage"
+              required
             />
           </div>
         </div>
@@ -370,7 +434,7 @@ function onSubmit() {
             </span>
           </label>
 
-          <UiButton type="submit">
+          <UiButton type="submit" :disabled="!canSubmit">
             Отправить
           </UiButton>
         </div>
@@ -408,7 +472,7 @@ function onSubmit() {
                 <span :class="$style.contactsExt">{{ phoneExt }}</span>
               </a>
             </li>
-            <li :class="[$style.contactsItem, $style.contactsItemMail]">
+            <li :class="$style.contactsItem">
               <div :class="$style.contactsMeta">
                 <UIcon
                   name="local:message"
@@ -527,6 +591,9 @@ function onSubmit() {
 }
 
 .fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: rem(24);
   margin: 0;
   padding: 0;
   border: 0;
@@ -663,27 +730,35 @@ function onSubmit() {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-4);
+  gap: var(--fs-space-3);
   width: 100%;
-  padding: var(--fs-space-4);
+  padding: var(--fs-space-2);
   overflow: clip;
   background-color: var(--fs-color-light);
-  border-radius: rem(32);
+  border-radius: rem(24);
 
   @include from-desktop {
     flex: 0 0 rem(504);
+    gap: var(--fs-space-4);
     width: rem(504);
+    padding: var(--fs-space-4);
+    border-radius: rem(32);
   }
 }
 
 .contactsDecor {
   position: absolute;
-  right: rem(-172);
-  bottom: rem(160);
+  right: rem(-177);
+  bottom: rem(214);
   width: rem(366);
   height: auto;
   max-width: none;
   pointer-events: none;
+
+  @include from-desktop {
+    right: rem(-172);
+    bottom: rem(160);
+  }
 }
 
 .contactsFade {
@@ -691,7 +766,7 @@ function onSubmit() {
   inset: 0;
   pointer-events: none;
   background-image: linear-gradient(
-    36deg,
+    50deg,
     var(--fs-color-light) 53%,
     rgb(243 242 237 / 0%) 90%
   );
@@ -703,8 +778,12 @@ function onSubmit() {
   z-index: z('default');
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-3);
+  gap: var(--fs-space-2);
   width: 100%;
+
+  @include from-desktop {
+    gap: var(--fs-space-3);
+  }
 }
 
 .contactsTitle {
@@ -715,20 +794,25 @@ function onSubmit() {
 .contactsList {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-3);
+  gap: var(--fs-space-2);
   margin: 0;
   padding: 0;
   list-style: none;
+
+  @include from-desktop {
+    gap: var(--fs-space-3);
+  }
 }
 
 .contactsItem {
   display: flex;
+  flex-direction: column;
   gap: rem(8);
   align-items: flex-start;
-}
 
-.contactsItemMail {
-  align-items: center;
+  @include from-desktop {
+    flex-direction: row;
+  }
 }
 
 .contactsMeta {
@@ -737,8 +821,12 @@ function onSubmit() {
   gap: rem(4);
   align-items: center;
   width: rem(120);
-  @include fs-text-lg;
+  @include fs-text;
   color: var(--fs-color-gray);
+
+  @include from-desktop {
+    @include fs-text-lg;
+  }
 }
 
 .contactsIcon {
@@ -749,10 +837,14 @@ function onSubmit() {
 }
 
 .contactsValue {
-  @include fs-text-lg;
+  @include fs-text;
   color: var(--fs-color-black);
   text-decoration: none;
   overflow-wrap: break-word;
+
+  @include from-desktop {
+    @include fs-text-lg;
+  }
 }
 
 .contactsExt {
@@ -761,8 +853,12 @@ function onSubmit() {
 
 .presentationNote {
   margin: 0;
-  @include fs-text-lg;
+  @include fs-text;
   overflow-wrap: break-word;
+
+  @include from-desktop {
+    @include fs-text-lg;
+  }
 }
 
 .presentationBtn {
