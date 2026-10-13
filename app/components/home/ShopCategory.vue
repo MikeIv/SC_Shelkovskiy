@@ -159,8 +159,7 @@ $shop-category-pattern-desktop: 1220;
   width: rem(374);
   height: rem(373);
   pointer-events: none;
-  background-color: var(--fs-color-black);
-  opacity: 0.08;
+  background-color: var(--fs-color-ornament);
   mask: url('/images/home/categories/pattern.svg') center / contain no-repeat;
 
   @include from-desktop {
@@ -171,8 +170,6 @@ $shop-category-pattern-desktop: 1220;
     bottom: rem(($shop-category-right-height - $shop-category-pattern-desktop) * 0.5);
     width: rem($shop-category-pattern-desktop);
     height: rem($shop-category-pattern-desktop);
-    background-color: var(--fs-color-beige);
-    opacity: 0.2;
   }
 }
 

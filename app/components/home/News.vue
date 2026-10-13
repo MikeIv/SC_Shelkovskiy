@@ -17,6 +17,8 @@ const {
 
 <template>
   <section :class="$style.root" aria-labelledby="home-news-title">
+    <div :class="$style.pattern" aria-hidden="true" />
+
     <div :class="$style.inner">
       <div :class="$style.head">
         <h2 id="home-news-title" :class="$style.title">Новости и акции</h2>
@@ -65,8 +67,37 @@ const {
 @use 'tools' as *;
 
 .root {
-  /* Гасит горизонтальный скролл fs-carousel-viewport. */
+  /* Контекст для z-index:-1; clip гасит скролл карусели. */
+  position: relative;
+  z-index: 0;
   overflow-x: clip;
+}
+
+/* Figma 687:49135 — слева; desk: центр на левом крае (−674 / 1348×1344). */
+.pattern {
+  position: absolute;
+  z-index: -1;
+  top: rem(-80);
+  left: rem(-194);
+  width: rem(374);
+  height: rem(373);
+  pointer-events: none;
+  background-color: var(--fs-color-ornament);
+  mask: url('/images/home/categories/pattern.svg') center / contain no-repeat;
+
+  @include from-tablet {
+    top: rem(-100);
+    left: 0;
+    width: rem(725);
+    height: rem(723);
+    transform: translateX(-50%);
+  }
+
+  @include from-desktop {
+    top: rem(-372);
+    width: rem(1348);
+    height: rem(1344);
+  }
 }
 
 .inner {
