@@ -736,7 +736,7 @@ $menu-media-duration: 0.55s;
   height: 0;
   margin-top: var(--fs-space-4);
   border: 0;
-  border-top: rem(2) solid var(--fs-color-black);
+  border-top: rem(2) solid var(--fs-color-light);
 
   @include from-desktop {
     display: none;
