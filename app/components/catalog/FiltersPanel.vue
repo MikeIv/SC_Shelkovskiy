@@ -84,6 +84,7 @@ function reset(): void {
   draftActionsOnly.value = false
   draftBreakfastOnly.value = false
   draftBusinessLunchOnly.value = false
+  apply()
 }
 
 function lockScroll(lock: boolean): void {

@@ -106,6 +106,7 @@ function closeFilters(): void {
     <div :class="$style.actions">
       <UiTab
         :class="$style.filterBtn"
+        :data-active="hasActiveFilters || undefined"
         variant="circle"
         icon="local:filter"
         :selected="hasActiveFilters || filtersOpen"
@@ -230,6 +231,17 @@ function closeFilters(): void {
 .filterBtn {
   @include from-desktop {
     display: none;
+  }
+
+  &[data-active]::after {
+    content: '';
+    position: absolute;
+    top: rem(2);
+    right: rem(2);
+    width: rem(10);
+    height: rem(10);
+    border-radius: 50%;
+    background-color: var(--fs-color-red);
   }
 }
 
