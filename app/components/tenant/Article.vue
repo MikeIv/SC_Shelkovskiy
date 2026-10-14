@@ -17,10 +17,77 @@ const galleryImages = computed(() =>
     :class="$style.root"
     :data-has-gallery="galleryImages.length ? '' : undefined"
   >
-    <header :class="$style.header">
-      <h1 :class="$style.title">{{ item.title }}</h1>
-      <p :class="$style.category">{{ item.category }}</p>
-    </header>
+    <div :class="$style.primary">
+      <div :class="$style.intro">
+        <header :class="$style.header">
+          <h1 :class="$style.title">{{ item.title }}</h1>
+          <p :class="$style.category">{{ item.category }}</p>
+        </header>
+
+        <div :class="$style.info">
+          <NuxtLink :class="$style.mapCard" :to="item.mapUrl">
+            <div :class="$style.logo">
+              <img
+                v-if="item.logoSrc"
+                :class="$style.logoImage"
+                :src="logoSrc"
+                :alt="item.logoAlt || item.title"
+              >
+              <UiLogo v-else :class="$style.logoFallback" />
+            </div>
+
+            <div :class="$style.mapInfo">
+              <UiTag variant="other">{{ item.floor }}</UiTag>
+              <UiIconLink icon="local:map">Смотреть на схеме</UiIconLink>
+            </div>
+          </NuxtLink>
+
+          <div v-if="item.phone || item.website" :class="$style.contacts">
+            <div v-if="item.phone" :class="$style.contact">
+              <span :class="$style.contactLabel">
+                <UIcon name="local:phone" :class="$style.contactIcon" aria-hidden="true" />
+                Телефон
+              </span>
+              <a
+                v-if="item.phoneHref"
+                :class="$style.contactValue"
+                :href="item.phoneHref"
+              >
+                {{ item.phone }}
+              </a>
+              <span v-else :class="$style.contactValue">{{ item.phone }}</span>
+            </div>
+
+            <div v-if="item.website" :class="$style.contact">
+              <span :class="$style.contactLabel">
+                <UIcon name="local:globe" :class="$style.contactIcon" aria-hidden="true" />
+                Сайт
+              </span>
+              <a
+                :class="$style.contactValue"
+                :href="item.website"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {{ item.website }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section
+        v-if="item.about"
+        :class="$style.about"
+        aria-labelledby="tenant-about-title"
+      >
+        <h2 id="tenant-about-title" :class="$style.aboutTitle">
+          {{ item.aboutTitle || 'О бренде' }}
+        </h2>
+        <!-- eslint-disable-next-line vue/no-v-html -- HTML из CMS прошёл sanitizeApiHtml: script/style сняты, из атрибутов остаётся только безопасный href -->
+        <div :class="$style.aboutText" v-html="item.about" />
+      </section>
+    </div>
 
     <NewsDetailGallery
       v-if="galleryImages.length"
@@ -28,76 +95,13 @@ const galleryImages = computed(() =>
       :images="galleryImages"
       :alt="item.galleryAlt || item.title"
     />
-
-    <div :class="$style.info">
-      <NuxtLink :class="$style.mapCard" :to="item.mapUrl">
-        <div :class="$style.logo">
-          <img
-            v-if="item.logoSrc"
-            :class="$style.logoImage"
-            :src="logoSrc"
-            :alt="item.logoAlt || item.title"
-          >
-          <UiLogo v-else :class="$style.logoFallback" />
-        </div>
-
-        <div :class="$style.mapInfo">
-          <UiTag variant="other">{{ item.floor }}</UiTag>
-          <UiIconLink icon="local:map">Смотреть на схеме</UiIconLink>
-        </div>
-      </NuxtLink>
-
-      <div v-if="item.phone || item.website" :class="$style.contacts">
-        <div v-if="item.phone" :class="$style.contact">
-          <span :class="$style.contactLabel">
-            <UIcon name="local:phone" :class="$style.contactIcon" aria-hidden="true" />
-            Телефон
-          </span>
-          <a
-            v-if="item.phoneHref"
-            :class="$style.contactValue"
-            :href="item.phoneHref"
-          >
-            {{ item.phone }}
-          </a>
-          <span v-else :class="$style.contactValue">{{ item.phone }}</span>
-        </div>
-
-        <div v-if="item.website" :class="$style.contact">
-          <span :class="$style.contactLabel">
-            <UIcon name="local:globe" :class="$style.contactIcon" aria-hidden="true" />
-            Сайт
-          </span>
-          <a
-            :class="$style.contactValue"
-            :href="item.website"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {{ item.website }}
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <section
-      v-if="item.about"
-      :class="$style.about"
-      aria-labelledby="tenant-about-title"
-    >
-      <h2 id="tenant-about-title" :class="$style.aboutTitle">
-        {{ item.aboutTitle || 'О бренде' }}
-      </h2>
-      <!-- eslint-disable-next-line vue/no-v-html -- HTML из CMS прошёл sanitizeApiHtml: script/style сняты, из атрибутов остаётся только безопасный href -->
-      <div :class="$style.aboutText" v-html="item.about" />
-    </section>
   </article>
 </template>
 
 <style module lang="scss">
 @use 'tools' as *;
 
-/* Mob: title → gallery → info → about (Figma 971:52108). Desk: текст слева, gallery sticky справа. */
+/* Mob: title → gallery → info → about (order). Desk: primary | sticky gallery. */
 .root {
   display: flex;
   flex-direction: column;
@@ -107,7 +111,7 @@ const galleryImages = computed(() =>
   @include from-desktop {
     display: grid;
     grid-template-columns: minmax(0, rem(768));
-    gap: var(--fs-space-6) var(--fs-space-3);
+    gap: var(--fs-space-3);
     align-items: start;
     justify-content: space-between;
 
@@ -117,15 +121,34 @@ const galleryImages = computed(() =>
   }
 }
 
+.primary {
+  display: contents;
+
+  @include from-desktop {
+    display: flex;
+    flex-direction: column;
+    gap: var(--fs-space-6);
+    min-width: 0;
+  }
+}
+
+.intro {
+  display: contents;
+
+  @include from-desktop {
+    display: flex;
+    flex-direction: column;
+    gap: var(--fs-space-3);
+    min-width: 0;
+  }
+}
+
 .header {
   display: flex;
   flex-direction: column;
-  gap: rem(4);
+  gap: var(--fs-space-1);
+  order: 1;
   min-width: 0;
-
-  @include from-desktop {
-    grid-column: 1;
-  }
 }
 
 .title {
@@ -141,13 +164,12 @@ const galleryImages = computed(() =>
 }
 
 .gallery {
+  order: 2;
   min-width: 0;
 
   @include from-desktop {
     position: sticky;
     top: var(--fs-space-5);
-    grid-column: 2;
-    grid-row: 1 / -1;
   }
 }
 
@@ -156,6 +178,7 @@ const galleryImages = computed(() =>
   flex-direction: column;
   gap: var(--fs-space-3);
   align-items: flex-start;
+  order: 3;
   min-width: 0;
 
   @include from-tablet {
@@ -163,10 +186,6 @@ const galleryImages = computed(() =>
     flex-wrap: wrap;
     gap: var(--fs-space-5);
     align-items: center;
-  }
-
-  @include from-desktop {
-    grid-column: 1;
   }
 }
 
@@ -245,7 +264,7 @@ const galleryImages = computed(() =>
 .contact {
   display: flex;
   flex-wrap: wrap;
-  gap: rem(8);
+  gap: var(--fs-space-1);
   align-items: center;
 }
 
@@ -283,15 +302,18 @@ const galleryImages = computed(() =>
 .about {
   display: flex;
   flex-direction: column;
-  gap: rem(12);
-  /* Top→About в Figma 40: gap root 24 + 16 */
-  margin-top: var(--fs-space-2);
+  gap: var(--fs-space-3);
+  order: 4;
   min-width: 0;
+}
 
-  @include from-desktop {
-    margin-top: 0;
-    gap: var(--fs-space-3);
-    grid-column: 1;
+/* Desk: DOM-порядок primary→gallery; order только для mob (contents). */
+@include from-desktop {
+  .header,
+  .gallery,
+  .info,
+  .about {
+    order: unset;
   }
 }
 
