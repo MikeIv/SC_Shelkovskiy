@@ -308,6 +308,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   width: min(100%, #{rem(643)});
+  min-width: 0;
   margin-block: auto;
 }
 
@@ -317,6 +318,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   width: 100%;
+  min-width: 0;
   padding: var(--fs-space-4);
   background-color: var(--fs-color-white);
   border-radius: rem(32);
@@ -426,6 +428,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-2);
+  min-width: 0;
 }
 
 .row {
@@ -463,11 +466,14 @@ onBeforeUnmount(() => {
   gap: rem(12);
   align-items: center;
   min-width: 0;
+  max-width: 100%;
   margin: 0;
   padding: 0;
+  overflow: hidden;
   border: 0;
   @include fs-text-md;
   color: var(--fs-color-black);
+  text-align: start;
   background: transparent;
   cursor: pointer;
   appearance: none;

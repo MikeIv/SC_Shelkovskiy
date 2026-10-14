@@ -71,19 +71,34 @@ const lastIndex = computed(() => items.length - 1)
 
 .list {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: rem(4);
   align-items: center;
+  max-width: 100%;
+  min-width: 0;
   margin: 0;
   padding: 0;
+  overflow-x: auto;
   list-style: none;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @include from-tablet {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
 }
 
 .item {
   display: inline-flex;
+  flex-shrink: 0;
   gap: rem(4);
   align-items: center;
-  min-width: 0;
   min-height: rem(24);
 }
 
@@ -119,18 +134,23 @@ const lastIndex = computed(() => items.length - 1)
 }
 
 .current {
-  min-width: 0;
-  max-width: 100%;
   color: var(--fs-color-black);
-  white-space: normal;
-  overflow-wrap: break-word;
 }
 
-/* Длинное текущее название целиком уходит на следующую строку и там переносится. */
+/* С tablet длинное текущее название уходит на следующую строку и переносится. */
 .item:last-child {
-  flex: 0 1 auto;
-  min-width: min(100%, max-content);
-  max-width: 100%;
+  @include from-tablet {
+    flex: 0 1 auto;
+    min-width: min(100%, max-content);
+    max-width: 100%;
+
+    .current {
+      min-width: 0;
+      max-width: 100%;
+      white-space: normal;
+      overflow-wrap: break-word;
+    }
+  }
 }
 
 .separator {
