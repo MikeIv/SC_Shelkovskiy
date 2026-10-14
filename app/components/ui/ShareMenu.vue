@@ -170,9 +170,9 @@ onBeforeUnmount(() => {
   z-index: z('dropdown-panel');
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-1);
+  gap: var(--fs-space-2);
   width: rem(268);
-  padding: var(--fs-space-2);
+  padding: var(--fs-space-3);
   overflow: clip;
   border-radius: var(--fs-radius-xl);
   background-color: var(--fs-color-light);
@@ -180,22 +180,20 @@ onBeforeUnmount(() => {
 
 .item {
   display: flex;
-  gap: var(--fs-space-2);
+  gap: var(--fs-space-1);
   align-items: center;
   width: 100%;
   margin: 0;
-  padding: rem(10) var(--fs-space-2);
+  padding: 0;
   border: 0;
-  border-radius: var(--fs-radius-lg);
   @include fs-text-md;
   color: var(--fs-color-gray);
   text-align: start;
+  white-space: nowrap;
   background: transparent;
   cursor: pointer;
   appearance: none;
-  transition:
-    color 0.15s ease,
-    background-color 0.15s ease;
+  transition: color 0.15s ease;
 
   &:focus-visible {
     outline: rem(2) solid var(--fs-color-black);
@@ -205,7 +203,6 @@ onBeforeUnmount(() => {
   @media (hover: hover) {
     &:hover {
       color: var(--fs-color-black);
-      background-color: var(--fs-color-light-hover);
     }
   }
 
@@ -216,8 +213,8 @@ onBeforeUnmount(() => {
 
 .itemIcon {
   flex-shrink: 0;
-  width: rem(24);
-  height: rem(24);
+  width: var(--fs-space-4);
+  height: var(--fs-space-4);
   color: inherit;
 }
 </style>

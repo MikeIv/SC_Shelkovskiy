@@ -34,6 +34,7 @@ const tab = defineModel<NewsFilterTab>('tab', { default: 'news' })
   gap: 0;
   align-items: center;
   max-width: 100%;
+  padding-block: rem(4);
   overflow-x: auto;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;

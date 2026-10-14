@@ -44,23 +44,22 @@ withDefaults(
   justify-content: center;
   min-height: rem(44);
   margin: 0;
-  padding: rem(12) rem(20);
-  border: 0;
+  /* ring через border — box-shadow наезжает на соседние табы */
+  padding: var(--fs-space-2) var(--fs-space-3);
+  border: rem(2) solid var(--fs-tab-ring);
   border-radius: rem(100);
   @include fs-text-lg;
   color: var(--fs-color-black);
   white-space: nowrap;
   background-color: var(--fs-color-white);
-  box-shadow: 0 0 0 rem(2) var(--fs-tab-ring);
   cursor: pointer;
   appearance: none;
   transition:
     background-color 0.2s ease,
-    box-shadow 0.2s ease;
+    border-color 0.2s ease;
 
   @include from-desktop {
     min-height: rem(56);
-    padding-inline: var(--fs-space-3);
   }
 
   &[data-variant='default'] .icon {
@@ -88,6 +87,7 @@ withDefaults(
   }
 
   &[aria-pressed='true'] {
+    --fs-tab-ring: transparent;
     background-color: var(--fs-color-light);
   }
 
