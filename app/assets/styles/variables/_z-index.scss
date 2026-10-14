@@ -12,6 +12,7 @@ $z-layers: (
   'dropdown-panel': 300,
   'header-elevated': 400,
   'modal': 1000,
+  'toast': 1100,
 );
 
 @function z($name) {
