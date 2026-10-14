@@ -369,6 +369,8 @@ const registerPopup = computed<EventRegisterPopup>(() => {
 }
 
 .media {
+  /* Mob/Tab: фото сразу после заголовка */
+  order: -1;
   flex: 1 1 auto;
   width: 100%;
   min-width: 0;
@@ -376,6 +378,7 @@ const registerPopup = computed<EventRegisterPopup>(() => {
   border-radius: rem(32);
 
   @include from-desktop {
+    order: unset;
     position: sticky;
     top: var(--fs-space-4);
     flex-basis: rem(768);
