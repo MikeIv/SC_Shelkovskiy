@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { HomeBrandRow } from '#shared/types/home'
 
-const { rows, flush = false } = defineProps<{
+const { rows, flush = false, isDemo = false } = defineProps<{
   rows: HomeBrandRow[]
   flush?: boolean
+  /** Раздел подставлен из мока — ярлык «Демо-данные». */
+  isDemo?: boolean
 }>()
 
 const paused = ref(false)
@@ -19,6 +21,8 @@ function togglePause() {
     :class="[$style.root, flush && $style.flush]"
     aria-label="Бренды торгового центра"
   >
+    <UiDemoDataBadge v-if="isDemo" :class="$style.demo" />
+
     <button
       :class="$style.pause"
       type="button"
@@ -101,6 +105,13 @@ function togglePause() {
   &.flush {
     padding-block: 0;
   }
+}
+
+.demo {
+  position: absolute;
+  z-index: z('default');
+  top: 0;
+  left: var(--fs-grid-margin);
 }
 
 .pause {

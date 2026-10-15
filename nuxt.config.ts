@@ -130,6 +130,15 @@ export default defineNuxtConfig({
     ],
     clientBundle: {
       scan: true,
+      /** Соцсети layout API (`item.icon`) — scan не видит динамический `:name`. */
+      icons: [
+        'local:social-dzen',
+        'local:social-globe',
+        'local:social-max',
+        'local:social-rutube',
+        'local:social-telegram',
+        'local:social-vk',
+      ],
     },
   },
 

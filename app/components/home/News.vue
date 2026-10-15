@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { NewsCardItem } from '#shared/types/news'
 
-const { items } = defineProps<{
+const { items, isDemo = false } = defineProps<{
   items: NewsCardItem[]
+  /** Раздел подставлен из мока — ярлык «Демо-данные». */
+  isDemo?: boolean
 }>()
 
 const {
@@ -21,7 +23,10 @@ const {
 
     <div :class="$style.inner">
       <div :class="$style.head">
-        <h2 id="home-news-title" :class="$style.title">Новости и акции</h2>
+        <div :class="$style.headTitle">
+          <h2 id="home-news-title" :class="$style.title">Новости и акции</h2>
+          <UiDemoDataBadge v-if="isDemo" />
+        </div>
 
         <div v-if="showNav" :class="$style.nav">
           <UiButtonArrow
@@ -124,6 +129,14 @@ const {
   align-items: center;
   justify-content: space-between;
   width: 100%;
+}
+
+.headTitle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(12);
+  align-items: center;
+  min-width: 0;
 }
 
 .title {

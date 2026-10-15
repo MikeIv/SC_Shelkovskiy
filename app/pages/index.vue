@@ -9,7 +9,7 @@ definePageMeta({
 })
 
 const layout = useLayoutStore()
-const { data: home } = await useHome()
+const { data: home, demo: homeDemo } = await useHome()
 
 /** Корневой URL площадки (rutube.ru/) — не профиль центра, в sameAs не публикуем. */
 function hasSocialProfilePath(href: string): boolean {
@@ -90,14 +90,14 @@ useHead(() => ({
 <template>
   <div>
     <h1 :class="$style.hiddenTitle">{{ siteName }}</h1>
-    <HomeIntro :slides="home.slides" />
+    <HomeIntro :slides="home.slides" :is-demo="homeDemo.slides" />
     <div :class="$style.stack">
-      <HomeNews :items="home.feed" />
-      <HomeBrands :rows="home.brands" flush />
+      <HomeNews :items="home.feed" :is-demo="homeDemo.feed" />
+      <HomeBrands :rows="home.brands" :is-demo="homeDemo.brands" flush />
       <HomeLoyalty :items="homeLoyaltyItems" flush />
-      <HomeShopCategories :items="home.categories" />
+      <HomeShopCategories :items="home.categories" :is-demo="homeDemo.categories" />
       <HomeCinema :items="homeCinemaItems" />
-      <HomeGallery :items="home.gallery" />
+      <HomeGallery :items="home.gallery" :is-demo="homeDemo.gallery" />
     </div>
   </div>
 </template>

@@ -6,7 +6,7 @@ import { defineComponent, h } from 'vue'
  */
 export const HomeProbe = defineComponent({
   setup() {
-    const { data, isFallback } = useHome()
+    const { data, demo, isFallback } = useHome()
 
     return () =>
       h('div', {
@@ -17,6 +17,10 @@ export const HomeProbe = defineComponent({
         'data-brands': String(data.value.brands.length),
         'data-gallery': String(data.value.gallery.length),
         'data-fallback': String(isFallback.value),
+        'data-demo-slides': String(demo.value.slides),
+        'data-demo-feed': String(demo.value.feed),
+        'data-demo-brands': String(demo.value.brands),
+        'data-demo-gallery': String(demo.value.gallery),
       })
   },
 })

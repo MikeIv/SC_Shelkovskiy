@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import type { HomeShopCategory } from '#shared/types/home'
 
-const { items } = defineProps<{
+const { items, isDemo = false } = defineProps<{
   items: HomeShopCategory[]
+  /** Раздел подставлен из мока — ярлык «Демо-данные». */
+  isDemo?: boolean
 }>()
 </script>
 
 <template>
   <section :class="$style.root" aria-label="Категории магазина">
+    <UiDemoDataBadge v-if="isDemo" :class="$style.demo" />
     <div :class="$style.inner">
       <HomeShopCategory :items="items" />
     </div>
@@ -18,8 +21,16 @@ const { items } = defineProps<{
 @use 'tools' as *;
 
 .root {
+  position: relative;
   width: 100%;
   overflow-x: clip;
+}
+
+.demo {
+  position: absolute;
+  z-index: z('default');
+  top: 0;
+  left: var(--fs-grid-margin);
 }
 
 .inner {

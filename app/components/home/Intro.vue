@@ -13,8 +13,10 @@ const SLIDE_SIZES = 'sm:100vw 2xl:100vw'
 
 const img = useImage()
 
-const { slides } = defineProps<{
+const { slides, isDemo = false } = defineProps<{
   slides: HomeIntroSlide[]
+  /** Раздел подставлен из мока — ярлык «Демо-данные». */
+  isDemo?: boolean
 }>()
 
 /** Кадр слайда: `srcset`/`sizes` из ipx, без зашитых размеров. */
@@ -147,6 +149,8 @@ onUnmounted(() => {
       <div :class="$style.dim" aria-hidden="true" />
     </div>
 
+    <UiDemoDataBadge v-if="isDemo" :class="$style.demo" />
+
     <div :class="$style.chrome">
       <div :class="$style.copy">
         <h2 v-if="current.title" :class="$style.title">{{ current.title }}</h2>
@@ -211,6 +215,14 @@ onUnmounted(() => {
     border-end-start-radius: var(--fs-radius-4xl);
     border-end-end-radius: var(--fs-radius-4xl);
   }
+}
+
+/* Ниже шапки, чтобы не перекрывать логотип и меню. */
+.demo {
+  position: absolute;
+  z-index: z('default');
+  top: rem(84);
+  left: var(--fs-grid-margin);
 }
 
 .viewport {

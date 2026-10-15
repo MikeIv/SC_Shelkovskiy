@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { HomeGalleryAlbum } from '#shared/types/home'
 
-const { items } = defineProps<{
+const { items, isDemo = false } = defineProps<{
   items: HomeGalleryAlbum[]
+  /** Раздел подставлен из мока — ярлык «Демо-данные». */
+  isDemo?: boolean
 }>()
 
 const {
@@ -42,7 +44,10 @@ function closeLightbox(): void {
   <section :class="$style.root" aria-labelledby="home-gallery-title">
     <div :class="$style.inner">
       <div :class="$style.head">
-        <h2 id="home-gallery-title" :class="$style.title">Галерея</h2>
+        <div :class="$style.headTitle">
+          <h2 id="home-gallery-title" :class="$style.title">Галерея</h2>
+          <UiDemoDataBadge v-if="isDemo" />
+        </div>
 
         <div v-if="showHeadNav" :class="$style.nav">
           <UiButtonArrow
@@ -144,6 +149,14 @@ function closeLightbox(): void {
   align-items: center;
   justify-content: space-between;
   width: 100%;
+}
+
+.headTitle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(12);
+  align-items: center;
+  min-width: 0;
 }
 
 .title {

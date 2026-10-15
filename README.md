@@ -100,10 +100,11 @@ pnpm approve-builds --all
 В том же режиме база проверяется запросом к `/home`: опечатка в хосте или пути (`/api` вместо
 `/api/v1`) роняет сборку вместо тихой подмены контентом из `~/data`.
 
-Когда API не отдал раздел и страница показала демо-контент, в углу появляется плашка
-«Демо-данные» — [`app/composables/useDemoData.ts`](app/composables/useDemoData.ts) и
-[`app/components/ui/DemoDataNotice.vue`](app/components/ui/DemoDataNotice.vue). Признак ставится
-только на клиенте: в статику он не попадает, а `refresh` после гидратации снимает его сам.
+Когда API не отдал раздел и страница показала демо-контент, появляется ярлык
+«Демо-данные» — [`DemoDataBadge.vue`](app/components/ui/DemoDataBadge.vue).
+На главной — в секциях с моком (`useHome.demo`); на остальных страницах — плашка в углу
+[`DemoDataNotice.vue`](app/components/ui/DemoDataNotice.vue) / [`useDemoData`](app/composables/useDemoData.ts)
+(признак только на клиенте, в статику не попадает).
 404 от API остаётся 404 (страницы нет), а сбой API (5xx, таймаут, CORS) — это не «не найдено»:
 детальные composables подставляют демо-запись, если она есть, иначе показывают настоящий код ошибки.
 
