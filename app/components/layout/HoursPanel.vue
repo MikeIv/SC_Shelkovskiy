@@ -13,9 +13,6 @@ withDefaults(
 
 const titleId = useId()
 
-/** Обход Nuxt `virtual:public` + Vite HMR (`?t=&path` → `/&/images/...`). */
-const hoursMallSrc = ['', 'images', 'layout', 'hours-mall.png'].join('/')
-
 const layout = useLayoutStore()
 const mallDays = computed(() => layoutDisplayWeek(layout.hours))
 const tenants = computed(() => layout.hours.tenants)
@@ -29,34 +26,22 @@ const todayIndex = computed(() => layoutTodayIndex(layout.hours))
     :aria-labelledby="titleId"
   >
     <section :class="$style.mall">
-      <div :class="$style.media">
-        <img
-          :class="$style.mediaImg"
-          :src="hoursMallSrc"
-          alt="ТРЦ Щёлковский"
-          width="902"
-          height="416"
-          decoding="async"
+      <h2 :id="titleId" :class="$style.title">
+        Время работы ТРЦ
+      </h2>
+      <ul :class="$style.days" aria-label="Расписание по дням недели">
+        <li
+          v-for="(day, index) in mallDays"
+          :key="day.label"
+          :class="[$style.day, { [$style.dayActive]: index === todayIndex }]"
         >
-      </div>
-      <div :class="$style.mallBlock">
-        <h2 :id="titleId" :class="$style.title">
-          Время работы ТРЦ
-        </h2>
-        <ul :class="$style.days" aria-label="Расписание по дням недели">
-          <li
-            v-for="(day, index) in mallDays"
-            :key="day.label"
-            :class="[$style.day, { [$style.dayActive]: index === todayIndex }]"
-          >
-            <span :class="$style.dayLabel">{{ day.label }}</span>
-            <span :class="$style.dayTimes">
-              <span>{{ day.open }}</span>
-              <span>{{ day.close }}</span>
-            </span>
-          </li>
-        </ul>
-      </div>
+          <span :class="$style.dayLabel">{{ day.label }}</span>
+          <span :class="$style.dayTimes">
+            <span>{{ day.open }}</span>
+            <span>{{ day.close }}</span>
+          </span>
+        </li>
+      </ul>
     </section>
 
     <section :class="$style.tenantsSection" aria-label="Время работы арендаторов">
@@ -98,14 +83,17 @@ const todayIndex = computed(() => layoutTodayIndex(layout.hours))
   min-width: 0;
 }
 
+.mall {
+  display: flex;
+  flex-direction: column;
+  gap: rem(10);
+}
+
 .carded {
   gap: 0;
 
   .mall,
   .tenantsSection {
-    display: flex;
-    flex-direction: column;
-    gap: var(--fs-space-2);
     padding: var(--fs-space-3);
     border-radius: rem(32);
     background-color: var(--fs-color-white);
@@ -113,11 +101,6 @@ const todayIndex = computed(() => layoutTodayIndex(layout.hours))
     @include from-desktop {
       padding: var(--fs-space-4);
     }
-  }
-
-  .media {
-    aspect-ratio: 451 / 208;
-    border-radius: var(--fs-radius-xl);
   }
 
   .title,
@@ -141,17 +124,6 @@ const todayIndex = computed(() => layoutTodayIndex(layout.hours))
 }
 
 .embedded {
-  .mall {
-    display: flex;
-    flex-direction: column;
-    gap: var(--fs-space-2);
-  }
-
-  .media {
-    height: rem(158);
-    border-radius: var(--fs-radius-xl);
-  }
-
   .title,
   .tenantName {
     @include fs-text-md;
@@ -170,29 +142,6 @@ const todayIndex = computed(() => layoutTodayIndex(layout.hours))
     padding-block: var(--fs-space-1);
     padding-inline: 0;
   }
-
-  .media {
-    flex-shrink: 0;
-  }
-}
-
-.media {
-  width: 100%;
-  overflow: hidden;
-}
-
-.mediaImg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-}
-
-.mallBlock {
-  display: flex;
-  flex-direction: column;
-  gap: rem(10);
 }
 
 .title,
