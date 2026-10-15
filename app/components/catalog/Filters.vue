@@ -2,44 +2,15 @@
 import type { UiDropdownOption } from '~/components/ui/Dropdown.vue'
 import type { UiSearchOption } from '~/components/ui/Search.vue'
 import type { CatalogCardLayout } from '#shared/types/catalog'
+import {
+  catalogFilterTexts,
+  type CatalogFiltersVariant,
+} from '#shared/utils/catalogFilterTexts'
 
-export type CatalogFiltersVariant = 'shops' | 'cafes' | 'services' | 'entertainment'
+export type { CatalogFiltersVariant }
 
-type CatalogFilterTexts = {
-  searchLabel: string
-  searchPlaceholder: string
-  categoryLabel: string
-  categoryPlaceholder: string
-}
-
-const DEFAULT_CATEGORY_TEXTS = {
-  categoryLabel: 'Категория',
-  categoryPlaceholder: 'Все категории',
-} as const satisfies Pick<CatalogFilterTexts, 'categoryLabel' | 'categoryPlaceholder'>
-
-const CATALOG_FILTER_TEXTS: Record<CatalogFiltersVariant, CatalogFilterTexts> = {
-  shops: {
-    searchLabel: 'Поиск магазина',
-    searchPlaceholder: 'Найти магазин',
-    ...DEFAULT_CATEGORY_TEXTS,
-  },
-  cafes: {
-    searchLabel: 'Поиск кафе или ресторана',
-    searchPlaceholder: 'Найти кафе или ресторан',
-    categoryLabel: 'Тип кухни',
-    categoryPlaceholder: 'Тип кухни',
-  },
-  services: {
-    searchLabel: 'Поиск услуги',
-    searchPlaceholder: 'Найти услугу',
-    ...DEFAULT_CATEGORY_TEXTS,
-  },
-  entertainment: {
-    searchLabel: 'Поиск спорта или развлечения',
-    searchPlaceholder: 'Найти спорт или развлечения',
-    ...DEFAULT_CATEGORY_TEXTS,
-  },
-}
+const DESKTOP_MQ = '(min-width: 1280px)'
+const TITLE_ASIDE_SELECTOR = '[data-fs-title-aside]'
 
 const props = withDefaults(
   defineProps<{
@@ -67,7 +38,16 @@ const businessLunchOnly = defineModel<boolean>('businessLunchOnly', { default: f
 const viewMode = defineModel<CatalogCardLayout>('viewMode', { default: 'card' })
 
 const filtersOpen = ref(false)
-const texts = computed(() => CATALOG_FILTER_TEXTS[props.variant])
+const isDesktop = ref(false)
+const texts = computed(() => catalogFilterTexts(props.variant))
+
+/** Desktop + хост в LayoutInnerPage (`with-title-aside`) → поиск у заголовка. */
+const searchInTitle = computed(
+  () =>
+    import.meta.client &&
+    isDesktop.value &&
+    Boolean(document.querySelector(TITLE_ASIDE_SELECTOR)),
+)
 
 const hasActiveFilters = computed(
   () =>
@@ -84,6 +64,14 @@ const viewModes = [
   { mode: 'list' as const, icon: 'local:list', label: 'Список' },
 ]
 
+function syncDesktop(): void {
+  if (!import.meta.client) {
+    return
+  }
+
+  isDesktop.value = window.matchMedia(DESKTOP_MQ).matches
+}
+
 function openFilters(): void {
   filtersOpen.value = true
 }
@@ -91,43 +79,31 @@ function openFilters(): void {
 function closeFilters(): void {
   filtersOpen.value = false
 }
+
+let desktopMq: MediaQueryList | undefined
+
+onMounted(() => {
+  syncDesktop()
+  desktopMq = window.matchMedia(DESKTOP_MQ)
+  desktopMq.addEventListener('change', syncDesktop)
+})
+
+onUnmounted(() => {
+  desktopMq?.removeEventListener('change', syncDesktop)
+})
 </script>
 
 <template>
   <div :class="$style.toolbar">
-    <UiSearch
-      v-model="query"
-      :class="$style.search"
-      :label="texts.searchLabel"
-      :placeholder="texts.searchPlaceholder"
-      :options="searchOptions"
-    />
-
-    <div :class="$style.actions">
-      <UiTab
-        :class="$style.filterBtn"
-        :data-active="hasActiveFilters || undefined"
-        variant="circle"
-        icon="local:filter"
-        :selected="hasActiveFilters || filtersOpen"
-        aria-label="Фильтры"
-        :aria-expanded="filtersOpen"
-        aria-haspopup="dialog"
-        @click="openFilters"
+    <Teleport :to="TITLE_ASIDE_SELECTOR" :disabled="!searchInTitle">
+      <UiSearch
+        v-model="query"
+        :class="$style.search"
+        :label="texts.searchLabel"
+        :placeholder="texts.searchPlaceholder"
+        :options="searchOptions"
       />
-
-      <div :class="$style.view" role="group" aria-label="Вид каталога">
-        <UiTab
-          v-for="view in viewModes"
-          :key="view.mode"
-          variant="circle"
-          :icon="view.icon"
-          :selected="viewMode === view.mode"
-          :aria-label="view.label"
-          @click="viewMode = view.mode"
-        />
-      </div>
-    </div>
+    </Teleport>
 
     <div :class="$style.desktopFields">
       <UiDropdown
@@ -169,6 +145,32 @@ function closeFilters(): void {
       </div>
     </div>
 
+    <div :class="$style.actions">
+      <UiTab
+        :class="$style.filterBtn"
+        :data-active="hasActiveFilters || undefined"
+        variant="circle"
+        icon="local:filter"
+        :selected="hasActiveFilters || filtersOpen"
+        aria-label="Фильтры"
+        :aria-expanded="filtersOpen"
+        aria-haspopup="dialog"
+        @click="openFilters"
+      />
+
+      <div :class="$style.view" role="group" aria-label="Вид каталога">
+        <UiTab
+          v-for="view in viewModes"
+          :key="view.mode"
+          variant="circle"
+          :icon="view.icon"
+          :selected="viewMode === view.mode"
+          :aria-label="view.label"
+          @click="viewMode = view.mode"
+        />
+      </div>
+    </div>
+
     <CatalogFiltersPanel
       v-model:category="category"
       v-model:floor="floor"
@@ -196,20 +198,15 @@ function closeFilters(): void {
   width: 100%;
 
   @include from-desktop {
-    display: grid;
-    grid-template-columns: rem(440) rem(320) max-content 1fr;
+    flex-direction: row;
     gap: var(--fs-space-3);
-    align-items: start;
+    align-items: center;
+    justify-content: space-between;
   }
 }
 
 .search {
   width: 100%;
-
-  @include from-desktop {
-    grid-column: 1;
-    grid-row: 1;
-  }
 }
 
 .actions {
@@ -219,11 +216,8 @@ function closeFilters(): void {
   width: 100%;
 
   @include from-desktop {
-    grid-column: 4;
-    grid-row: 1;
     gap: var(--fs-space-1);
     justify-content: flex-end;
-    justify-self: end;
     width: auto;
   }
 }
@@ -256,21 +250,23 @@ function closeFilters(): void {
   display: none;
 
   @include from-desktop {
-    display: contents;
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    gap: var(--fs-space-3);
+    align-items: center;
+    min-width: 0;
   }
 }
 
 .category {
   @include from-desktop {
-    grid-column: 2;
-    grid-row: 1;
+    width: rem(320);
   }
 }
 
 .floor {
   @include from-desktop {
-    grid-column: 3;
-    grid-row: 1;
     width: max-content;
   }
 }
@@ -279,11 +275,7 @@ function closeFilters(): void {
   display: flex;
   flex-flow: row wrap;
   gap: var(--fs-space-3);
-
-  @include from-desktop {
-    grid-column: 1 / -1;
-    grid-row: 2;
-  }
+  align-items: center;
 }
 
 .checkbox {

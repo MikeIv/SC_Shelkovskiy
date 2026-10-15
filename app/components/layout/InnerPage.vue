@@ -1,6 +1,8 @@
 <script setup lang="ts">
 const props = defineProps<{
   title?: string
+  /** Desktop: пустой хост справа от h1 (поиск каталога через Teleport). */
+  withTitleAside?: boolean
 }>()
 
 /**
@@ -19,7 +21,17 @@ if (props.title) {
       <slot name="lead" />
     </div>
 
-    <h1 v-if="title" :class="$style.title">{{ title }}</h1>
+    <div
+      v-if="title || withTitleAside"
+      :class="[$style.heading, withTitleAside ? $style.headingSplit : undefined]"
+    >
+      <h1 v-if="title" :class="$style.title">{{ title }}</h1>
+      <div
+        v-if="withTitleAside"
+        :class="$style.titleAside"
+        data-fs-title-aside
+      />
+    </div>
 
     <div v-if="$slots.default" :class="$style.content">
       <slot />
@@ -50,9 +62,34 @@ if (props.title) {
   min-width: 0;
 }
 
+.heading {
+  min-width: 0;
+}
+
+.headingSplit {
+  @include from-desktop {
+    display: flex;
+    gap: var(--fs-space-3);
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
 .title {
   @include fs-h1;
   margin: 0;
+}
+
+.titleAside {
+  display: none;
+  min-width: 0;
+
+  @include from-desktop {
+    display: block;
+    flex: 0 1 rem(504);
+    width: rem(504);
+    max-width: 100%;
+  }
 }
 
 .content {

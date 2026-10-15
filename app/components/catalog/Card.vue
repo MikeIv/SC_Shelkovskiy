@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Карточка арендатора каталога (Figma: card catalog, node 3032:34727).
+ * Карточка арендатора каталога (Figma: card catalog, node 3305:39231).
  *
  * Наполнение (layout `card`):
  * 1. Логотип — при отсутствии `imageSrc` показывается заглушка.
@@ -264,7 +264,8 @@ async function onMapClick(event: MouseEvent) {
   }
 
   @include from-desktop {
-    height: rem(290);
+    height: rem(200);
+    border-radius: rem(20);
   }
 }
 
@@ -282,7 +283,7 @@ async function onMapClick(event: MouseEvent) {
 
   @include from-desktop {
     width: rem(218);
-    height: rem(224);
+    height: rem(170);
   }
 }
 

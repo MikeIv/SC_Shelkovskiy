@@ -23,7 +23,7 @@ await useCatalog('services')
 </script>
 
 <template>
-  <LayoutInnerPage :title="label">
+  <LayoutInnerPage :title="label" with-title-aside>
     <template #lead>
       <UiBreadcrumbs :items="breadcrumbItems" />
     </template>
