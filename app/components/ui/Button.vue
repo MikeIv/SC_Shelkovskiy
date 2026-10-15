@@ -87,15 +87,15 @@ const rootBind = computed(() => {
   padding: rem(12) rem(20);
   border: 0;
   border-radius: rem(100);
-  @include fs-text-md;
   color: var(--fs-color-black);
+  text-decoration: none;
   white-space: nowrap;
   background-color: var(--fs-color-beige);
   overflow: hidden;
   cursor: pointer;
   appearance: none;
-  text-decoration: none;
   transition: color 0.35s ease;
+  @include fs-text-md;
 
   @include from-desktop {
     padding: var(--fs-space-2) var(--fs-space-3);
@@ -110,9 +110,9 @@ const rootBind = computed(() => {
     border-radius: 50%;
     background-color: var(--fs-color-black);
     pointer-events: none;
+    transition: width 0.35s ease;
     content: '';
     transform: translateY(-50%);
-    transition: width 0.35s ease;
   }
 
   &:not(:disabled):is(:focus-visible, :active) {

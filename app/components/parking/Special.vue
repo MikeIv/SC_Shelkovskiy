@@ -95,9 +95,9 @@ const { benefitsTitle, benefitGroups, special } = defineProps<{
   gap: var(--fs-space-3);
   min-width: 0;
   padding: var(--fs-space-2);
-  overflow: clip;
-  background-color: var(--fs-color-light);
   border-radius: rem(24);
+  background-color: var(--fs-color-light);
+  overflow: clip;
 
   @include from-desktop {
     gap: rem(40);

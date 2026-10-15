@@ -153,8 +153,8 @@ onMounted(centerMapScroll)
   @include from-desktop {
     display: grid;
     grid-template-columns: minmax(0, 1fr) rem(636);
-    column-gap: rem(80);
     row-gap: rem(48);
+    column-gap: rem(80);
     align-items: start;
   }
 
@@ -179,20 +179,20 @@ onMounted(centerMapScroll)
   margin: 0;
 
   @include from-desktop {
-    grid-column: 1;
     grid-row: 1;
+    grid-column: 1;
   }
 }
 
 .media {
   width: 100%;
   height: rem(228);
-  overflow: clip;
   border-radius: rem(32);
+  overflow: clip;
 
   @include from-desktop {
-    grid-column: 2;
     grid-row: 1 / span 3;
+    grid-column: 2;
     width: rem(636);
     height: auto;
     aspect-ratio: 636 / 500;
@@ -221,8 +221,8 @@ onMounted(centerMapScroll)
   }
 
   @include from-desktop {
-    grid-column: 1;
     grid-row: 2;
+    grid-column: 1;
   }
 }
 
@@ -234,8 +234,8 @@ onMounted(centerMapScroll)
   justify-content: center;
   min-width: 0;
   padding: var(--fs-space-3);
-  background-color: var(--fs-color-light);
   border-radius: rem(24);
+  background-color: var(--fs-color-light);
 
   @include from-desktop {
     gap: var(--fs-space-3);
@@ -260,8 +260,8 @@ onMounted(centerMapScroll)
   min-width: 0;
 
   @include from-desktop {
-    grid-column: 1;
     grid-row: 3;
+    grid-column: 1;
     gap: rem(48);
   }
 }
@@ -289,12 +289,12 @@ onMounted(centerMapScroll)
   align-items: flex-start;
   align-self: flex-start;
   padding: var(--fs-space-3);
-  @include fs-h4;
+  border-radius: rem(24);
   color: var(--fs-color-black);
   text-decoration: none;
   background-color: var(--fs-color-light);
-  border-radius: rem(24);
   transition: background-color 0.2s ease;
+  @include fs-h4;
 
   @include from-desktop {
     align-items: center;
@@ -326,11 +326,11 @@ onMounted(centerMapScroll)
 .mapWrap {
   position: relative;
   width: 100%;
-  height: rem(500);
   min-width: 0;
-  overflow: clip;
-  background-color: var(--fs-color-white);
+  height: rem(500);
   border-radius: rem(32);
+  background-color: var(--fs-color-white);
+  overflow: clip;
 
   @include from-desktop {
     height: auto;

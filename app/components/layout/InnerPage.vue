@@ -42,12 +42,12 @@ if (props.title) {
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-5);
-  overflow-x: clip;
   padding-top: var(--fs-space-3);
   padding-inline: max(
     var(--fs-grid-margin),
     calc((100% - var(--fs-grid-content-max)) / 2)
   );
+  overflow-x: clip;
 
   @include from-desktop {
     padding-top: var(--fs-space-6);

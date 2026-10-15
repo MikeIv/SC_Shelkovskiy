@@ -159,8 +159,8 @@ const visibleAmenities = computed(() => {
   max-width: none;
   height: 100%;
   aspect-ratio: 1560 / 600;
-  overflow: clip;
   background-color: var(--fs-color-white);
+  overflow: clip;
 
   @include from-desktop {
     width: 100%;
@@ -188,18 +188,18 @@ const visibleAmenities = computed(() => {
   outline: none;
 
   polygon {
-    fill: color-mix(in srgb, var(--fs-color-light) 72%, transparent);
-    stroke: var(--fs-color-white);
-    stroke-width: 2;
     transition:
       fill 0.2s ease,
       stroke 0.2s ease;
+    fill: color-mix(in srgb, var(--fs-color-light) 72%, transparent);
+    stroke: var(--fs-color-white);
+    stroke-width: 2;
   }
 
   text {
     @include fs-text-sm;
-    fill: var(--fs-color-black);
     pointer-events: none;
+    fill: var(--fs-color-black);
     paint-order: stroke;
     stroke: color-mix(in srgb, var(--fs-color-white) 80%, transparent);
     stroke-width: 3px;
@@ -250,8 +250,8 @@ const visibleAmenities = computed(() => {
   inset: 0;
   margin: 0;
   padding: 0;
-  list-style: none;
   pointer-events: none;
+  list-style: none;
 }
 
 .amenity {
@@ -265,8 +265,8 @@ const visibleAmenities = computed(() => {
   border-radius: 50%;
   background-color: var(--fs-color-white);
   opacity: 0.85;
-  transform: translate(-50%, -50%);
   transition: opacity 0.2s ease;
+  transform: translate(-50%, -50%);
 
   @include from-desktop {
     width: rem(44);
@@ -274,8 +274,8 @@ const visibleAmenities = computed(() => {
   }
 
   &[data-active='true'] {
-    opacity: 1;
     border-color: var(--fs-color-beige);
+    opacity: 1;
   }
 
   @media (prefers-reduced-motion: reduce) {

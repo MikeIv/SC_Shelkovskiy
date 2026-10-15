@@ -74,8 +74,8 @@ const lastIndex = computed(() => items.length - 1)
   flex-wrap: nowrap;
   gap: rem(4);
   align-items: center;
-  max-width: 100%;
   min-width: 0;
+  max-width: 100%;
   margin: 0;
   padding: 0;
   overflow-x: auto;
@@ -123,9 +123,9 @@ const lastIndex = computed(() => items.length - 1)
   }
 
   &:focus-visible {
+    border-radius: rem(2);
     outline: rem(2) solid var(--fs-color-black);
     outline-offset: rem(2);
-    border-radius: rem(2);
   }
 
   @media (prefers-reduced-motion: reduce) {

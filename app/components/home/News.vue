@@ -81,13 +81,13 @@ const {
 /* Figma 687:49135 — слева; desk: центр на левом крае (−674 / 1348×1344). */
 .pattern {
   position: absolute;
-  z-index: -1;
   top: rem(-80);
   left: rem(-194);
+  z-index: -1;
   width: rem(374);
   height: rem(373);
-  pointer-events: none;
   background-color: var(--fs-color-ornament);
+  pointer-events: none;
   mask: url('/images/home/categories/pattern.svg') center / contain no-repeat;
 
   @include from-tablet {
@@ -147,9 +147,9 @@ const {
 
 .nav {
   display: none;
+  flex-shrink: 0;
   gap: var(--fs-space-4);
   align-items: center;
-  flex-shrink: 0;
 
   @include from-desktop {
     display: flex;

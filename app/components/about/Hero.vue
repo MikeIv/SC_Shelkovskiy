@@ -43,9 +43,9 @@ const { title, description, imageSrc, imageAlt, breadcrumbs } = defineProps<{
   display: flex;
   flex-direction: column;
   min-height: rem(750);
-  overflow: clip;
   color: var(--fs-color-white);
   background-color: var(--fs-color-black);
+  overflow: clip;
   border-end-start-radius: rem(32);
   border-end-end-radius: rem(32);
 
@@ -72,8 +72,8 @@ const { title, description, imageSrc, imageAlt, breadcrumbs } = defineProps<{
 .dim {
   position: absolute;
   inset: 0;
-  pointer-events: none;
   background-color: rgb(0 0 0 / 40%);
+  pointer-events: none;
 }
 
 .chrome {
@@ -88,12 +88,12 @@ const { title, description, imageSrc, imageAlt, breadcrumbs } = defineProps<{
     var(--fs-grid-margin) var(--fs-space-4);
 
   @include from-desktop {
+    padding-top: rem(203);
+    padding-bottom: rem(100);
     padding-inline: max(
       var(--fs-grid-margin),
       calc((100% - var(--fs-grid-content-max)) / 2)
     );
-    padding-top: rem(203);
-    padding-bottom: rem(100);
   }
 }
 
@@ -111,10 +111,10 @@ const { title, description, imageSrc, imageAlt, breadcrumbs } = defineProps<{
 }
 
 .desc {
-  margin: 0;
   max-width: rem(715);
-  @include fs-text;
+  margin: 0;
   overflow-wrap: break-word;
+  @include fs-text;
 
   @include from-desktop {
     @include fs-text-lg;

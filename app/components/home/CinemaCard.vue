@@ -82,8 +82,8 @@ function onBuyTicket() {
   flex-shrink: 0;
   width: 100%;
   aspect-ratio: 372 / 560;
-  overflow: clip;
   border-radius: var(--fs-radius-2xl);
+  overflow: clip;
 
   @include from-desktop {
     border-radius: var(--fs-radius-3xl);

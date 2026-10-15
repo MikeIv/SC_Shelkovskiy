@@ -429,8 +429,8 @@ onBeforeUnmount(() => {
 
 .footer {
   display: flex;
-  flex-shrink: 0;
   flex-direction: column;
+  flex-shrink: 0;
   gap: var(--fs-space-3);
   align-items: center;
   padding: var(--fs-space-3) var(--fs-grid-margin) var(--fs-space-4);

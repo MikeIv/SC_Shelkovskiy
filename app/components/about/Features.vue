@@ -87,8 +87,8 @@ const {
   top: rem(-200);
   left: rem(-280);
   width: min(140%, rem(640));
-  height: auto;
   max-width: none;
+  height: auto;
   pointer-events: none;
 
   @include from-desktop {
@@ -129,8 +129,8 @@ const {
   max-width: rem(1105);
 
   @include from-desktop {
-    max-width: none;
     width: 100%;
+    max-width: none;
     padding-inline-end: rem(248);
   }
 }
@@ -142,17 +142,17 @@ const {
 }
 
 .desc {
-  margin: 0;
-  @include fs-text-lg;
   max-width: rem(564);
+  margin: 0;
   overflow-wrap: break-word;
+  @include fs-text-lg;
 }
 
 .nav {
   display: none;
+  flex-shrink: 0;
   gap: var(--fs-space-4);
   align-items: center;
-  flex-shrink: 0;
 
   @include from-desktop {
     position: absolute;

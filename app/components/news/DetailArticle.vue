@@ -191,11 +191,11 @@ const tenantLogoSrc = computed(() =>
   min-width: 0;
 
   @include from-desktop {
-    /* DOM: gallery → content; order ставит галерею справа */
-    order: 1;
     position: sticky;
     top: var(--fs-space-5);
     flex-basis: rem(768);
+    /* DOM: gallery → content; order ставит галерею справа */
+    order: 1;
     max-width: rem(768);
   }
 }
@@ -207,8 +207,8 @@ const tenantLogoSrc = computed(() =>
   width: fit-content;
   max-width: 100%;
   padding: var(--fs-space-2) var(--fs-space-3) var(--fs-space-2) var(--fs-space-2);
-  background-color: var(--fs-color-light);
   border-radius: rem(24);
+  background-color: var(--fs-color-light);
 
   @include from-desktop {
     border-radius: rem(32);
@@ -222,9 +222,9 @@ const tenantLogoSrc = computed(() =>
   justify-content: center;
   width: rem(80);
   height: rem(80);
-  overflow: clip;
-  background-color: var(--fs-color-white);
   border-radius: rem(16);
+  background-color: var(--fs-color-white);
+  overflow: clip;
 
   @include from-desktop {
     width: rem(100);
@@ -261,8 +261,8 @@ const tenantLogoSrc = computed(() =>
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-4);
-  min-width: 0;
   width: 100%;
+  min-width: 0;
 
   @include from-desktop {
     gap: var(--fs-space-5);
@@ -349,9 +349,9 @@ const tenantLogoSrc = computed(() =>
       left: 0;
       width: rem(8);
       height: rem(8);
-      content: '';
-      background-color: var(--fs-color-beige);
       border-radius: 50%;
+      background-color: var(--fs-color-beige);
+      content: '';
     }
   }
 }
@@ -361,14 +361,14 @@ const tenantLogoSrc = computed(() =>
   --quote-pattern-offset: #{rem(-72)};
 
   position: relative;
-  isolation: isolate;
   margin: 0;
   padding: var(--fs-space-2);
-  overflow: clip;
-  @include fs-text-md;
+  border-radius: rem(24);
   color: var(--fs-color-black);
   background-color: var(--fs-color-light);
-  border-radius: rem(24);
+  overflow: clip;
+  isolation: isolate;
+  @include fs-text-md;
 
   @include from-desktop {
     --quote-pattern-size: #{rem(400)};
@@ -380,13 +380,13 @@ const tenantLogoSrc = computed(() =>
   &::before,
   &::after {
     position: absolute;
-    z-index: -1;
     top: 50%;
+    z-index: -1;
     width: var(--quote-pattern-size);
     height: var(--quote-pattern-size);
+    background-color: var(--fs-color-white);
     pointer-events: none;
     content: '';
-    background-color: var(--fs-color-white);
     transform: translateY(-50%);
     mask: url('/images/home/categories/pattern.svg') center / contain no-repeat;
   }

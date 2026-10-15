@@ -131,8 +131,8 @@ const cardImage = computed(() => mediaSrc(props.item.imageSrc, 960))
   flex-shrink: 0;
   width: 100%;
   height: rem(228);
-  overflow: clip;
   border-radius: rem(24);
+  overflow: clip;
 
   @include from-tablet {
     flex: 1 0 0;
@@ -180,8 +180,8 @@ const cardImage = computed(() => mediaSrc(props.item.imageSrc, 960))
   flex-direction: column;
   gap: var(--fs-space-2);
   align-items: flex-start;
-  min-width: 0;
   width: 100%;
+  min-width: 0;
 
   @include from-tablet {
     flex: 1 0 0;
@@ -192,19 +192,19 @@ const cardImage = computed(() => mediaSrc(props.item.imageSrc, 960))
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-1);
-  min-width: 0;
   width: 100%;
+  min-width: 0;
 }
 
 .title {
-  margin: 0;
-  @include fs-h3;
   display: -webkit-box;
+  margin: 0;
+  color: var(--fs-color-black);
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   line-clamp: 3;
-  color: var(--fs-color-black);
+  @include fs-h3;
 }
 
 .description {

@@ -247,6 +247,9 @@ $shop-category-right-height: 470;
 $shop-category-left-inset: rem(545 + $shop-category-left-width * 0.5);
 $shop-category-right-inset: rem(540 + $shop-category-right-width * 0.5);
 $shop-category-pattern-desktop: 1220;
+$shop-category-pattern-offset: rem(
+  ($shop-category-pattern-desktop - $shop-category-right-width) * 0.5
+);
 
 .root {
   position: relative;
@@ -270,20 +273,17 @@ $shop-category-pattern-desktop: 1220;
 
 .pattern {
   position: absolute;
-  z-index: -1;
   right: rem(-100);
   bottom: rem(-95);
+  z-index: -1;
   width: rem(374);
   height: rem(373);
-  pointer-events: none;
   background-color: var(--fs-color-ornament);
+  pointer-events: none;
   mask: url('/images/home/categories/pattern.svg') center / contain no-repeat;
 
   @include from-desktop {
-    right: calc(
-      max(0px, 50% - #{$shop-category-right-inset}) -
-        #{rem(($shop-category-pattern-desktop - $shop-category-right-width) * 0.5)}
-    );
+    right: calc(max(0px, 50% - #{$shop-category-right-inset}) - #{$shop-category-pattern-offset});
     bottom: rem(($shop-category-right-height - $shop-category-pattern-desktop) * 0.5);
     width: rem($shop-category-pattern-desktop);
     height: rem($shop-category-pattern-desktop);
@@ -349,10 +349,10 @@ $shop-category-pattern-desktop: 1220;
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center;
   opacity: 0;
   transition: opacity $shop-category-duration $shop-category-ease;
+  object-fit: cover;
+  object-position: center;
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;
@@ -439,8 +439,8 @@ $shop-category-pattern-desktop: 1220;
   margin: rem(-1);
   padding: 0;
   border: 0;
-  overflow: hidden;
   white-space: nowrap;
-  clip: rect(0, 0, 0, 0);
+  overflow: hidden;
+  clip-path: inset(50%);
 }
 </style>

@@ -74,9 +74,9 @@ const patternSide = computed<'left' | 'right' | null>(() => {
    tablet+ — по центру вьюпорта. Кадр клипует выход за край. */
 .patternFrame {
   position: absolute;
-  z-index: -1;
   top: rem(-80);
   left: 0;
+  z-index: -1;
   width: 100%;
   height: rem(400);
   overflow: hidden;

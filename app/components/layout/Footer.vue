@@ -167,10 +167,10 @@ function onNewsletterSubmit() {
   position: relative;
   z-index: z('default');
   margin-top: auto;
-  color: var(--fs-color-black);
-  background-color: var(--fs-color-light);
   border-top-left-radius: var(--fs-space-4);
   border-top-right-radius: var(--fs-space-4);
+  color: var(--fs-color-black);
+  background-color: var(--fs-color-light);
 
   @include from-desktop {
     border-top-left-radius: calc(var(--fs-space-6) + var(--fs-space-2));
@@ -200,8 +200,8 @@ function onNewsletterSubmit() {
     'nav-a nav-b'
     'newsletter newsletter'
     'contact contact';
-  column-gap: var(--fs-space-3);
   row-gap: var(--fs-space-6);
+  column-gap: var(--fs-space-3);
 
   @include from-tablet {
     grid-template-columns: minmax(0, 334fr) minmax(0, 172fr) minmax(0, 101fr);
@@ -226,8 +226,8 @@ function onNewsletterSubmit() {
 .brand {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-2);
   grid-area: brand;
+  gap: var(--fs-space-2);
   min-width: 0;
 }
 
@@ -294,8 +294,8 @@ function onNewsletterSubmit() {
 .contact {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-2);
   grid-area: contact;
+  gap: var(--fs-space-2);
   min-width: 0;
 
   @include from-desktop {
@@ -307,7 +307,7 @@ function onNewsletterSubmit() {
   @include fs-h4;
   color: inherit;
   text-decoration: none;
-  word-break: break-word;
+  overflow-wrap: break-word;
 
   @media (hover: hover) {
     &:hover {
@@ -334,8 +334,8 @@ function onNewsletterSubmit() {
 .newsletter {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-2);
   grid-area: newsletter;
+  gap: var(--fs-space-2);
   min-width: 0;
 }
 
@@ -354,11 +354,11 @@ function onNewsletterSubmit() {
   gap: var(--fs-space-2);
 
   @include from-tablet {
+    grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas:
       'input btn'
       'consent consent'
       'status status';
-    grid-template-columns: minmax(0, 1fr) auto;
   }
 
   @include from-desktop {
@@ -376,8 +376,8 @@ function onNewsletterSubmit() {
   width: 100%;
 
   @include from-tablet {
-    width: auto;
     align-self: stretch;
+    width: auto;
   }
 }
 
@@ -445,9 +445,9 @@ function onNewsletterSubmit() {
 
   @include from-tablet {
     flex-direction: row;
+    gap: var(--fs-space-3);
     align-items: center;
     justify-content: space-between;
-    gap: var(--fs-space-3);
   }
 }
 

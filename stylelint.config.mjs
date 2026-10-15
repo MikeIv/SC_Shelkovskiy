@@ -2,7 +2,7 @@ import { propertiesOrderRule } from './stylelint-properties-order.mjs'
 
 /** @type {import('stylelint').Config} */
 export default {
-  extends: ['stylelint-config-recommended-vue'],
+  extends: ['stylelint-config-recommended-vue/scss'],
   plugins: ['stylelint-order'],
   ignoreFiles: ['**/node_modules/**', '.nuxt/**', '.output/**', 'dist/**', 'app/assets/css/ui.css'],
   rules: {
@@ -15,4 +15,11 @@ export default {
     /** Порядок CSS-свойств в declaration blocks — см. `stylelint-properties-order.mjs` */
     'order/properties-order': propertiesOrderRule,
   },
+  overrides: [
+    {
+      /** SCSS вне SFC (токены, миксины): нужен `postcss-scss`, иначе интерполяции не парсятся. */
+      files: ['**/*.scss'],
+      extends: ['stylelint-config-recommended-scss'],
+    },
+  ],
 }

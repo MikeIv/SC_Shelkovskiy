@@ -85,8 +85,8 @@ function goNext() {
   flex-shrink: 0;
   width: 100%;
   height: var(--fs-gallery-height);
-  overflow: clip;
   border-radius: var(--fs-gallery-radius);
+  overflow: clip;
 }
 
 .image {

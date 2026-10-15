@@ -153,8 +153,8 @@ const todayIndex = computed(() => layoutTodayIndex(layout.hours))
 .days {
   display: flex;
   flex-wrap: nowrap;
-  justify-content: space-between;
   gap: rem(4);
+  justify-content: space-between;
   margin: 0;
   padding: 0;
   list-style: none;

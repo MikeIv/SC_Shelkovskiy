@@ -62,9 +62,9 @@ const { title, description, stats, videoPosterSrc, videoPosterAlt } =
   flex-direction: column;
   gap: var(--fs-space-4);
   padding-top: rem(100);
-  overflow: clip;
-  background-color: var(--fs-color-light);
   border-radius: rem(32);
+  background-color: var(--fs-color-light);
+  overflow: clip;
 
   @include from-desktop {
     gap: rem(56);
@@ -185,12 +185,12 @@ const { title, description, stats, videoPosterSrc, videoPosterAlt } =
   height: rem(50);
   margin: 0;
   padding: 0;
-  color: var(--fs-color-white);
   border: 0;
+  color: var(--fs-color-white);
   background: transparent;
   cursor: pointer;
-  transform: translate(-50%, -50%);
   appearance: none;
+  transform: translate(-50%, -50%);
 
   @include from-desktop {
     width: rem(100);
@@ -198,9 +198,9 @@ const { title, description, stats, videoPosterSrc, videoPosterAlt } =
   }
 
   &:focus-visible {
+    border-radius: 50%;
     outline: rem(2) solid var(--fs-color-white);
     outline-offset: rem(4);
-    border-radius: 50%;
   }
 }
 

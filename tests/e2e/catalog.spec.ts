@@ -50,3 +50,39 @@ test.describe('Каталог арендаторов', () => {
     expect(other?.status()).toBe(404)
   })
 })
+
+/**
+ * Первая отрисовка без JS: так выглядит SSR-документ до гидрации. Если ширину фильтров
+ * задать селектором той же специфичности, что и `.root { width: 100% }` у `UiDropdown`,
+ * каскад решает порядок ссылок на CSS-модули — строка фильтров растягивается, а после
+ * гидрации приходит в норму скачком.
+ */
+test.describe('Каталог: первая отрисовка', () => {
+  test.use({ javaScriptEnabled: false })
+
+  test('строка фильтров на десктопе собрана сразу', async ({ page }) => {
+    await page.goto('/shops')
+
+    const category = page.getByRole('combobox', { name: 'Категория' })
+    const floor = page.getByRole('combobox', { name: 'Этаж' })
+
+    /** 20rem = 320px при базовом 16px: ширина не должна теряться в каскаде. */
+    await expect(category).toHaveCSS('width', '320px')
+
+    const [categoryBox, floorBox] = await Promise.all([category.boundingBox(), floor.boundingBox()])
+    expect(categoryBox).not.toBeNull()
+    expect(floorBox).not.toBeNull()
+    /** Оба селекта — в одной строке: иначе вторая строка шапки уезжает вниз. */
+    expect(Math.abs((categoryBox?.y ?? 0) - (floorBox?.y ?? 0))).toBeLessThanOrEqual(1)
+
+    /** Поиск стоит у заголовка, дубль в тулбаре скрыт. */
+    await expect(page.locator('.fs-catalog-search-aside')).toBeVisible()
+    await expect(page.locator('.fs-catalog-search-toolbar')).toHaveCount(1)
+    await expect(page.locator('.fs-catalog-search-toolbar')).toBeHidden()
+
+    /** Кнопка фильтров — только для узких экранов. */
+    const filterButton = page.locator('button[aria-label="Фильтры"]')
+    await expect(filterButton).toHaveCount(1)
+    await expect(filterButton).toBeHidden()
+  })
+})

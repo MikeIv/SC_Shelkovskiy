@@ -39,10 +39,10 @@ const logoNode = createStaticVNode(
 .root {
   display: inline-flex;
   flex-shrink: 0;
-  overflow: clip;
   width: rem(161);
   aspect-ratio: 303 / 46;
   color: var(--fs-color-black);
+  overflow: clip;
 
   &[data-variant='white'] {
     color: var(--fs-color-white);

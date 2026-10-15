@@ -298,10 +298,10 @@ onBeforeUnmount(() => {
   width: 1px;
   height: 1px;
   padding: 0;
+  border: 0;
+  white-space: nowrap;
   overflow: hidden;
   clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
 }
 
 @mixin hover-underline {
@@ -364,8 +364,8 @@ onBeforeUnmount(() => {
     color 0.25s ease;
 
   &[data-variant='white'] {
-    border-bottom-color: color-mix(in srgb, var(--fs-color-white) 50%, transparent);
     color: var(--fs-color-white);
+    border-bottom-color: color-mix(in srgb, var(--fs-color-white) 50%, transparent);
   }
 
   &[data-overlay]:not([data-pinned]):not([data-menu-open]) {
@@ -384,12 +384,12 @@ onBeforeUnmount(() => {
     width: 100%;
     padding-top: rem(24);
     padding-bottom: rem(24);
-    border-bottom-color: transparent;
     border-bottom-right-radius: rem(32);
     border-bottom-left-radius: rem(32);
     color: var(--fs-color-black);
     background-color: var(--fs-color-white);
     box-shadow: 0 #{rem(8)} #{rem(40)} rgb(172 172 172 / 25%);
+    border-bottom-color: transparent;
   }
 
   &[data-hidden]:not([data-menu-open]) {
@@ -405,11 +405,11 @@ onBeforeUnmount(() => {
       right: 0;
       left: 0;
       width: 100%;
-      border-bottom-color: transparent;
       border-radius: 0;
       color: var(--fs-color-black);
       background-color: var(--fs-color-white);
       box-shadow: none;
+      border-bottom-color: transparent;
     }
   }
 
@@ -451,20 +451,20 @@ onBeforeUnmount(() => {
   width: 1px;
   height: 1px;
   padding: 0;
+  border: 0;
+  white-space: nowrap;
   overflow: hidden;
   clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
 
   &:focus {
     width: auto;
     height: auto;
     padding: var(--fs-space-1) var(--fs-space-2);
+    color: var(--fs-color-black);
+    background-color: var(--fs-color-white);
     overflow: visible;
     clip-path: none;
     @include fs-text-lg;
-    color: var(--fs-color-black);
-    background-color: var(--fs-color-white);
   }
 
   &:focus-visible {
@@ -692,9 +692,9 @@ onBeforeUnmount(() => {
     display: block;
     max-height: rem(72);
     padding-top: var(--fs-space-2);
-    overflow: hidden;
     border-top: rem(2) solid var(--fs-color-light);
     opacity: 1;
+    overflow: hidden;
     transition:
       max-height 0.3s ease,
       opacity 0.2s ease,
@@ -709,9 +709,9 @@ onBeforeUnmount(() => {
   .root[data-pinned] & {
     max-height: 0;
     padding-top: 0;
-    border-top-color: transparent;
     opacity: 0;
     pointer-events: none;
+    border-top-color: transparent;
   }
 
   @media (prefers-reduced-motion: reduce) {

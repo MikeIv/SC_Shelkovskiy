@@ -113,8 +113,8 @@ function scrollToLetter(letter: string): void {
 
 .letters {
   display: flex;
-  flex-shrink: 0;
   flex-wrap: nowrap;
+  flex-shrink: 0;
   gap: 0;
   margin: 0;
   padding: 0;

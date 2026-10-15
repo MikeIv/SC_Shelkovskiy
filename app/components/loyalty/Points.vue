@@ -56,8 +56,8 @@ const { title, steps, rulesLabel, rulesHref, phonesSrc, phonesAlt } = defineProp
 
 .root {
   padding-block: var(--fs-space-5);
-  background-color: var(--fs-color-light);
   border-radius: rem(32);
+  background-color: var(--fs-color-light);
 
   @include from-desktop {
     padding-block: rem(160);
@@ -125,9 +125,9 @@ const { title, steps, rulesLabel, rulesHref, phonesSrc, phonesAlt } = defineProp
   place-items: center;
   width: rem(56);
   height: rem(64);
-  @include fs-h3;
-  background-color: var(--fs-color-white);
   border-radius: rem(999);
+  background-color: var(--fs-color-white);
+  @include fs-h3;
 
   @include from-desktop {
     width: rem(78);

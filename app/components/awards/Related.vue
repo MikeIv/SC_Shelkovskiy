@@ -137,9 +137,9 @@ onUnmounted(() => {
 
 .nav {
   display: none;
+  flex-shrink: 0;
   gap: var(--fs-space-4);
   align-items: center;
-  flex-shrink: 0;
 
   @include from-desktop {
     display: flex;

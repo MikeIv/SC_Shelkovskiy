@@ -75,7 +75,6 @@ const {
 
 .root {
   position: relative;
-  overflow: clip;
   color: var(--fs-color-black);
   background-image: linear-gradient(
     115deg,
@@ -83,6 +82,7 @@ const {
     #f8f1e6 52%,
     #ede3d1 100%
   );
+  overflow: clip;
   border-end-start-radius: rem(32);
   border-end-end-radius: rem(32);
 
@@ -95,8 +95,8 @@ const {
 .bg {
   position: absolute;
   inset: 0;
-  pointer-events: none;
   overflow: hidden;
+  pointer-events: none;
 }
 
 .shapes {
@@ -104,8 +104,8 @@ const {
   top: rem(-80);
   left: 35%;
   width: rem(900);
-  height: auto;
   max-width: none;
+  height: auto;
   opacity: 0.9;
 
   @include from-desktop {
@@ -158,8 +158,8 @@ const {
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-2);
-  max-width: rem(720);
   min-width: 0;
+  max-width: rem(720);
 }
 
 .title {

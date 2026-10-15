@@ -46,11 +46,11 @@ const { item } = defineProps<{
   flex-direction: column;
   width: 100%;
   padding: var(--fs-space-3);
-  overflow: clip;
+  border-radius: rem(24);
   color: inherit;
   text-decoration: none;
   background-color: var(--fs-color-light);
-  border-radius: rem(24);
+  overflow: clip;
   transition: background-color 0.2s ease;
 
   @include from-desktop {
@@ -94,8 +94,8 @@ const { item } = defineProps<{
   right: rem(-360);
   bottom: rem(-360);
   width: rem(720);
-  height: auto;
   max-width: none;
+  height: auto;
 
   @include from-desktop {
     right: rem(-599);
@@ -134,11 +134,11 @@ const { item } = defineProps<{
   @include fs-h4;
   display: -webkit-box;
   margin: 0;
+  color: var(--fs-color-black);
+  overflow-wrap: break-word;
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 5;
   line-clamp: 5;
-  color: var(--fs-color-black);
-  overflow-wrap: break-word;
 }
 </style>

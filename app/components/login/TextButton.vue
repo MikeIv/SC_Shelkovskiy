@@ -18,9 +18,9 @@
   appearance: none;
 
   &:focus-visible {
+    border-radius: rem(2);
     outline: rem(2) solid var(--fs-color-black);
     outline-offset: rem(2);
-    border-radius: rem(2);
   }
 }
 </style>

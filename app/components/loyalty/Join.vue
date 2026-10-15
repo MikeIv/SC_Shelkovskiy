@@ -96,9 +96,9 @@ const { title, steps, storeLinks } = defineProps<{
   display: flex;
   flex-direction: column;
   min-height: rem(360);
-  overflow: clip;
-  background-color: var(--fs-color-light);
   border-radius: rem(32);
+  background-color: var(--fs-color-light);
+  overflow: clip;
 
   @include from-desktop {
     min-height: rem(488);
@@ -123,9 +123,9 @@ const { title, steps, storeLinks } = defineProps<{
   place-items: center;
   width: rem(64);
   height: rem(72);
-  @include fs-h3;
-  background-color: var(--fs-color-white);
   border-radius: rem(999);
+  background-color: var(--fs-color-white);
+  @include fs-h3;
 
   @include from-desktop {
     width: rem(78);
@@ -139,8 +139,8 @@ const { title, steps, storeLinks } = defineProps<{
 
 .cardTitle {
   @include fs-h3;
-  margin: 0;
   max-width: rem(340);
+  margin: 0;
   overflow-wrap: break-word;
 }
 
@@ -153,8 +153,8 @@ const { title, steps, storeLinks } = defineProps<{
 .visual {
   display: flex;
   flex: 1;
-  justify-content: center;
   align-items: flex-end;
+  justify-content: center;
   min-height: rem(140);
   padding-top: var(--fs-space-3);
   overflow: hidden;

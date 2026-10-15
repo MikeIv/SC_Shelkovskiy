@@ -190,8 +190,8 @@ $metro-blue: #007ac6;
   min-width: 0;
 
   @include from-desktop {
-    max-width: rem(768);
     gap: rem(48);
+    max-width: rem(768);
   }
 }
 
@@ -237,8 +237,8 @@ $metro-blue: #007ac6;
   align-items: center;
   height: rem(35);
   padding: rem(8) rem(16) rem(8) rem(8);
-  background-color: var(--fs-color-light);
   border-radius: rem(100);
+  background-color: var(--fs-color-light);
 }
 
 .metroBadge {
@@ -248,8 +248,8 @@ $metro-blue: #007ac6;
   justify-content: center;
   width: rem(20);
   height: rem(20);
-  background-color: $metro-blue;
   border-radius: rem(100);
+  background-color: $metro-blue;
 }
 
 .metroIcon {
@@ -413,8 +413,8 @@ $metro-blue: #007ac6;
 
   @include from-desktop {
     flex: 0 0 rem(636);
-    max-width: 100%;
     gap: rem(16);
+    max-width: 100%;
   }
 }
 
@@ -422,8 +422,8 @@ $metro-blue: #007ac6;
   position: relative;
   width: 100%;
   height: rem(360);
-  overflow: clip;
   border-radius: rem(32);
+  overflow: clip;
 
   @include from-desktop {
     height: auto;
@@ -447,8 +447,8 @@ $metro-blue: #007ac6;
   gap: var(--fs-space-2);
   align-items: flex-start;
   padding: var(--fs-space-3);
-  background-color: var(--fs-color-light);
   border-radius: rem(24);
+  background-color: var(--fs-color-light);
 
   @include from-desktop {
     flex-direction: row;

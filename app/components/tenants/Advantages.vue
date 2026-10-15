@@ -220,9 +220,9 @@ onMounted(() => {
   appearance: none;
 
   &:focus-visible {
+    border-radius: rem(4);
     outline: rem(2) solid var(--fs-color-black);
     outline-offset: rem(4);
-    border-radius: rem(4);
   }
 }
 
@@ -299,9 +299,9 @@ onMounted(() => {
   }
 
   &:focus-visible {
+    border-radius: rem(4);
     outline: rem(2) solid var(--fs-color-black);
     outline-offset: rem(4);
-    border-radius: rem(4);
   }
 
   @media (hover: hover) {
@@ -318,8 +318,8 @@ onMounted(() => {
 .media,
 .mediaDesk {
   position: relative;
-  overflow: clip;
   border-radius: 50%;
+  overflow: clip;
 }
 
 .media {

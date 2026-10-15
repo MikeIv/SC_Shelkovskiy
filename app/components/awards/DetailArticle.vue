@@ -126,8 +126,8 @@ defineProps<{
   flex: 1 1 auto;
   width: 100%;
   min-width: 0;
-  overflow: clip;
   border-radius: rem(32);
+  overflow: clip;
 
   @include from-desktop {
     position: sticky;

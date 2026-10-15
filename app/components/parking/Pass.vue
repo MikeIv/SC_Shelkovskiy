@@ -94,8 +94,8 @@ const { title, description, contact, phone, phoneHref, items } = defineProps<{
 
   @include from-desktop {
     @include fs-h4;
-    font-weight: 400;
     max-width: rem(907);
+    font-weight: 400;
   }
 }
 
@@ -138,9 +138,9 @@ const { title, description, contact, phone, phoneHref, items } = defineProps<{
   position: relative;
   width: 100%;
   height: 100%;
-  overflow: hidden;
-  background-color: var(--fs-color-light);
   border-radius: rem(24);
+  background-color: var(--fs-color-light);
+  overflow: hidden;
 
   @include from-desktop {
     width: rem(503);
@@ -156,8 +156,8 @@ const { title, description, contact, phone, phoneHref, items } = defineProps<{
   flex-direction: column;
   gap: rem(8);
   justify-content: flex-start;
-  height: 100%;
   min-width: 0;
+  height: 100%;
   padding: var(--fs-space-3);
 
   @include from-desktop {
@@ -199,8 +199,8 @@ const { title, description, contact, phone, phoneHref, items } = defineProps<{
   right: 0;
   width: rem(220);
   height: rem(220);
-  background-color: var(--fs-color-beige);
   border-radius: 50%;
+  background-color: var(--fs-color-beige);
   transform: translate(50%, -50%);
 
   @include from-desktop {
@@ -254,10 +254,10 @@ const { title, description, contact, phone, phoneHref, items } = defineProps<{
 .contact {
   margin: 0;
   padding: var(--fs-space-2);
-  @include fs-text;
-  background-color: var(--fs-color-light);
   border-radius: rem(24);
   overflow-wrap: break-word;
+  background-color: var(--fs-color-light);
+  @include fs-text;
 
   @include from-desktop {
     padding: var(--fs-space-3);

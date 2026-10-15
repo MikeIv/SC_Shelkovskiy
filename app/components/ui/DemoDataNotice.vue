@@ -28,9 +28,9 @@ const sources = computed(() => pageNotes.value.join(', '))
 /* Ниже шапки и слева: не перекрывает cookie-плашку и кнопки внизу экрана. */
 .root {
   position: fixed;
-  z-index: 20;
   top: rem(84);
   left: rem(16);
+  z-index: 20;
 
   @include from-tablet {
     left: rem(24);

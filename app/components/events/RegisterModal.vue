@@ -180,9 +180,9 @@ onBeforeUnmount(() => {
 .media {
   position: relative;
   width: 100%;
-  overflow: clip;
-  background-color: var(--fs-color-white);
   border-radius: rem(32);
+  background-color: var(--fs-color-white);
+  overflow: clip;
 
   @include from-desktop {
     border-radius: rem(60);
@@ -254,9 +254,9 @@ onBeforeUnmount(() => {
   }
 
   &:focus-visible {
+    border-radius: rem(2);
     outline: rem(2) solid var(--fs-color-black);
     outline-offset: rem(2);
-    border-radius: rem(2);
   }
 }
 
@@ -271,9 +271,9 @@ onBeforeUnmount(() => {
   width: 100%;
   height: auto;
   aspect-ratio: 619 / 306;
+  border-radius: rem(24);
   object-fit: cover;
   object-position: center;
-  border-radius: rem(24);
 
   @include from-desktop {
     border-radius: rem(60);

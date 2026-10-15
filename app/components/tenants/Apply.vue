@@ -594,10 +594,10 @@ function onSubmit() {
   display: flex;
   flex-direction: column;
   gap: rem(24);
+  min-width: 0;
   margin: 0;
   padding: 0;
   border: 0;
-  min-width: 0;
 }
 
 .profiles {
@@ -623,8 +623,8 @@ function onSubmit() {
   display: flex;
   gap: rem(12);
   align-items: center;
-  max-width: 100%;
   min-width: 0;
+  max-width: 100%;
 }
 
 .fileInput {
@@ -632,10 +632,10 @@ function onSubmit() {
   width: 1px;
   height: 1px;
   padding: 0;
+  border: 0;
+  white-space: nowrap;
   overflow: hidden;
   clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
 }
 
 .attachBtn {
@@ -653,17 +653,17 @@ function onSubmit() {
   appearance: none;
 
   &:focus-visible {
+    border-radius: rem(4);
     outline: rem(2) solid var(--fs-color-black);
     outline-offset: rem(4);
-    border-radius: rem(4);
   }
 }
 
 .attachLabel {
   min-width: 0;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .attachIcon,
@@ -689,9 +689,9 @@ function onSubmit() {
   appearance: none;
 
   &:focus-visible {
+    border-radius: rem(2);
     outline: rem(2) solid var(--fs-color-black);
     outline-offset: rem(2);
-    border-radius: rem(2);
   }
 }
 
@@ -733,9 +733,9 @@ function onSubmit() {
   gap: var(--fs-space-3);
   width: 100%;
   padding: var(--fs-space-2);
-  overflow: clip;
-  background-color: var(--fs-color-light);
   border-radius: rem(24);
+  background-color: var(--fs-color-light);
+  overflow: clip;
 
   @include from-desktop {
     flex: 0 0 rem(504);
@@ -751,8 +751,8 @@ function onSubmit() {
   right: rem(-177);
   bottom: rem(214);
   width: rem(366);
-  height: auto;
   max-width: none;
+  height: auto;
   pointer-events: none;
 
   @include from-desktop {
@@ -764,12 +764,12 @@ function onSubmit() {
 .contactsFade {
   position: absolute;
   inset: 0;
-  pointer-events: none;
   background-image: linear-gradient(
     50deg,
     var(--fs-color-light) 53%,
     rgb(243 242 237 / 0%) 90%
   );
+  pointer-events: none;
 }
 
 .contactsBody,

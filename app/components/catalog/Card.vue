@@ -255,9 +255,9 @@ async function onMapClick(event: MouseEvent) {
   justify-content: center;
   width: 100%;
   height: rem(140);
-  overflow: clip;
   border-radius: rem(32);
   background-color: var(--fs-color-white);
+  overflow: clip;
 
   @include from-tablet {
     height: rem(174);

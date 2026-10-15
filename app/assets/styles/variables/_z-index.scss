@@ -18,7 +18,7 @@ $z-layers: (
 @function z($name) {
   $v: map.get($z-layers, $name);
 
-  @if $v == null {
+  @if not $v {
     @warn "Неизвестный слой z-index: #{$name}";
     @return null;
   }

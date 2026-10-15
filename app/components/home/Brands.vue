@@ -109,39 +109,39 @@ function togglePause() {
 
 .demo {
   position: absolute;
-  z-index: z('default');
   top: 0;
   left: var(--fs-grid-margin);
+  z-index: z('default');
 }
 
 .pause {
   position: absolute;
-  z-index: z('default');
   top: var(--fs-space-3);
   right: var(--fs-space-3);
+  z-index: z('default');
   width: 1px;
   height: 1px;
   padding: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
   border: 0;
   color: var(--fs-color-black);
+  white-space: nowrap;
   background-color: var(--fs-color-white);
+  overflow: hidden;
   appearance: none;
+  clip-path: inset(50%);
 
   &:focus-visible {
     width: auto;
     height: auto;
     padding: rem(6) rem(12);
-    overflow: visible;
-    clip-path: none;
     border: rem(1) solid var(--fs-color-gray);
     border-radius: var(--fs-radius-sm);
-    @include fs-text-sm;
+    overflow: visible;
     cursor: pointer;
     outline: rem(2) solid var(--fs-color-black);
+    clip-path: none;
     outline-offset: rem(2);
+    @include fs-text-sm;
   }
 }
 

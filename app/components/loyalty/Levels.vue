@@ -113,9 +113,9 @@ const { title, items } = defineProps<{
   place-items: center;
   width: rem(120);
   height: rem(136);
-  overflow: hidden;
-  background-color: var(--fs-color-white);
   border-radius: rem(999);
+  background-color: var(--fs-color-white);
+  overflow: hidden;
 
   @include from-desktop {
     width: rem(148);

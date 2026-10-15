@@ -76,8 +76,8 @@ const routeHref = computed(() => {
   flex-wrap: nowrap;
   gap: 0;
   align-items: center;
-  max-width: 100%;
   min-width: 0;
+  max-width: 100%;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;

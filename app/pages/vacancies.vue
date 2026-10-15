@@ -46,8 +46,8 @@ const breadcrumbItems = [
   top: 0;
   left: rem(-200);
   width: min(140%, rem(520));
-  height: auto;
   max-width: none;
+  height: auto;
   pointer-events: none;
 
   @include from-tablet {

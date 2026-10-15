@@ -77,10 +77,10 @@ const { title, imageSrc, imageAlt, items } = defineProps<{
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
+  min-width: 0;
   margin: 0;
   padding: 0;
   list-style: none;
-  min-width: 0;
 
   @include from-desktop {
     flex: 1 1 rem(640);
@@ -124,8 +124,8 @@ const { title, imageSrc, imageAlt, items } = defineProps<{
 .media {
   flex: 0 0 auto;
   min-width: 0;
-  overflow: hidden;
   border-radius: rem(32);
+  overflow: hidden;
 
   @include from-desktop {
     flex: 0 0 rem(480);

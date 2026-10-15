@@ -205,8 +205,8 @@ const registerPopup = computed<EventRegisterPopup>(() => {
 
   @include from-desktop {
     flex-basis: rem(768);
-    max-width: rem(768);
     gap: var(--fs-space-6);
+    max-width: rem(768);
   }
 }
 
@@ -217,9 +217,9 @@ const registerPopup = computed<EventRegisterPopup>(() => {
   align-items: flex-start;
   width: 100%;
   padding: var(--fs-space-3);
-  overflow: clip;
-  background-color: var(--fs-color-light);
   border-radius: rem(32);
+  background-color: var(--fs-color-light);
+  overflow: clip;
 
   @include from-tablet {
     flex-direction: row;
@@ -369,19 +369,19 @@ const registerPopup = computed<EventRegisterPopup>(() => {
 }
 
 .media {
+  flex: 1 1 auto;
   /* Mob/Tab: фото сразу после заголовка */
   order: -1;
-  flex: 1 1 auto;
   width: 100%;
   min-width: 0;
-  overflow: clip;
   border-radius: rem(32);
+  overflow: clip;
 
   @include from-desktop {
-    order: unset;
     position: sticky;
     top: var(--fs-space-4);
     flex-basis: rem(768);
+    order: unset;
     max-width: rem(768);
     border-radius: rem(60);
   }

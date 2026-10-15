@@ -66,9 +66,9 @@ function onResend(): void {
   align-items: center;
   justify-content: center;
   min-height: 100dvh;
-  overflow: clip;
   padding-block: var(--fs-space-4);
   padding-inline: var(--fs-grid-margin);
+  overflow: clip;
 
   @include from-desktop {
     padding-block: rem(72) rem(96);
@@ -81,8 +81,8 @@ function onResend(): void {
   left: 50%;
   width: min(100%, rem(600));
   height: min(100%, rem(600));
-  pointer-events: none;
   background-color: var(--fs-color-ornament);
+  pointer-events: none;
   mask: url('/images/ornament/pattern.svg') center / contain no-repeat;
   transform: translate(-50%, -50%);
 

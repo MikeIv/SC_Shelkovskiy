@@ -320,8 +320,8 @@ onBeforeUnmount(() => {
   width: 100%;
   min-width: 0;
   padding: var(--fs-space-4);
-  background-color: var(--fs-color-white);
   border-radius: rem(32);
+  background-color: var(--fs-color-white);
 
   @include from-desktop {
     padding: rem(56);
@@ -348,8 +348,8 @@ onBeforeUnmount(() => {
   top: rem(-528);
   left: rem(-179);
   width: rem(1001);
-  height: rem(999);
   max-width: none;
+  height: rem(999);
   pointer-events: none;
 }
 
@@ -359,12 +359,12 @@ onBeforeUnmount(() => {
   bottom: 0;
   left: 0;
   height: rem(214);
-  pointer-events: none;
   background-image: linear-gradient(
     to top,
     var(--fs-color-white) 0%,
     rgb(255 255 255 / 0%) 35.5%
   );
+  pointer-events: none;
 }
 
 .title {
@@ -408,9 +408,9 @@ onBeforeUnmount(() => {
   }
 
   &:focus-visible {
+    border-radius: rem(2);
     outline: rem(2) solid var(--fs-color-black);
     outline-offset: rem(2);
-    border-radius: rem(2);
   }
 }
 
@@ -446,8 +446,8 @@ onBeforeUnmount(() => {
   display: flex;
   gap: rem(12);
   align-items: center;
-  max-width: 100%;
   min-width: 0;
+  max-width: 100%;
 }
 
 .fileInput {
@@ -455,10 +455,10 @@ onBeforeUnmount(() => {
   width: 1px;
   height: 1px;
   padding: 0;
+  border: 0;
+  white-space: nowrap;
   overflow: hidden;
   clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
 }
 
 .attachBtn {
@@ -469,27 +469,27 @@ onBeforeUnmount(() => {
   max-width: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;
   border: 0;
-  @include fs-text-md;
   color: var(--fs-color-black);
   text-align: start;
   background: transparent;
+  overflow: hidden;
   cursor: pointer;
   appearance: none;
+  @include fs-text-md;
 
   &:focus-visible {
+    border-radius: rem(4);
     outline: rem(2) solid var(--fs-color-black);
     outline-offset: rem(4);
-    border-radius: rem(4);
   }
 }
 
 .attachLabel {
   min-width: 0;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .attachIcon,
@@ -515,9 +515,9 @@ onBeforeUnmount(() => {
   appearance: none;
 
   &:focus-visible {
+    border-radius: rem(2);
     outline: rem(2) solid var(--fs-color-black);
     outline-offset: rem(2);
-    border-radius: rem(2);
   }
 }
 

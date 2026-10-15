@@ -31,13 +31,13 @@ defineProps<{
   align-items: center;
   padding: rem(6) rem(12);
   border-radius: rem(100);
-  @include fs-text-sm;
 
   font-weight: 500;
   color: var(--fs-color-white);
-  pointer-events: none;
   background-color: color-mix(in srgb, var(--fs-color-black) 82%, transparent);
   backdrop-filter: blur(rem(4));
+  pointer-events: none;
+  @include fs-text-sm;
 }
 
 .dot {

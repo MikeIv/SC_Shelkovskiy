@@ -195,11 +195,11 @@ const galleryImages = computed(() =>
   align-items: center;
   max-width: 100%;
   padding: var(--fs-space-2) var(--fs-space-3) var(--fs-space-2) var(--fs-space-2);
-  overflow: clip;
+  border-radius: rem(24);
   color: inherit;
   text-decoration: none;
   background-color: var(--fs-color-light);
-  border-radius: rem(24);
+  overflow: clip;
 
   @include from-desktop {
     border-radius: rem(32);
@@ -218,9 +218,9 @@ const galleryImages = computed(() =>
   justify-content: center;
   width: rem(80);
   height: rem(80);
-  overflow: clip;
-  background-color: var(--fs-color-white);
   border-radius: rem(16);
+  background-color: var(--fs-color-white);
+  overflow: clip;
 
   @include from-desktop {
     width: rem(100);

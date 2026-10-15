@@ -265,17 +265,17 @@ onMounted(centerMapScroll)</script>
 .mapWrap {
   position: relative;
   width: 100%;
-  height: rem(500);
   min-width: 0;
-  overflow: clip;
+  height: rem(500);
   border-radius: rem(32);
   background-color: var(--fs-color-white);
+  overflow: clip;
 
   @include from-desktop {
     height: auto;
-    overflow: visible;
     border-radius: 0;
     background-color: transparent;
+    overflow: visible;
   }
 }
 
@@ -292,8 +292,8 @@ onMounted(centerMapScroll)</script>
   }
 
   @include from-desktop {
-    overflow: visible;
     height: auto;
+    overflow: visible;
   }
 }
 

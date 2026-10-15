@@ -139,8 +139,8 @@ $loyalty-hover-duration: 0.65s;
 
       .action {
         opacity: 1;
-        visibility: visible;
         transition-delay: 0.18s;
+        visibility: visible;
       }
     }
   }
@@ -161,10 +161,10 @@ $loyalty-hover-duration: 0.65s;
   align-items: center;
   width: min(calc(100% - rem(32)), rem(311));
   text-align: center;
-  transform: translateX(-50%);
   transition:
     top $loyalty-hover-duration $loyalty-hover-ease,
     transform $loyalty-hover-duration $loyalty-hover-ease;
+  transform: translateX(-50%);
 
   @include from-desktop {
     top: rem(56);
@@ -191,10 +191,10 @@ $loyalty-hover-duration: 0.65s;
 
 .action {
   opacity: 1;
-  visibility: visible;
   transition:
     opacity 0.45s ease,
     visibility 0.45s ease;
+  visibility: visible;
 
   @include from-desktop {
     margin-top: var(--fs-space-2);
@@ -207,8 +207,8 @@ $loyalty-hover-duration: 0.65s;
 
   @media (prefers-reduced-motion: reduce) {
     opacity: 1;
-    visibility: visible;
     transition: none;
+    visibility: visible;
   }
 }
 

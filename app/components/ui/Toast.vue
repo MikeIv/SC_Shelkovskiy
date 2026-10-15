@@ -124,10 +124,10 @@ const actionBind = computed(() => {
   align-items: center;
   width: 100%;
   padding: var(--fs-space-2);
-  overflow: clip;
   border-radius: var(--fs-radius-3xl);
   background-color: var(--fs-color-white);
   box-shadow: 0 #{rem(8)} #{rem(80)} rgb(172 172 172 / 25%);
+  overflow: clip;
 
   &[data-expanded] {
     align-items: flex-start;

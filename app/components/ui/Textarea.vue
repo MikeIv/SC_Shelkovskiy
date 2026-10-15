@@ -86,11 +86,11 @@ const inputAttrs = computed(() => {
 }
 
 .shell {
-  overflow: hidden;
   height: rem(120);
   padding: var(--fs-textarea-pad);
   border-radius: var(--fs-textarea-radius);
   background-color: var(--fs-textarea-bg);
+  overflow: hidden;
   transition: background-color 0.2s ease;
 
   &:focus-within {
@@ -185,9 +185,9 @@ const inputAttrs = computed(() => {
   width: 1px;
   height: 1px;
   padding: 0;
+  border: 0;
+  white-space: nowrap;
   overflow: hidden;
   clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
 }
 </style>

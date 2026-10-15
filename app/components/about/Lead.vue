@@ -83,9 +83,9 @@ const { title, description, watermarkSrc } = defineProps<{
 }
 
 .desc {
-  margin: 0;
-  @include fs-text-lg;
   max-width: rem(844);
+  margin: 0;
   overflow-wrap: break-word;
+  @include fs-text-lg;
 }
 </style>

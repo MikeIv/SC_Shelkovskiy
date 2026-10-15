@@ -85,8 +85,8 @@ const { title, description, items } = defineProps<{
   width: 100%;
   margin: 0;
   padding: 0;
-  list-style: none;
   text-align: left;
+  list-style: none;
 
   @include from-tablet {
     grid-template-columns: repeat(3, minmax(0, 1fr));

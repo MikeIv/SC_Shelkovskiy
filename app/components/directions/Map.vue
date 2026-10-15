@@ -77,10 +77,10 @@ const iframeSrc = computed(() => {
   display: block;
   width: 100%;
   height: rem(500);
-  overflow: clip;
   border: 0;
   border-radius: rem(32);
   background-color: var(--fs-color-light);
+  overflow: clip;
 
   @include from-desktop {
     height: rem(600);

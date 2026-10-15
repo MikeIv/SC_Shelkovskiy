@@ -432,13 +432,17 @@ onBeforeUnmount(() => {
 $menu-media-ease: cubic-bezier(0.33, 1, 0.18, 1);
 $menu-media-duration: 0.55s;
 
+/* Слагаемые `calc()` в переменных: перенос строки рядом с оператором запрещён правилами SCSS. */
+$menu-panel-top: var(--fs-menu-panel-top, var(--fs-menu-header-offset, #{rem(80)}));
+$menu-panel-bottom-gap: rem(24);
+
 .backdrop {
   display: none;
 
   @include from-tablet {
-    display: block;
     /* Строго ниже header — не перекрываем схему/крестик. */
     top: var(--fs-menu-header-offset, #{rem(80)});
+    display: block;
     background-color: color-mix(in srgb, var(--fs-color-black) 55%, transparent);
   }
 
@@ -456,11 +460,11 @@ $menu-media-duration: 0.55s;
   gap: 0;
   max-height: none;
   padding: 0;
-  overflow: auto;
   border-radius: 0;
   color: var(--fs-color-black);
   background-color: var(--fs-color-white);
   box-shadow: none;
+  overflow: auto;
 
   /*
    * Tablet: drawer справа НИЖЕ header (не top:0).
@@ -490,18 +494,15 @@ $menu-media-duration: 0.55s;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
+    gap: rem(24);
     align-items: flex-start;
     justify-content: space-between;
-    gap: rem(24);
     width: auto;
     max-width: 100%;
-    max-height: calc(
-      100vh - var(--fs-menu-panel-top, var(--fs-menu-header-offset, #{rem(80)})) -
-        #{rem(24)}
-    );
+    max-height: calc(100vh - #{$menu-panel-top} - #{$menu-panel-bottom-gap});
     padding: rem(80) clamp(#{rem(24)}, 2.5vw, #{rem(48)});
-    overflow: auto;
     border-radius: rem(60);
+    overflow: auto;
   }
 }
 
@@ -566,8 +567,8 @@ $menu-media-duration: 0.55s;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-inline: var(--fs-grid-margin);
   padding-bottom: var(--fs-space-2);
+  padding-inline: var(--fs-grid-margin);
 
   @include from-tablet {
     display: none;
@@ -592,10 +593,10 @@ $menu-media-duration: 0.55s;
   padding: 0;
   border: 0;
   color: inherit;
+  text-decoration: none;
   background: none;
   cursor: pointer;
   appearance: none;
-  text-decoration: none;
 
   &:focus-visible {
     outline: rem(2) solid var(--fs-color-black);
@@ -828,11 +829,11 @@ $menu-media-duration: 0.55s;
 .media {
   position: relative;
   flex-shrink: 0;
+  align-self: start;
   width: clamp(#{rem(200)}, 22vw, #{rem(338)});
   aspect-ratio: 338 / 350;
-  overflow: hidden;
   border-radius: 50%;
-  align-self: start;
+  overflow: hidden;
 }
 
 .mediaImg {
@@ -842,10 +843,10 @@ $menu-media-duration: 0.55s;
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center;
   opacity: 0;
   transition: opacity $menu-media-duration $menu-media-ease;
+  object-fit: cover;
+  object-position: center;
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;
@@ -869,8 +870,8 @@ $menu-media-duration: 0.55s;
 
   @include from-desktop {
     flex-shrink: 1;
-    min-width: 0;
     width: rem(306);
+    min-width: 0;
     max-width: rem(306);
     padding: 0;
   }
@@ -926,9 +927,9 @@ $menu-media-duration: 0.55s;
 
 .contactLink {
   align-self: flex-start;
-  text-decoration: none;
-  word-break: break-word;
   border-bottom: rem(2) solid transparent;
+  text-decoration: none;
+  overflow-wrap: break-word;
   transition: border-color 0.2s ease;
 
   @media (prefers-reduced-motion: reduce) {
@@ -936,15 +937,15 @@ $menu-media-duration: 0.55s;
   }
 
   &:focus-visible {
-    border-bottom-color: var(--fs-color-black);
     outline: rem(2) solid var(--fs-color-black);
+    border-bottom-color: var(--fs-color-black);
     outline-offset: rem(2);
   }
 
   @media (hover: hover) {
     &:hover {
-      border-bottom-color: var(--fs-color-black);
       text-decoration: none;
+      border-bottom-color: var(--fs-color-black);
     }
   }
 }

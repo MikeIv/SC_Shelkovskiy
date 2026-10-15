@@ -34,12 +34,12 @@ withDefaults(
   flex-shrink: 0;
   width: var(--fs-loader-size);
   aspect-ratio: 1;
-  animation: fs-loader-spin 1s infinite steps(12);
   background:
     radial-gradient(closest-side at 50% 12.5%, var(--fs-loader-color) 96%, #0000) 50% 0 / 20% 80%
       repeat-y,
     radial-gradient(closest-side at 12.5% 50%, var(--fs-loader-color) 96%, #0000) 0 50% / 80% 20%
       repeat-x;
+  animation: fs-loader-spin 1s infinite steps(12);
   -webkit-mask: conic-gradient(from 15deg, #0000, #000);
   mask: conic-gradient(from 15deg, #0000, #000);
 
@@ -53,9 +53,9 @@ withDefaults(
 
   &::before,
   &::after {
-    content: '';
     grid-area: 1 / 1;
     background: inherit;
+    content: '';
     transform: rotate(30deg);
   }
 
@@ -64,8 +64,8 @@ withDefaults(
   }
 
   @media (prefers-reduced-motion: reduce) {
-    animation: none;
     opacity: 0.72;
+    animation: none;
   }
 }
 

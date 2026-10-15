@@ -48,8 +48,8 @@ withDefaults(
   gap: var(--fs-space-4);
   width: min(100%, #{rem(600)});
   padding: var(--fs-space-4);
-  background-color: var(--fs-color-light);
   border-radius: rem(32);
+  background-color: var(--fs-color-light);
 
   @include from-desktop {
     gap: var(--fs-space-5);
@@ -77,10 +77,10 @@ withDefaults(
 }
 
 .desc {
-  margin: 0;
   width: min(100%, #{rem(412)});
-  @include fs-text;
+  margin: 0;
   overflow-wrap: break-word;
+  @include fs-text;
 
   @include from-desktop {
     @include fs-text-lg;

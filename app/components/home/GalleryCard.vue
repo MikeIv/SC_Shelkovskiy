@@ -84,8 +84,8 @@ function onActivate(): void {
   flex-direction: column;
   gap: var(--fs-space-2);
   width: 100%;
-  height: 100%;
   min-width: 0;
+  height: 100%;
 }
 
 .hit {
@@ -96,10 +96,10 @@ function onActivate(): void {
   padding: 0;
   border: 0;
   border-radius: var(--fs-radius-2xl);
+  text-decoration: none;
   background: transparent;
   cursor: pointer;
   appearance: none;
-  text-decoration: none;
 
   @include from-desktop {
     border-radius: var(--fs-radius-3xl);
@@ -116,8 +116,8 @@ function onActivate(): void {
   flex-shrink: 0;
   width: 100%;
   aspect-ratio: 343 / 240;
-  overflow: clip;
   border-radius: var(--fs-radius-2xl);
+  overflow: clip;
   pointer-events: none;
 
   @include from-desktop {

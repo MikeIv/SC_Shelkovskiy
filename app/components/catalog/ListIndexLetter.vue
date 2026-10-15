@@ -45,9 +45,9 @@ const emit = defineEmits<{
   transition: color 0.2s ease;
 
   &:focus-visible {
+    border-radius: rem(2);
     outline: rem(2) solid var(--fs-color-black);
     outline-offset: rem(2);
-    border-radius: rem(2);
   }
 
   @media (hover: hover) {

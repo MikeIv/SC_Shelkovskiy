@@ -191,11 +191,11 @@ function isOpen(id: string) {
   width: 100%;
   margin: 0;
   padding: 0;
-  text-align: left;
-  color: inherit;
-  cursor: pointer;
-  background: none;
   border: 0;
+  color: inherit;
+  text-align: left;
+  background: none;
+  cursor: pointer;
 
   @include from-desktop {
     gap: var(--fs-space-3);
@@ -257,14 +257,14 @@ function isOpen(id: string) {
   gap: var(--fs-space-2);
   width: 100%;
   padding: var(--fs-space-2);
-  overflow: clip;
-  background-color: var(--fs-color-light);
   border-radius: rem(24);
+  background-color: var(--fs-color-light);
+  overflow: clip;
 
   @include from-desktop {
+    flex: 0 0 rem(370);
     /* Desk: контакты слева от текста. */
     order: -1;
-    flex: 0 0 rem(370);
     width: rem(370);
     padding: var(--fs-space-3);
     border-radius: rem(32);
@@ -282,8 +282,8 @@ function isOpen(id: string) {
   top: 50%;
   right: rem(-180);
   width: rem(420);
-  height: auto;
   max-width: none;
+  height: auto;
   transform: translateY(-50%);
 }
 
@@ -409,9 +409,9 @@ function isOpen(id: string) {
     left: 0;
     width: rem(8);
     height: rem(8);
-    content: '';
-    background-color: var(--fs-color-beige);
     border-radius: 50%;
+    background-color: var(--fs-color-beige);
+    content: '';
   }
 }
 

@@ -204,9 +204,9 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   height: rem(750);
-  overflow: clip;
   color: var(--fs-color-white);
   background-color: var(--fs-color-black);
+  overflow: clip;
   border-end-start-radius: var(--fs-radius-3xl);
   border-end-end-radius: var(--fs-radius-3xl);
 
@@ -220,9 +220,9 @@ onUnmounted(() => {
 /* Ниже шапки, чтобы не перекрывать логотип и меню. */
 .demo {
   position: absolute;
-  z-index: z('default');
   top: rem(84);
   left: var(--fs-grid-margin);
+  z-index: z('default');
 }
 
 .viewport {
@@ -263,8 +263,8 @@ onUnmounted(() => {
 .dim {
   position: absolute;
   inset: 0;
-  pointer-events: none;
   background-color: rgb(0 0 0 / 40%);
+  pointer-events: none;
 }
 
 .chrome {
@@ -282,13 +282,13 @@ onUnmounted(() => {
     grid-template-areas:
       'copy nav'
       'progress progress';
-    column-gap: var(--fs-space-4);
     row-gap: rem(64);
+    column-gap: var(--fs-space-4);
+    padding-bottom: rem(100);
     padding-inline: max(
       var(--fs-grid-margin),
       calc((100% - var(--fs-grid-content-max)) / 2)
     );
-    padding-bottom: rem(100);
   }
 }
 
@@ -330,8 +330,8 @@ onUnmounted(() => {
   position: relative;
   width: 100%;
   height: rem(2);
-  overflow: hidden;
   background-color: rgb(255 255 255 / 40%);
+  overflow: hidden;
 
   @include from-desktop {
     grid-area: progress;
@@ -344,11 +344,11 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   background-color: var(--fs-color-white);
-  transform: scaleX(0);
-  transform-origin: left center;
   animation-name: home-intro-progress;
   animation-timing-function: linear;
   animation-fill-mode: forwards;
+  transform: scaleX(0);
+  transform-origin: left center;
 }
 
 .progress[data-paused] .fill {
@@ -363,42 +363,42 @@ onUnmounted(() => {
   @include from-desktop {
     grid-area: nav;
     gap: var(--fs-space-4);
-    justify-content: flex-end;
     align-self: end;
+    justify-content: flex-end;
   }
 }
 
 .pause {
   /* Absolute и при фокусе — иначе прыгает flex .nav (space-between). */
   position: absolute;
-  z-index: z('default');
   inset-block: 0;
   left: 50%;
+  z-index: z('default');
   width: 1px;
   height: 1px;
   margin-block: auto;
   padding: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
   border: 0;
   color: var(--fs-color-white);
+  white-space: nowrap;
   background: transparent;
+  overflow: hidden;
   appearance: none;
+  clip-path: inset(50%);
   transform: translateX(-50%);
 
   &:focus-visible {
     width: auto;
     height: auto;
     padding: rem(8) rem(12);
-    overflow: visible;
-    clip-path: none;
-    @include fs-text-sm;
-    white-space: nowrap;
     border-radius: var(--fs-radius-sm);
+    white-space: nowrap;
+    overflow: visible;
     cursor: pointer;
     outline: rem(2) solid var(--fs-color-white);
+    clip-path: none;
     outline-offset: rem(2);
+    @include fs-text-sm;
   }
 }
 

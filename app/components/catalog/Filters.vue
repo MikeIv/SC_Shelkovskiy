@@ -191,7 +191,6 @@ function closeFilters(): void {
 
 .filterBtn {
   &[data-active]::after {
-    content: '';
     position: absolute;
     top: rem(2);
     right: rem(2);
@@ -199,6 +198,7 @@ function closeFilters(): void {
     height: rem(10);
     border-radius: 50%;
     background-color: var(--fs-color-red);
+    content: '';
   }
 }
 

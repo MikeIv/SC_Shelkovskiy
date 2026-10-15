@@ -70,9 +70,9 @@ const sides = ['left', 'right'] as const
   align-items: center;
   min-height: rem(420);
   padding: var(--fs-space-5) var(--fs-space-3);
-  overflow: clip;
-  background-color: var(--fs-color-light);
   border-radius: rem(32);
+  background-color: var(--fs-color-light);
+  overflow: clip;
 
   @include from-desktop {
     min-height: rem(488);

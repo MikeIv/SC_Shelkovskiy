@@ -59,17 +59,17 @@ const cardImage = computed(() => mediaSrc(props.item.imageSrc, 960))
   flex-direction: column;
   width: 100%;
   height: 100%;
-  overflow: clip;
   color: inherit;
   text-decoration: none;
+  overflow: clip;
 }
 
 .media {
   flex-shrink: 0;
   width: 100%;
   height: rem(240);
-  overflow: clip;
   border-radius: rem(24);
+  overflow: clip;
 }
 
 .image {

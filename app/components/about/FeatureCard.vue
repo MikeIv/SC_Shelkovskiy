@@ -51,9 +51,9 @@ const { feature } = defineProps<{
   height: 100%;
   min-height: rem(560);
   padding: var(--fs-space-2);
-  overflow: clip;
-  background-color: var(--fs-color-light);
   border-radius: rem(24);
+  background-color: var(--fs-color-light);
+  overflow: clip;
 
   @include from-desktop {
     flex-direction: row;
@@ -70,8 +70,8 @@ const { feature } = defineProps<{
   flex-shrink: 0;
   width: 100%;
   height: rem(286);
-  overflow: clip;
   border-radius: rem(24);
+  overflow: clip;
 
   @include from-desktop {
     width: rem(382);

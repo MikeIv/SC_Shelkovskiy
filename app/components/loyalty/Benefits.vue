@@ -54,8 +54,8 @@ const { title, description, items } = defineProps<{
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-3);
-  max-width: rem(700);
   min-width: 0;
+  max-width: rem(700);
 
   @include from-desktop {
     flex: 1 1 rem(640);
@@ -69,10 +69,10 @@ const { title, description, items } = defineProps<{
 }
 
 .desc {
-  margin: 0;
   max-width: rem(652);
-  @include fs-text;
+  margin: 0;
   overflow-wrap: break-word;
+  @include fs-text;
 }
 
 .list {

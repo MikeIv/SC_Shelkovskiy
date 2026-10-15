@@ -3,7 +3,8 @@
 
 /* Типографика Figma Typography (759:31465). База — Mob; H1 с tablet; Desk с 1280. */
 :root {
-  --fs-font-display: 'Actay', sans-serif;
+  /* `Actay Fallback` — метрики fallback под Actay, см. base/_fonts.scss. */
+  --fs-font-display: 'Actay', 'Actay Fallback', sans-serif;
   --fs-font-display-wide: 'Actay Wide', sans-serif;
   --fs-font-display-condensed: 'Actay Condensed', sans-serif;
   --fs-font-sans: 'Roboto', system-ui, sans-serif;

@@ -67,9 +67,9 @@ const {
   gap: var(--fs-space-3);
   width: 100%;
   min-width: 0;
-  overflow-x: clip;
   /* + gap .content (space-4 / desk space-5) → --fs-space-section до блока */
   padding-top: calc(var(--fs-space-section) - var(--fs-space-4));
+  overflow-x: clip;
 
   @include from-desktop {
     gap: var(--fs-space-5);
@@ -92,9 +92,9 @@ const {
 
 .nav {
   display: none;
+  flex-shrink: 0;
   gap: var(--fs-space-4);
   align-items: center;
-  flex-shrink: 0;
 
   @include from-desktop {
     display: flex;

@@ -84,8 +84,8 @@ const goHome = async () => {
   left: 50%;
   max-width: none;
   height: auto;
-  pointer-events: none;
   user-select: none;
+  pointer-events: none;
   transform: translate(-50%, -50%);
 }
 
@@ -119,8 +119,8 @@ const goHome = async () => {
   line-height: 1;
   color: var(--fs-color-black);
   text-align: center;
-  pointer-events: none;
   user-select: none;
+  pointer-events: none;
 
   @include from-tablet {
     font-size: rem(248);
@@ -155,10 +155,9 @@ const goHome = async () => {
   height: 1px;
   margin: -1px;
   padding: 0;
-  overflow: hidden;
-  white-space: nowrap;
   border: 0;
-  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  overflow: hidden;
   clip-path: inset(50%);
 }
 </style>

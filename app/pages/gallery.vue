@@ -46,8 +46,8 @@ const breadcrumbItems = [
   top: rem(-120);
   right: rem(-180);
   width: min(100%, rem(640));
-  height: auto;
   max-width: none;
+  height: auto;
   pointer-events: none;
 
   @include from-desktop {

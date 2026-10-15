@@ -39,9 +39,9 @@ defineProps<{
 .link {
   display: block;
   flex-shrink: 0;
+  border-radius: 50%;
   line-height: 0;
   color: var(--fs-color-black);
-  border-radius: 50%;
   transition: color 0.2s ease;
 
   @media (prefers-reduced-motion: reduce) {

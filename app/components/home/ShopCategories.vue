@@ -28,9 +28,9 @@ const { items, isDemo = false } = defineProps<{
 
 .demo {
   position: absolute;
-  z-index: z('default');
   top: 0;
   left: var(--fs-grid-margin);
+  z-index: z('default');
 }
 
 .inner {

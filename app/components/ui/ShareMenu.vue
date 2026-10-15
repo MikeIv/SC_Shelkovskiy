@@ -209,9 +209,9 @@ onBeforeUnmount(() => {
   gap: var(--fs-space-2);
   width: rem(268);
   padding: var(--fs-space-3);
-  overflow: clip;
   border-radius: var(--fs-radius-xl);
   background-color: var(--fs-color-light);
+  overflow: clip;
 }
 
 .item {

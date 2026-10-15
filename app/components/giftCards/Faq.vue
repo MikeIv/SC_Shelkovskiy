@@ -120,11 +120,11 @@ function toggle(id: string) {
   width: 100%;
   margin: 0;
   padding: 0;
-  text-align: left;
-  color: inherit;
-  cursor: pointer;
-  background: none;
   border: 0;
+  color: inherit;
+  text-align: left;
+  background: none;
+  cursor: pointer;
 }
 
 .question {

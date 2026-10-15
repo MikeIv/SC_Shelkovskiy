@@ -35,7 +35,7 @@ function getStagedFiles() {
   }
 }
 
-const LINT_STAGED_EXT = /\.(vue|css|mjs|cjs|js|ts|json|md|yml|yaml)$/i
+const LINT_STAGED_EXT = /\.(vue|css|scss|mjs|cjs|js|ts|json|md|yml|yaml)$/i
 
 const esc = (code, s) => `\u001b[${code}m${s}\u001b[0m`
 const bold = (s) => esc(1, s)

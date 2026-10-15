@@ -78,8 +78,8 @@ useSeoMeta({
   top: 0;
   right: rem(-160);
   width: min(80%, rem(640));
-  height: auto;
   max-width: none;
+  height: auto;
   pointer-events: none;
 
   @include from-desktop {

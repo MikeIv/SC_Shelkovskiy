@@ -47,10 +47,10 @@ defineProps<{
   align-items: center;
   min-width: 0;
   padding: var(--fs-space-3);
+  border-radius: rem(32);
   color: var(--fs-color-black);
   text-decoration: none;
   background-color: var(--fs-color-light);
-  border-radius: rem(32);
   transition: background-color 0.2s ease;
 
   @media (hover: hover) {
