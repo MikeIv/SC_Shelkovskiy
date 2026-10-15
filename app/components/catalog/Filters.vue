@@ -9,9 +9,6 @@ import {
 
 export type { CatalogFiltersVariant }
 
-const DESKTOP_MQ = '(min-width: 1280px)'
-const TITLE_ASIDE_SELECTOR = '[data-fs-title-aside]'
-
 const props = withDefaults(
   defineProps<{
     variant?: CatalogFiltersVariant
@@ -38,16 +35,7 @@ const businessLunchOnly = defineModel<boolean>('businessLunchOnly', { default: f
 const viewMode = defineModel<CatalogCardLayout>('viewMode', { default: 'card' })
 
 const filtersOpen = ref(false)
-const isDesktop = ref(false)
 const texts = computed(() => catalogFilterTexts(props.variant))
-
-/** Desktop + хост в LayoutInnerPage (`with-title-aside`) → поиск у заголовка. */
-const searchInTitle = computed(
-  () =>
-    import.meta.client &&
-    isDesktop.value &&
-    Boolean(document.querySelector(TITLE_ASIDE_SELECTOR)),
-)
 
 const hasActiveFilters = computed(
   () =>
@@ -64,14 +52,6 @@ const viewModes = [
   { mode: 'list' as const, icon: 'local:list', label: 'Список' },
 ]
 
-function syncDesktop(): void {
-  if (!import.meta.client) {
-    return
-  }
-
-  isDesktop.value = window.matchMedia(DESKTOP_MQ).matches
-}
-
 function openFilters(): void {
   filtersOpen.value = true
 }
@@ -79,31 +59,17 @@ function openFilters(): void {
 function closeFilters(): void {
   filtersOpen.value = false
 }
-
-let desktopMq: MediaQueryList | undefined
-
-onMounted(() => {
-  syncDesktop()
-  desktopMq = window.matchMedia(DESKTOP_MQ)
-  desktopMq.addEventListener('change', syncDesktop)
-})
-
-onUnmounted(() => {
-  desktopMq?.removeEventListener('change', syncDesktop)
-})
 </script>
 
 <template>
   <div :class="$style.toolbar">
-    <Teleport :to="TITLE_ASIDE_SELECTOR" :disabled="!searchInTitle">
-      <UiSearch
+    <div class="fs-catalog-search-toolbar">
+      <CatalogSearch
         v-model="query"
-        :class="$style.search"
-        :label="texts.searchLabel"
-        :placeholder="texts.searchPlaceholder"
+        :variant="variant"
         :options="searchOptions"
       />
-    </Teleport>
+    </div>
 
     <div :class="$style.desktopFields">
       <UiDropdown
@@ -205,10 +171,6 @@ onUnmounted(() => {
   }
 }
 
-.search {
-  width: 100%;
-}
-
 .actions {
   display: flex;
   align-items: center;
@@ -219,14 +181,15 @@ onUnmounted(() => {
     gap: var(--fs-space-1);
     justify-content: flex-end;
     width: auto;
+
+    /* Выше специфичности, чем `UiTab` module `.root { display: inline-flex }`. */
+    .filterBtn {
+      display: none;
+    }
   }
 }
 
 .filterBtn {
-  @include from-desktop {
-    display: none;
-  }
-
   &[data-active]::after {
     content: '';
     position: absolute;
@@ -256,18 +219,15 @@ onUnmounted(() => {
     gap: var(--fs-space-3);
     align-items: center;
     min-width: 0;
-  }
-}
 
-.category {
-  @include from-desktop {
-    width: rem(320);
-  }
-}
+    /* Вложенность > `UiDropdown` `.root { width: 100% }` (иначе скачок ширины при гидрации). */
+    .category {
+      width: rem(320);
+    }
 
-.floor {
-  @include from-desktop {
-    width: max-content;
+    .floor {
+      width: max-content;
+    }
   }
 }
 

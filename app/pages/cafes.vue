@@ -29,9 +29,13 @@ await useCatalog('cafes')
 </script>
 
 <template>
-  <LayoutInnerPage :title="label" with-title-aside>
+  <LayoutInnerPage :title="label">
     <template #lead>
       <UiBreadcrumbs :items="breadcrumbItems" />
+    </template>
+
+    <template #title-aside>
+      <CatalogSearch v-model="query" variant="cafes" :options="searchOptions" />
     </template>
 
     <CatalogFilters

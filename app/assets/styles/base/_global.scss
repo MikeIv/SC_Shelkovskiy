@@ -1,8 +1,35 @@
 @use '../variables/base-font-size' as size;
+@use '../tools/functions' as *;
+@use '../tools/mixins' as *;
 
 html {
   min-height: 100dvh;
   font-size: size.$base-font-size;
+}
+
+/**
+ * Каталог: два инпута поиска (у h1 / в тулбаре). Видимость только здесь,
+ * в одном файле с main.css — иначе module CSS фильтров грузится позже и
+ * на desktop оба инпута мелькают.
+ */
+.fs-catalog-search-aside {
+  display: none;
+  min-width: 0;
+
+  @include from-desktop {
+    display: block;
+    flex: 0 1 rem(504);
+    width: rem(504);
+    max-width: 100%;
+  }
+}
+
+.fs-catalog-search-toolbar {
+  width: 100%;
+
+  @include from-desktop {
+    display: none;
+  }
 }
 
 html,
