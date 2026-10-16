@@ -106,14 +106,10 @@ const labels = {
         >
           <h2 :class="$style.departmentTitle">{{ item.title }}</h2>
           <div :class="$style.departmentBody">
-            <div :class="[$style.row, $style.rowStart]">
+            <div :class="[$style.row, $style.departmentPhone]">
               <span :class="$style.label">{{ labels.phone }}</span>
-              <a
-                :class="[$style.value, $style.phoneStack]"
-                :href="item.phoneHref"
-              >
-                <span>{{ item.phone }}</span>
-                <span>{{ item.phoneExt }}</span>
+              <a :class="$style.value" :href="item.phoneHref">
+                {{ item.phone }}{{ item.phoneExt ? ` ${item.phoneExt}` : '' }}
               </a>
             </div>
             <div :class="$style.row">
@@ -186,11 +182,10 @@ $metro-blue: #007ac6;
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  gap: var(--fs-space-4);
+  gap: var(--fs-space-3);
   min-width: 0;
 
   @include from-desktop {
-    gap: rem(48);
     max-width: rem(768);
   }
 }
@@ -313,10 +308,6 @@ $metro-blue: #007ac6;
   align-items: center;
 }
 
-.rowStart {
-  align-items: flex-start;
-}
-
 .block {
   display: flex;
   flex-direction: column;
@@ -337,11 +328,6 @@ $metro-blue: #007ac6;
     outline: rem(2) solid var(--fs-color-black);
     outline-offset: rem(2);
   }
-}
-
-.phoneStack {
-  display: flex;
-  flex-direction: column;
 }
 
 .hours {
@@ -378,25 +364,42 @@ $metro-blue: #007ac6;
 }
 
 .departments {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   gap: var(--fs-space-3);
   margin: 0;
   padding: 0;
   list-style: none;
+}
 
-  @include from-tablet {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: rem(48) rem(24);
+.department {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-2);
+  min-width: 0;
+
+  &:not(:last-child) {
+    padding-bottom: var(--fs-space-3);
+    border-bottom: rem(2) solid var(--fs-color-light);
   }
 }
 
-.department,
 .departmentBody {
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-2);
   min-width: 0;
+
+  @include from-tablet {
+    flex-flow: row wrap;
+    gap: var(--fs-space-3);
+  }
+}
+
+.departmentPhone {
+  @include from-tablet {
+    flex: 0 1 rem(372);
+  }
 }
 
 .departmentTitle {
