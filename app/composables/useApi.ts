@@ -87,6 +87,20 @@ export function useApi(): ApiClient {
 }
 
 /**
+ * POST без кэша (формы). `path` — Nitro `/api/...`; в прямом режиме префикс `/api`
+ * снимается, запрос идёт на `{apiBase}/...` Laravel.
+ */
+export async function useApiPost<T>(path: string, body: unknown): Promise<T> {
+  const config = useRuntimeConfig()
+  const client = createApiClient()
+  const target = isDirectApiBase(config.public.apiBase)
+    ? path.replace(/^\/api(?=\/|$)/, '') || '/'
+    : path
+
+  return client(target, { method: 'POST', body }) as Promise<T>
+}
+
+/**
  * Реактивный `useFetch` к тому же API, что и {@link useApi}: URL собирается из `apiBase` + путь.
  *
  * В прямом режиме запрос идёт через `useAsyncData` (ключ — путь нашей ручки, одинаковый

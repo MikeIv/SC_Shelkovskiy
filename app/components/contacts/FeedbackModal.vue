@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import { firstFieldError, formErrorStatus, readFormError } from '#shared/api/formErrors'
 import type { ContactsFeedbackContent } from '#shared/types/contacts'
+import { isFeedbackTopic } from '#shared/types/forms'
+import { isEmail } from '#shared/utils/isEmail'
+import { useSubmitFeedback } from '~/composables/api/useSubmitFeedback'
 import { footerContacts } from '~/utils/siteFooter'
 
 const props = defineProps<{
@@ -11,9 +15,14 @@ const emit = defineEmits<{
   close: []
 }>()
 
+const requiredError = 'Обязательное поле'
+const emailFormatError = 'Некорректный email'
+
 const titleId = useId()
 const closeRef = ref<HTMLButtonElement | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
+const toast = useUiToast()
+const { submit } = useSubmitFeedback()
 
 const form = reactive({
   topic: '',
@@ -22,11 +31,34 @@ const form = reactive({
   email: '',
   message: '',
 })
+const errors = reactive({
+  topic: '',
+  fullName: '',
+  phone: '',
+  email: '',
+  message: '',
+})
 const consent = ref(false)
+const consentError = ref('')
 const fileName = ref('')
+const websiteUrl = ref('')
+const submitting = ref(false)
 
 let previousOverflow = ''
 let previousFocus: HTMLElement | null = null
+
+for (const field of ['topic', 'fullName', 'phone', 'email', 'message'] as const) {
+  watch(
+    () => form[field],
+    () => {
+      errors[field] = ''
+    },
+  )
+}
+
+watch(consent, () => {
+  consentError.value = ''
+})
 
 function close(): void {
   emit('close')
@@ -40,6 +72,13 @@ function clearFile(): void {
   }
 }
 
+function clearErrors(): void {
+  for (const key of Object.keys(errors) as (keyof typeof errors)[]) {
+    errors[key] = ''
+  }
+  consentError.value = ''
+}
+
 function resetForm(): void {
   form.topic = ''
   form.fullName = ''
@@ -47,6 +86,8 @@ function resetForm(): void {
   form.email = ''
   form.message = ''
   consent.value = false
+  websiteUrl.value = ''
+  clearErrors()
   clearFile()
 }
 
@@ -59,8 +100,78 @@ function onFileChange(event: Event): void {
   fileName.value = input.files?.[0]?.name ?? ''
 }
 
-function onSubmit(): void {
-  // Отправка появится после контракта API.
+function validate(): boolean {
+  errors.topic = isFeedbackTopic(form.topic) ? '' : requiredError
+  errors.fullName = form.fullName.trim() ? '' : requiredError
+  errors.phone = form.phone.trim() ? '' : requiredError
+  errors.email = !form.email.trim()
+    ? requiredError
+    : isEmail(form.email)
+      ? ''
+      : emailFormatError
+  errors.message = form.message.trim() ? '' : requiredError
+  consentError.value = consent.value ? '' : requiredError
+
+  return Object.values(errors).every((value) => !value) && !consentError.value
+}
+
+function applyApiFieldErrors(payload: ReturnType<typeof readFormError>): void {
+  errors.topic = firstFieldError(payload, 'topic') ?? errors.topic
+  errors.fullName = firstFieldError(payload, 'name') ?? errors.fullName
+  errors.phone = firstFieldError(payload, 'phone') ?? errors.phone
+  errors.email = firstFieldError(payload, 'email') ?? errors.email
+  errors.message = firstFieldError(payload, 'message') ?? errors.message
+  consentError.value = firstFieldError(payload, 'consent') ?? consentError.value
+}
+
+async function onSubmit(): Promise<void> {
+  if (submitting.value || !validate() || !isFeedbackTopic(form.topic)) {
+    return
+  }
+
+  submitting.value = true
+
+  try {
+    await submit({
+      consent: consent.value,
+      topic: form.topic,
+      name: form.fullName.trim(),
+      phone: form.phone.trim(),
+      email: form.email.trim(),
+      message: form.message.trim(),
+      website_url: websiteUrl.value.trim() || null,
+    })
+
+    toast.success({
+      title: 'Заявка отправлена',
+      description: 'Мы свяжемся с вами в ближайшее время',
+    })
+    close()
+  } catch (error: unknown) {
+    const status = formErrorStatus(error)
+    const payload = readFormError(error)
+
+    if (status === 422) {
+      applyApiFieldErrors(payload)
+      toast.error({ title: payload?.message ?? 'Проверьте поля формы' })
+      return
+    }
+
+    if (status === 429) {
+      toast.error({
+        title: 'Слишком много заявок',
+        description: 'Попробуйте отправить форму позже',
+      })
+      return
+    }
+
+    toast.error({
+      title: 'Не удалось отправить',
+      description: 'Попробуйте ещё раз',
+    })
+  } finally {
+    submitting.value = false
+  }
 }
 
 function onKeydown(event: KeyboardEvent): void {
@@ -178,12 +289,23 @@ onBeforeUnmount(() => {
 
         <form :class="$style.form" @submit.prevent="onSubmit">
           <div :class="$style.fields">
+            <input
+              v-model="websiteUrl"
+              :class="$style.fileInput"
+              type="text"
+              name="website_url"
+              tabindex="-1"
+              autocomplete="off"
+              aria-hidden="true"
+            >
             <UiDropdown
               v-model="form.topic"
               name="topic"
               placeholder="Тема обращения"
               label="Тема обращения"
               :options="content.topics"
+              :error="errors.topic"
+              :disabled="submitting"
             />
             <UiInput
               v-model="form.fullName"
@@ -191,6 +313,8 @@ onBeforeUnmount(() => {
               autocomplete="name"
               placeholder="ФИО"
               label="ФИО"
+              :error="errors.fullName"
+              :disabled="submitting"
             />
             <div :class="$style.row">
               <UiInput
@@ -200,6 +324,8 @@ onBeforeUnmount(() => {
                 autocomplete="tel"
                 placeholder="Телефон"
                 label="Телефон"
+                :error="errors.phone"
+                :disabled="submitting"
               />
               <UiInput
                 v-model="form.email"
@@ -208,6 +334,8 @@ onBeforeUnmount(() => {
                 autocomplete="email"
                 placeholder="Почта"
                 label="Почта"
+                :error="errors.email"
+                :disabled="submitting"
               />
             </div>
             <UiTextarea
@@ -215,6 +343,8 @@ onBeforeUnmount(() => {
               name="message"
               placeholder="Ваше сообщение"
               label="Ваше сообщение"
+              :error="errors.message"
+              :disabled="submitting"
             />
             <div :class="$style.attach">
               <input
@@ -222,11 +352,13 @@ onBeforeUnmount(() => {
                 :class="$style.fileInput"
                 type="file"
                 name="attachment"
+                :disabled="submitting"
                 @change="onFileChange"
               >
               <button
                 :class="$style.attachBtn"
                 type="button"
+                :disabled="submitting"
                 @click="openFilePicker"
               >
                 <UIcon
@@ -241,6 +373,7 @@ onBeforeUnmount(() => {
                 :class="$style.attachClear"
                 type="button"
                 aria-label="Удалить файл"
+                :disabled="submitting"
                 @click="clearFile"
               >
                 <UIcon
@@ -253,27 +386,40 @@ onBeforeUnmount(() => {
           </div>
 
           <div :class="$style.footer">
-            <label :class="$style.consent">
-              <UiCheckbox v-model="consent" />
-              <span :class="$style.consentText">
-                Даю согласие на
-                <NuxtLink
-                  v-if="footerContacts.privacyHref"
-                  :class="$style.consentLink"
-                  :to="footerContacts.privacyHref"
-                  @click.stop
-                >
-                  обработку персональных данных
-                </NuxtLink>
-                <span
-                  v-else
-                  :class="$style.consentLink"
-                >обработку персональных данных</span>
-              </span>
-            </label>
+            <div :class="$style.consentBlock">
+              <label :class="$style.consent">
+                <UiCheckbox v-model="consent" :disabled="submitting" />
+                <span :class="$style.consentText">
+                  Даю согласие на
+                  <NuxtLink
+                    v-if="footerContacts.privacyHref"
+                    :class="$style.consentLink"
+                    :to="footerContacts.privacyHref"
+                    @click.stop
+                  >
+                    обработку персональных данных
+                  </NuxtLink>
+                  <span
+                    v-else
+                    :class="$style.consentLink"
+                  >обработку персональных данных</span>
+                </span>
+              </label>
+              <p
+                v-if="consentError"
+                :class="$style.consentError"
+                role="alert"
+              >
+                {{ consentError }}
+              </p>
+            </div>
 
-            <UiButton :class="$style.submit" type="submit">
-              Отправить
+            <UiButton
+              :class="$style.submit"
+              type="submit"
+              :disabled="submitting"
+            >
+              {{ submitting ? 'Отправка…' : 'Отправить' }}
             </UiButton>
           </div>
         </form>
@@ -527,6 +673,12 @@ onBeforeUnmount(() => {
   gap: var(--fs-space-2);
 }
 
+.consentBlock {
+  display: flex;
+  flex-direction: column;
+  gap: rem(8);
+}
+
 .consent {
   display: flex;
   gap: rem(12);
@@ -536,6 +688,12 @@ onBeforeUnmount(() => {
 
 .consentText {
   @include fs-text-lg;
+}
+
+.consentError {
+  margin: 0;
+  @include fs-text-md;
+  color: var(--fs-color-error);
 }
 
 .consentLink {

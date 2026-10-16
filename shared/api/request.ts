@@ -1,3 +1,5 @@
+import type { HttpMethod } from '#shared/types/api'
+
 /**
  * Контракт запроса к API — без зависимостей.
  *
@@ -8,6 +10,13 @@
 /** Значения query: из URL на клиенте, из `getQuery` в Nitro. */
 export type ApiQuery = Record<string, unknown>
 
+/** Опции GET/мутаций: query для чтения, method/body для форм. */
+export type ApiRequestOptions = {
+  query?: ApiQuery
+  method?: HttpMethod
+  body?: unknown
+}
+
 /** Запрос к API: путь относительно базы API и опциональный query. */
 export type ApiRequest = <Dto>(path: string, options?: { query?: ApiQuery }) => Promise<Dto>
 
@@ -15,7 +24,7 @@ export type ApiRequest = <Dto>(path: string, options?: { query?: ApiQuery }) => 
  * Тот же вызов до приведения к {@link ApiRequest}: `$fetch` типизирован маршрутами Nitro,
  * а пути здесь динамические — сравнение объединения маршрутов упирается в предел глубины типов TS.
  */
-export type RawApiClient = (path: string, options?: { query?: ApiQuery }) => Promise<unknown>
+export type RawApiClient = (path: string, options?: ApiRequestOptions) => Promise<unknown>
 
 /** Приводит `$fetch`-подобный клиент к контракту {@link ApiRequest}: тип ответа задаёт вызывающий. */
 export function asApiRequest(client: RawApiClient): ApiRequest {
