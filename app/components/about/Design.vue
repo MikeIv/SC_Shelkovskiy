@@ -58,6 +58,8 @@ const { title, description, stats, videoPosterSrc, videoPosterAlt } =
 @use 'tools' as *;
 
 .panel {
+  position: relative;
+  z-index: z('default');
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-4);
@@ -80,17 +82,12 @@ const { title, description, stats, videoPosterSrc, videoPosterAlt } =
   padding: 0 var(--fs-grid-margin);
 
   @include from-desktop {
-    flex-direction: row;
-    gap: rem(158);
-    align-items: flex-start;
-    justify-content: space-between;
-    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 635fr) minmax(0, 702fr);
+    gap: clamp(#{rem(32)}, 8vw, #{rem(158)});
+    align-items: start;
     max-width: var(--fs-grid-content-max);
     margin-inline: auto;
-    padding-inline: max(
-      var(--fs-grid-margin),
-      calc((100% - var(--fs-grid-content-max)) / 2)
-    );
   }
 }
 
@@ -101,7 +98,6 @@ const { title, description, stats, videoPosterSrc, videoPosterAlt } =
   min-width: 0;
 
   @include from-desktop {
-    flex: 0 1 rem(635);
     gap: var(--fs-space-3);
   }
 }
@@ -114,8 +110,8 @@ const { title, description, stats, videoPosterSrc, videoPosterAlt } =
 
 .desc {
   margin: 0;
-  @include fs-text-lg;
   overflow-wrap: break-word;
+  @include fs-text-lg;
 }
 
 .stats {
@@ -127,7 +123,6 @@ const { title, description, stats, videoPosterSrc, videoPosterAlt } =
   list-style: none;
 
   @include from-desktop {
-    flex: 0 1 rem(702);
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--fs-space-4) var(--fs-space-3);
   }

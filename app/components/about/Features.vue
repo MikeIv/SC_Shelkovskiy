@@ -79,6 +79,7 @@ const {
 
 .root {
   position: relative;
+  z-index: 0;
   overflow-x: clip;
 }
 
