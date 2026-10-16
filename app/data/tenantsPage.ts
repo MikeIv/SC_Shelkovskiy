@@ -88,8 +88,8 @@ export const tenantsAdvantageItems: TenantsAdvantage[] = [
 
 export const tenantsApply = {
   title: 'Присоединяйтесь к Щёлковскому',
-  /** Страница политики ещё не сверстана. */
-  privacyHref: '',
+  /** Пока одна страница правил — оба пункта политики ведут сюда. */
+  privacyHref: '/rules',
   presentationLabel: 'Скачать презентацию',
   presentationHref: '#',
   presentationNote: 'Вы можете скачать нашу презентацию и ознакомиться с нашим ТЦ подробнее',

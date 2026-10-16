@@ -40,7 +40,9 @@ const errors = reactive({
   email: '',
   message: '',
 })
-const consent = ref(false)
+const consentPersonal = ref(false)
+const consentPolicies = ref(false)
+const consentMailing = ref(false)
 const consentError = ref('')
 const fileName = ref('')
 const websiteUrl = ref('')
@@ -51,6 +53,10 @@ let submitSeq = 0
 let previousOverflow = ''
 let previousFocus: HTMLElement | null = null
 
+const requiredConsentsOk = computed(
+  () => consentPersonal.value && consentPolicies.value,
+)
+
 for (const field of ['topic', 'fullName', 'phone', 'email', 'message'] as const) {
   watch(
     () => form[field],
@@ -60,7 +66,7 @@ for (const field of ['topic', 'fullName', 'phone', 'email', 'message'] as const)
   )
 }
 
-watch(consent, () => {
+watch([consentPersonal, consentPolicies], () => {
   consentError.value = ''
 })
 
@@ -89,7 +95,9 @@ function resetForm(): void {
   form.phone = ''
   form.email = ''
   form.message = ''
-  consent.value = false
+  consentPersonal.value = false
+  consentPolicies.value = false
+  consentMailing.value = false
   websiteUrl.value = ''
   clearErrors()
   clearFile()
@@ -119,7 +127,7 @@ function validate(): FeedbackFormPayload | null {
       ? ''
       : emailFormatError
   errors.message = form.message.trim() ? '' : requiredError
-  consentError.value = consent.value ? '' : requiredError
+  consentError.value = requiredConsentsOk.value ? '' : requiredError
 
   const valid = Object.values(errors).every((value) => !value) && !consentError.value
 
@@ -128,7 +136,7 @@ function validate(): FeedbackFormPayload | null {
   const website = websiteUrl.value.trim()
 
   return {
-    consent: consent.value,
+    consent: true,
     topic,
     name: form.fullName.trim(),
     phone: form.phone.trim(),
@@ -417,33 +425,14 @@ onBeforeUnmount(() => {
           </div>
 
           <div :class="$style.footer">
-            <div :class="$style.consentBlock">
-              <label :class="$style.consent">
-                <UiCheckbox v-model="consent" :disabled="submitting" />
-                <span :class="$style.consentText">
-                  Даю согласие на
-                  <NuxtLink
-                    v-if="footerContacts.privacyHref"
-                    :class="$style.consentLink"
-                    :to="footerContacts.privacyHref"
-                    @click.stop
-                  >
-                    обработку персональных данных
-                  </NuxtLink>
-                  <span
-                    v-else
-                    :class="$style.consentLink"
-                  >обработку персональных данных</span>
-                </span>
-              </label>
-              <p
-                v-if="consentError"
-                :class="$style.consentError"
-                role="alert"
-              >
-                {{ consentError }}
-              </p>
-            </div>
+            <UiFormConsents
+              v-model:personal="consentPersonal"
+              v-model:policies="consentPolicies"
+              v-model:mailing="consentMailing"
+              :privacy-href="footerContacts.privacyHref"
+              :disabled="submitting"
+              :error="consentError"
+            />
 
             <UiButton
               :class="$style.submit"
@@ -703,40 +692,6 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-2);
-}
-
-.consentBlock {
-  display: flex;
-  flex-direction: column;
-  gap: rem(8);
-}
-
-.consent {
-  display: flex;
-  gap: rem(12);
-  align-items: flex-start;
-  cursor: pointer;
-}
-
-.consentText {
-  @include fs-text-lg;
-}
-
-.consentError {
-  margin: 0;
-  @include fs-text-md;
-  color: var(--fs-color-error);
-}
-
-.consentLink {
-  color: inherit;
-  text-decoration: underline;
-  text-underline-offset: rem(2);
-
-  &:focus-visible {
-    outline: rem(2) solid var(--fs-color-black);
-    outline-offset: rem(2);
-  }
 }
 
 .submit {

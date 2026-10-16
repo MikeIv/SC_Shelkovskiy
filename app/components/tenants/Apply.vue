@@ -64,7 +64,9 @@ const errors = reactive({
   adsMessage: '',
 })
 const selectedProfiles = ref<string[]>([])
-const consent = ref(false)
+const consentPersonal = ref(false)
+const consentPolicies = ref(false)
+const consentMailing = ref(false)
 const fileName = ref('')
 const fileInput = ref<HTMLInputElement | null>(null)
 
@@ -72,12 +74,16 @@ const presentationTo = computed(() =>
   presentationHref && presentationHref !== '#' ? presentationHref : undefined,
 )
 
+const requiredConsentsOk = computed(
+  () => consentPersonal.value && consentPolicies.value,
+)
+
 const canSubmit = computed(() => {
   const base =
     form.fullName.trim().length > 0
     && form.phone.trim().length > 0
     && isEmail(form.email)
-    && consent.value
+    && requiredConsentsOk.value
 
   if (activeTab.value === 'ads') {
     return base && form.adsMessage.trim().length > 0
@@ -147,7 +153,7 @@ function validate(): boolean {
 
 function onSubmit() {
   // Guard на Enter в поле при disabled submit в отдельных браузерах.
-  if (!validate() || !consent.value) {
+  if (!validate() || !requiredConsentsOk.value) {
     return
   }
 
@@ -416,23 +422,12 @@ function onSubmit() {
         </div>
 
         <div :class="$style.footer">
-          <label :class="$style.consent">
-            <UiCheckbox v-model="consent" />
-            <span :class="$style.consentText">
-              Даю согласие на
-              <NuxtLink
-                v-if="privacyHref"
-                :class="$style.consentLink"
-                :to="privacyHref"
-              >
-                обработку персональных данных
-              </NuxtLink>
-              <span
-                v-else
-                :class="$style.consentLink"
-              >обработку персональных данных</span>
-            </span>
-          </label>
+          <UiFormConsents
+            v-model:personal="consentPersonal"
+            v-model:policies="consentPolicies"
+            v-model:mailing="consentMailing"
+            :privacy-href="privacyHref"
+          />
 
           <UiButton type="submit" :disabled="!canSubmit">
             Отправить
@@ -698,32 +693,8 @@ function onSubmit() {
 .footer {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-3);
+  gap: var(--fs-space-2);
   align-items: flex-start;
-  justify-content: space-between;
-
-  @include from-desktop {
-    flex-direction: row;
-    align-items: center;
-  }
-}
-
-.consent {
-  display: flex;
-  flex: 1 1 auto;
-  gap: rem(12);
-  align-items: flex-start;
-  max-width: rem(520);
-  cursor: pointer;
-}
-
-.consentText {
-  @include fs-text-lg;
-}
-
-.consentLink {
-  color: inherit;
-  text-underline-offset: rem(2);
 }
 
 .contacts {
