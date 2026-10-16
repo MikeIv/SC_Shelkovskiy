@@ -33,12 +33,10 @@ const { title, description, watermarkSrc } = defineProps<{
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: rem(620);
-  padding-block: var(--fs-space-6);
+  padding-block: rem(110);
   overflow: clip;
 
   @include from-desktop {
-    min-height: 0;
     padding-block: var(--fs-space-section);
   }
 }

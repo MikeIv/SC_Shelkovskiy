@@ -141,7 +141,7 @@ const { title, description, stats, videoPosterSrc, videoPosterAlt } =
 }
 
 .statValue {
-  @include fs-h3;
+  @include fs-h4;
   margin: 0;
 }
 
