@@ -1,7 +1,8 @@
 import type { AsyncData, UseFetchOptions } from 'nuxt/app'
 import type { FetchError } from 'ofetch'
-import type { ApiQuery, ApiRequest, RawApiClient } from '#shared/api/request'
-import { asApiRequest } from '#shared/api/request'
+import type { ApiMutation } from '#shared/api/mutations'
+import type { ApiQuery, ApiRequest, ApiWriteRequest, RawApiClient } from '#shared/api/request'
+import { asApiRequest, asApiWriteRequest } from '#shared/api/request'
 import { isDirectApiBase } from '#shared/api/directBase'
 import { apiErrorInfo } from '#shared/api/errors'
 import { withThrottleRetry } from '#shared/api/throttle'
@@ -87,17 +88,32 @@ export function useApi(): ApiClient {
 }
 
 /**
- * POST без кэша (формы). `path` — Nitro `/api/...`; в прямом режиме префикс `/api`
- * снимается, запрос идёт на `{apiBase}/...` Laravel.
+ * Транспорт записи: без ожидания окна лимита API — повтор POST продублировал бы заявку
+ * (форма отправляется по действию пользователя, а не в цикле обхода страниц).
  */
-export async function useApiPost<T>(path: string, body: unknown): Promise<T> {
-  const config = useRuntimeConfig()
-  const client = createApiClient()
-  const target = isDirectApiBase(config.public.apiBase)
-    ? path.replace(/^\/api(?=\/|$)/, '') || '/'
-    : path
+function createWriteTransport(): ApiWriteRequest {
+  return asApiWriteRequest(createApiClient())
+}
 
-  return client(target, { method: 'POST', body }) as Promise<T>
+/**
+ * Мутация по контракту ручки из `shared/api`: путь и тело задаёт контракт, режим выбирает
+ * `public.apiBase`, как и у {@link useApi}:
+ *
+ * - **прокси** — POST на свою ручку Nitro `mutation.route`;
+ * - **прямой** — тот же `load` контракта, но из браузера в `{apiBase}` Laravel.
+ */
+export function useApiMutation<Payload, Data>(
+  mutation: ApiMutation<Payload, Data>,
+  payload: Payload,
+): Promise<Data> {
+  const config = useRuntimeConfig()
+  const request = createWriteTransport()
+
+  if (isDirectApiBase(config.public.apiBase)) {
+    return mutation.load(request, payload)
+  }
+
+  return request<Data>(mutation.route, { method: mutation.method, body: payload })
 }
 
 /**

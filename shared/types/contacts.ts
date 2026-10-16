@@ -1,3 +1,5 @@
+import type { FeedbackTopic } from './forms'
+
 export type ContactsHoursRange = {
   id: string
   days: string
@@ -31,7 +33,7 @@ export type ContactsPageContent = {
 }
 
 export type ContactsFeedbackTopic = {
-  value: string
+  value: FeedbackTopic
   label: string
 }
 

@@ -1,5 +1,4 @@
 import type { ApiError, ApiFieldErrors } from '#shared/types/api'
-import { apiErrorStatus } from './errors'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
@@ -51,5 +50,3 @@ export function readFormError(error: unknown): ApiError | null {
 export function firstFieldError(error: ApiError | null, field: string): string | undefined {
   return error?.errors?.[field]?.[0]
 }
-
-export { apiErrorStatus as formErrorStatus }

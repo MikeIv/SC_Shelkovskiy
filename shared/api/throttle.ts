@@ -64,6 +64,9 @@ export function throttleWaitMs(error: unknown): number | null {
 /**
  * Запрос с ожиданием окна лимита API: повторяет 429 после конца окна.
  * Ошибки любого другого вида и исчерпанные попытки уходят вызывающему как есть.
+ *
+ * Обёртка для чтения: повтор записи продублировал бы заявку, поэтому мутации идут
+ * отдельным транспортом без ожидания окна (`apiWriteFetch` / `useApiMutation`).
  */
 export function withThrottleRetry(request: ApiRequest, options: ThrottleOptions = {}): ApiRequest {
   const maxAttempts = options.maxAttempts ?? 4

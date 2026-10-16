@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { firstFieldError, formErrorStatus, readFormError } from '#shared/api/formErrors'
+import { apiErrorStatus } from '#shared/api/errors'
+import { firstFieldError, readFormError } from '#shared/api/formErrors'
 import type { ContactsFeedbackContent } from '#shared/types/contacts'
+import type { FeedbackFormPayload } from '#shared/types/forms'
 import { isFeedbackTopic } from '#shared/types/forms'
 import { isEmail } from '#shared/utils/isEmail'
 import { useSubmitFeedback } from '~/composables/api/useSubmitFeedback'
@@ -43,6 +45,8 @@ const consentError = ref('')
 const fileName = ref('')
 const websiteUrl = ref('')
 const submitting = ref(false)
+/** Номер отправки: результат запроса, пережившего сброс формы, в неё не пишем. */
+let submitSeq = 0
 
 let previousOverflow = ''
 let previousFocus: HTMLElement | null = null
@@ -89,6 +93,8 @@ function resetForm(): void {
   websiteUrl.value = ''
   clearErrors()
   clearFile()
+  submitSeq += 1
+  submitting.value = false
 }
 
 function openFilePicker(): void {
@@ -100,8 +106,11 @@ function onFileChange(event: Event): void {
   fileName.value = input.files?.[0]?.name ?? ''
 }
 
-function validate(): boolean {
-  errors.topic = isFeedbackTopic(form.topic) ? '' : requiredError
+/** Проверяет поля и собирает тело запроса; `null` — форма не готова к отправке. */
+function validate(): FeedbackFormPayload | null {
+  const topic = form.topic
+
+  errors.topic = isFeedbackTopic(topic) ? '' : requiredError
   errors.fullName = form.fullName.trim() ? '' : requiredError
   errors.phone = form.phone.trim() ? '' : requiredError
   errors.email = !form.email.trim()
@@ -112,7 +121,25 @@ function validate(): boolean {
   errors.message = form.message.trim() ? '' : requiredError
   consentError.value = consent.value ? '' : requiredError
 
-  return Object.values(errors).every((value) => !value) && !consentError.value
+  const valid = Object.values(errors).every((value) => !value) && !consentError.value
+
+  if (!valid || !isFeedbackTopic(topic)) return null
+
+  const website = websiteUrl.value.trim()
+
+  return {
+    consent: consent.value,
+    topic,
+    name: form.fullName.trim(),
+    phone: form.phone.trim(),
+    email: form.email.trim(),
+    message: form.message.trim(),
+    /**
+     * Хонейпот уходит только заполненным: пустое поле не шлём, чтобы не спорить
+     * с правилами Laravel вроде `prohibited`, а заполненное — сигнал для API.
+     */
+    ...(website ? { website_url: website } : {}),
+  }
 }
 
 function applyApiFieldErrors(payload: ReturnType<typeof readFormError>): void {
@@ -125,35 +152,34 @@ function applyApiFieldErrors(payload: ReturnType<typeof readFormError>): void {
 }
 
 async function onSubmit(): Promise<void> {
-  if (submitting.value || !validate() || !isFeedbackTopic(form.topic)) {
-    return
-  }
+  if (submitting.value) return
 
+  const payload = validate()
+
+  if (!payload) return
+
+  const seq = ++submitSeq
   submitting.value = true
 
   try {
-    await submit({
-      consent: consent.value,
-      topic: form.topic,
-      name: form.fullName.trim(),
-      phone: form.phone.trim(),
-      email: form.email.trim(),
-      message: form.message.trim(),
-      website_url: websiteUrl.value.trim() || null,
-    })
+    await submit(payload)
 
     toast.success({
       title: 'Заявка отправлена',
       description: 'Мы свяжемся с вами в ближайшее время',
     })
-    close()
+
+    if (submitSeq === seq) close()
   } catch (error: unknown) {
-    const status = formErrorStatus(error)
-    const payload = readFormError(error)
+    const status = apiErrorStatus(error)
+    const apiError = readFormError(error)
+    /** Форму закрыли или сбросили, пока запрос шёл: ошибки полей уже некуда писать. */
+    const stale = submitSeq !== seq
 
     if (status === 422) {
-      applyApiFieldErrors(payload)
-      toast.error({ title: payload?.message ?? 'Проверьте поля формы' })
+      if (!stale) applyApiFieldErrors(apiError)
+
+      toast.error({ title: apiError?.message ?? 'Проверьте поля формы' })
       return
     }
 
@@ -170,7 +196,7 @@ async function onSubmit(): Promise<void> {
       description: 'Попробуйте ещё раз',
     })
   } finally {
-    submitting.value = false
+    if (submitSeq === seq) submitting.value = false
   }
 }
 
@@ -289,14 +315,15 @@ onBeforeUnmount(() => {
 
         <form :class="$style.form" @submit.prevent="onSubmit">
           <div :class="$style.fields">
+            <!-- Хонейпот: `inert` убирает поле из фокуса и из дерева доступности, бот его заполнит. -->
             <input
               v-model="websiteUrl"
-              :class="$style.fileInput"
+              :class="$style.hiddenInput"
               type="text"
               name="website_url"
               tabindex="-1"
               autocomplete="off"
-              aria-hidden="true"
+              inert
             >
             <UiDropdown
               v-model="form.topic"
@@ -347,9 +374,13 @@ onBeforeUnmount(() => {
               :disabled="submitting"
             />
             <div :class="$style.attach">
+              <!--
+                Вложение пока не уходит: файл уедет отдельной ручкой, когда бэкенд
+                дополнит `POST /forms/feedback`. До этого выбор файла на отправку не влияет.
+              -->
               <input
                 ref="fileInput"
-                :class="$style.fileInput"
+                :class="$style.hiddenInput"
                 type="file"
                 name="attachment"
                 :disabled="submitting"
@@ -596,7 +627,8 @@ onBeforeUnmount(() => {
   max-width: 100%;
 }
 
-.fileInput {
+/** Визуально скрытый input: нативный файл под кнопкой и хонейпот. */
+.hiddenInput {
   position: absolute;
   width: 1px;
   height: 1px;

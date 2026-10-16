@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { apiErrorStatus } from '#shared/api/errors'
-import { firstFieldError, formErrorStatus, readFormError } from '#shared/api/formErrors'
+import { firstFieldError, readFormError } from '#shared/api/formErrors'
 
 describe('readFormError', () => {
   it('читает errors из тела ofetch', () => {
@@ -36,13 +35,5 @@ describe('readFormError', () => {
   it('возвращает null для неизвестного', () => {
     expect(readFormError(null)).toBeNull()
     expect(readFormError({ statusCode: 500 })).toBeNull()
-  })
-})
-
-describe('formErrorStatus', () => {
-  it('реэкспортирует apiErrorStatus', () => {
-    const error = { statusCode: 429 }
-    expect(formErrorStatus(error)).toBe(apiErrorStatus(error))
-    expect(formErrorStatus({ status: 422 })).toBe(422)
   })
 })

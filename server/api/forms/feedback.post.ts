@@ -1,11 +1,5 @@
-import type { FeedbackFormResult } from '#shared/types/forms'
-import { buildApiFetchOptions } from '../../utils/apiFetch'
-import { proxyFormPost } from '../../utils/proxyFormPost'
+import { feedbackMutation } from '#shared/api/mutations'
+import { defineApiMutationProxy } from '../../utils/apiMutationProxy'
 
-/** Прокси `POST /api/v1/forms/feedback` → Laravel. */
-export default defineEventHandler(async (event) => {
-  const body = await readBody(event)
-  const options = buildApiFetchOptions(useRuntimeConfig(event))
-
-  return proxyFormPost<FeedbackFormResult>(options, '/forms/feedback', body)
-})
+/** Прокси `POST /api/v1/forms/feedback` → Laravel по контракту `feedbackMutation`. */
+export default defineApiMutationProxy(feedbackMutation)

@@ -3,6 +3,9 @@
  */
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS'
 
+/** Методы записи: мутации ручек, у которых нет кэша и ключа. */
+export type ApiWriteMethod = 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+
 /** Пагинация списков Laravel (`current_page`, `last_page`, `per_page`, `total`). */
 export type ApiListMeta = {
   current_page: number

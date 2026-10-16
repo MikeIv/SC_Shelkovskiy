@@ -1,5 +1,5 @@
-import type { ApiRequest, RawApiClient } from '#shared/api/request'
-import { asApiRequest } from '#shared/api/request'
+import type { ApiRequest, ApiWriteRequest, RawApiClient } from '#shared/api/request'
+import { asApiRequest, asApiWriteRequest } from '#shared/api/request'
 import { withThrottleRetry } from '#shared/api/throttle'
 import type { ApiEvent } from './apiEvent'
 import { basicAuthorization } from '#shared/utils/basicAuthorization'
@@ -50,14 +50,14 @@ export function buildApiFetchOptions(config: ApiRuntimeConfig): ApiFetchOptions 
  * HTTP-клиент Nitro к Laravel. База и Basic auth — из приватного `runtimeConfig`,
  * не из `public.apiBase`. В лог пишется только статус, без тела и заголовков.
  *
- * Наружу — простой контракт {@link ApiRequest}: `$fetch` типизирован маршрутами Nitro,
- * а пути к Laravel у нас динамические (см. {@link RawApiClient}). Лимит API ждём окном:
- * пререндер обходит сотни страниц и без этого упирается в 429.
+ * Наружу — сырой клиент {@link RawApiClient}: `$fetch` типизирован маршрутами Nitro,
+ * а пути к Laravel у нас динамические. Контракт чтения или записи задают
+ * {@link apiFetch} и {@link apiWriteFetch}.
  */
-export function apiFetch(event?: ApiEvent): ApiRequest {
+function createApiFetchClient(event?: ApiEvent): RawApiClient {
   const config = event ? useRuntimeConfig(event) : useRuntimeConfig()
 
-  const client = $fetch.create({
+  return $fetch.create({
     ...buildApiFetchOptions(config),
     onResponseError(ctx) {
       if (import.meta.dev) {
@@ -65,6 +65,20 @@ export function apiFetch(event?: ApiEvent): ApiRequest {
       }
     },
   }) as unknown as RawApiClient
+}
 
-  return withThrottleRetry(asApiRequest(client))
+/**
+ * Клиент чтения: ждёт окно лимита API. Пререндер статики обходит сотни страниц
+ * и без ожидания упирается в 429.
+ */
+export function apiFetch(event?: ApiEvent): ApiRequest {
+  return withThrottleRetry(asApiRequest(createApiFetchClient(event)))
+}
+
+/**
+ * Клиент записи: окно лимита не ждём. Повтор POST после 429 продублировал бы заявку,
+ * а форма отправляется по действию пользователя, а не в цикле обхода страниц.
+ */
+export function apiWriteFetch(event?: ApiEvent): ApiWriteRequest {
+  return asApiWriteRequest(createApiFetchClient(event))
 }

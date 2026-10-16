@@ -1,12 +1,14 @@
-import type { FeedbackFormPayload, FeedbackFormResult } from '#shared/types/forms'
-import { useApiPost } from '~/composables/useApi'
+import { feedbackMutation } from '#shared/api/mutations'
+import type { FeedbackFormPayload } from '#shared/types/forms'
+import { useApiMutation } from '~/composables/useApi'
 
-const FEEDBACK_PATH = '/api/forms/feedback'
-
-/** Отправка обратной связи: прокси Nitro или прямой Laravel. */
+/**
+ * Отправка обратной связи: прокси Nitro или прямой Laravel — решает режим `public.apiBase`,
+ * путь и тело берутся из контракта `feedbackMutation`.
+ */
 export function useSubmitFeedback() {
-  async function submit(payload: FeedbackFormPayload): Promise<FeedbackFormResult> {
-    return useApiPost<FeedbackFormResult>(FEEDBACK_PATH, payload)
+  async function submit(payload: FeedbackFormPayload): Promise<void> {
+    await useApiMutation(feedbackMutation, payload)
   }
 
   return { submit }

@@ -9,10 +9,8 @@ export type FeedbackFormPayload = {
   phone: string
   email: string
   message: string
-  /** Honeypot: пустое или отсутствует. */
-  website_url?: string | null
-  /** Яндекс SmartCaptcha, если включена на бэкенде. */
-  captcha_token?: string | null
+  /** Honeypot: заполненным уходит только спам-ботом, обычная отправка поле не шлёт. */
+  website_url?: string
 }
 
 /** Успешный ответ формы обратной связи. */
