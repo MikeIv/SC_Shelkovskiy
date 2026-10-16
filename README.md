@@ -67,6 +67,10 @@ pnpm approve-builds --all
 - **Husky, pre-push**: хук [`.husky/pre-push`](.husky/pre-push) вызывает [`scripts/pre-push.mjs`](scripts/pre-push.mjs) — `pnpm test` (unit + component). E2E остаётся за CI: ему нужны браузеры и три сервера.
 - **lint-staged**: [`lint-staged.config.mjs`](lint-staged.config.mjs). Если в коммите только файлы вне типов для линта, проверки **пропускаются** с пояснением.
 
+## Зависимости
+
+- **`h3` (dev)**: код её не импортирует, зависимость закреплена ради раскладки. Стенд собирается npm без lockfile и поднимает в корень `node_modules` вторую копию `h3` — v2, её тянет dev-тулинг Nuxt. Тогда бренд события у `defineEventHandler`/`readBody` и у `ApiEvent` (выведен из `useRuntimeConfig`) расходятся, и `nuxt build` падает на `TS2769`. Пин держит корневую копию на линии 1.x, которой живут Nitro и nitropack; v2 остаётся вложенной у своего потребителя.
+
 Коммит без хуков: `git commit --no-verify`, пуш без тестов: `git push --no-verify` (использовать осознанно).
 
 ## Структура проекта (кратко)
