@@ -1,3 +1,5 @@
+import type { MapPlace } from './map'
+
 /** Способ проезда на странице «Как добраться». */
 export type DirectionsMode = 'car' | 'transit' | 'walk'
 
@@ -10,12 +12,8 @@ export type DirectionsTab = {
   yandexRtt: 'auto' | 'mt' | 'pd'
 }
 
-export type DirectionsPlace = {
-  title: string
-  address: string
-  /** Координаты [долгота, широта] — формат JS API Яндекс.Карт 3.0. */
-  coordinates: [number, number]
-}
+/** Точка маршрута: та же карта, что читает каркас `UiYandexMapFrame`. */
+export type DirectionsPlace = MapPlace
 
 export type DirectionsPageContent = {
   title: string

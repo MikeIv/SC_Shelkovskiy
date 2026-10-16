@@ -1,47 +1,31 @@
 <script setup lang="ts">
-import type { DirectionsPlace } from '#shared/types/directions'
+import type { MapPlace } from '#shared/types/map'
 
-const props = defineProps<{
-  place: DirectionsPlace
+defineProps<{
+  /** Живая точка из блока `map_route`; без неё показывается статичная карта. */
+  place: MapPlace | null
   mapAlt: string
+  mapSrc: string
 }>()
-
-const config = useRuntimeConfig()
-
-const hasApiKey = computed(() => Boolean(config.public.yandexMaps?.apikey?.trim()))
-
-const iframeSrc = computed(() => {
-  const [lng, lat] = props.place.coordinates
-  return `https://yandex.ru/map-widget/v1/?ll=${lng}%2C${lat}&z=15&pt=${lng},${lat},pm2rdm&l=map`
-})
 </script>
 
 <template>
-  <ClientOnly>
-    <LazyDirectionsYandexMap
-      v-if="hasApiKey"
-      :class="$style.map"
-      :place="place"
-    />
+  <UiYandexMapFrame
+    v-if="place"
+    :place="place"
+    :map-alt="mapAlt"
+    :fallback-src="mapSrc"
+  />
 
-    <iframe
-      v-else
-      :class="$style.map"
-      :src="iframeSrc"
-      :title="mapAlt"
-      loading="lazy"
-      referrerpolicy="no-referrer-when-downgrade"
-      allowfullscreen
-    />
-
-    <template #fallback>
-      <div
-        :class="$style.map"
-        role="img"
-        :aria-label="mapAlt"
-      />
-    </template>
-  </ClientOnly>
+  <img
+    v-else
+    :class="$style.map"
+    :src="mapSrc"
+    :alt="mapAlt"
+    width="634"
+    height="443"
+    decoding="async"
+  >
 </template>
 
 <style module lang="scss">
@@ -51,7 +35,6 @@ const iframeSrc = computed(() => {
   display: block;
   width: 100%;
   height: 100%;
-  border: 0;
-  background-color: var(--fs-color-light);
+  object-fit: cover;
 }
 </style>

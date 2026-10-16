@@ -1,5 +1,5 @@
-import type { DirectionsPlace } from './directions'
 import type { FeedbackTopic } from './forms'
+import type { MapPlace } from './map'
 
 export type ContactsHoursRange = {
   id: string
@@ -29,7 +29,7 @@ export type ContactsPageContent = {
   mapSrc: string
   mapAlt: string
   /** Живая карта из блока `map_route`; иначе показывается `mapSrc`. */
-  mapPlace: DirectionsPlace | null
+  mapPlace: MapPlace | null
   helpTitle: string
   helpText: string
   helpCtaLabel: string

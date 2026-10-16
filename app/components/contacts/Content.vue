@@ -126,19 +126,10 @@ const labels = {
     <aside :class="$style.aside" aria-label="Карта и помощь">
       <div :class="$style.mapWrap">
         <ContactsMap
-          v-if="content.mapPlace"
           :place="content.mapPlace"
           :map-alt="content.mapAlt"
+          :map-src="content.mapSrc"
         />
-        <img
-          v-else
-          :class="$style.map"
-          :src="content.mapSrc"
-          :alt="content.mapAlt"
-          width="634"
-          height="443"
-          decoding="async"
-        >
       </div>
 
       <div :class="$style.help">
@@ -439,15 +430,6 @@ $metro-blue: #007ac6;
     aspect-ratio: 636 / 439;
     border-radius: rem(60);
   }
-}
-
-.map {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 .help {

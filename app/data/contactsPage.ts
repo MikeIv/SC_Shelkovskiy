@@ -3,6 +3,7 @@ import type {
   ContactsFeedbackContent,
   ContactsPageContent,
 } from '#shared/types/contacts'
+import type { PageData } from '#shared/types/page'
 import { footerContacts } from '~/utils/siteFooter'
 
 /** Мок страницы «Контакты», пока `/pages/contacts` или поля layout пусты. */
@@ -22,6 +23,18 @@ export const contactsPage = {
   helpText: 'Обратитесь к нам',
   helpCtaLabel: 'Написать нам',
 } as const satisfies ContactsPageContent
+
+/**
+ * Ответ `/pages/contacts`, когда ручка пуста или недоступна:
+ * страница собирается из мока выше, а `form`/`map_route` остаются пустыми.
+ */
+export const contactsPageApi: PageData = {
+  slug: 'contacts',
+  title: contactsPage.title,
+  seo: null,
+  form: null,
+  mapRoute: null,
+}
 
 export const contactsFeedback = {
   title: 'Остались вопросы?',

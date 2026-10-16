@@ -72,6 +72,8 @@ function mapCoordinates(value: unknown): [number, number] | null {
 function asCoord(value: unknown): number | null {
   if (typeof value === 'number' && Number.isFinite(value)) return value
   if (typeof value !== 'string') return null
+  /** Пустое поле админки — не координата: `Number('')` вернул бы 0. */
+  if (value.trim() === '') return null
 
   const parsed = Number(value.trim().replace(',', '.'))
   return Number.isFinite(parsed) ? parsed : null

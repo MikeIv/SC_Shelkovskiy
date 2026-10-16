@@ -1,52 +1,22 @@
 <script setup lang="ts">
 import type { DirectionsPlace } from '#shared/types/directions'
 
-const props = defineProps<{
+defineProps<{
   place: DirectionsPlace
   mapAlt: string
   routeHref: string
   routePhrase: string
 }>()
-
-const config = useRuntimeConfig()
-
-const hasApiKey = computed(() =>
-  Boolean(config.public.yandexMaps?.apikey?.trim()),
-)
-
-const iframeSrc = computed(() => {
-  const [lng, lat] = props.place.coordinates
-  return `https://yandex.ru/map-widget/v1/?ll=${lng}%2C${lat}&z=15&pt=${lng},${lat},pm2rdm&l=map`
-})
 </script>
 
 <template>
   <div :class="$style.root">
-    <ClientOnly>
-      <LazyDirectionsYandexMap
-        v-if="hasApiKey"
-        :class="$style.map"
+    <div :class="$style.mapWrap">
+      <UiYandexMapFrame
         :place="place"
+        :map-alt="mapAlt"
       />
-
-      <iframe
-        v-else
-        :class="$style.map"
-        :src="iframeSrc"
-        :title="mapAlt"
-        loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade"
-        allowfullscreen
-      />
-
-      <template #fallback>
-        <div
-          :class="$style.map"
-          role="img"
-          :aria-label="mapAlt"
-        />
-      </template>
-    </ClientOnly>
+    </div>
 
     <a
       :class="$style.routeLink"
@@ -73,13 +43,10 @@ const iframeSrc = computed(() => {
   }
 }
 
-.map {
-  display: block;
-  width: 100%;
+.mapWrap {
+  position: relative;
   height: rem(500);
-  border: 0;
   border-radius: rem(32);
-  background-color: var(--fs-color-light);
   overflow: clip;
 
   @include from-desktop {

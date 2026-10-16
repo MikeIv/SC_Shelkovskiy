@@ -1,39 +1,10 @@
 import type { ApiEnvelope } from '#shared/types/api'
 import type { ContactsFeedbackContent, ContactsPageContent } from '#shared/types/contacts'
 import type { PageData } from '#shared/types/page'
-import { markDemoData, unmarkDemoData } from '~/composables/useDemoData'
-import { contactsFeedback, contactsPage } from '~/data/contactsPage'
+import { contactsFeedback, contactsPage, contactsPageApi } from '~/data/contactsPage'
+import { siteName } from '~/data/siteMeta'
 
-/**
- * Структура страницы «Контакты»: `GET /api/pages/contacts` (title, SEO, form, map_route).
- * Адрес, телефон, отделы и часы — из `useLayoutStore` (`GET /api/layout`).
- */
-export async function useContactsPage() {
-  const result = await useApiFetch<ApiEnvelope<PageData>>('/api/pages/contacts')
-  const source = '/api/pages/contacts'
-
-  const isFallback = computed(() => result.error.value != null || result.data.value == null)
-
-  const page = computed(() => resolveContactsPage(result.data.value?.data, isFallback.value))
-
-  watch(
-    isFallback,
-    (demoUsed) => {
-      if (demoUsed) markDemoData(source)
-      else unmarkDemoData(source)
-    },
-    { immediate: true },
-  )
-
-  return {
-    page,
-    isFallback,
-    error: result.error,
-    pending: result.pending,
-    refresh: result.refresh,
-  }
-}
-
+/** Что читает страница «Контакты»: контент, форма помощи и SEO. */
 export type ContactsPageView = {
   content: ContactsPageContent
   feedback: ContactsFeedbackContent
@@ -42,12 +13,33 @@ export type ContactsPageView = {
   seoOgImage: string | undefined
 }
 
-function resolveContactsPage(api: PageData | undefined, forceFallback: boolean): ContactsPageView {
-  const live = !forceFallback ? api : undefined
-  const title = live?.title || contactsPage.title
+/**
+ * Структура страницы «Контакты»: `GET /api/pages/contacts` (title, SEO, form, map_route).
+ * Адрес, телефон, отделы и часы — из `useLayoutStore` (`GET /api/layout`),
+ * пустой ответ ручки подменяется моком (`useApiData`).
+ */
+export function useContactsPage() {
+  const result = useApiData<ApiEnvelope<PageData>>('/api/pages/contacts', () => ({
+    data: contactsPageApi,
+  }))
+
+  const page = computed(() => resolveContactsPage(result.data.value.data))
+
+  return {
+    page,
+    isFallback: result.isFallback,
+    error: result.error,
+    pending: result.pending,
+    refresh: result.refresh,
+  }
+}
+
+/** Мок страницы — база: поля, которые ручка отдала, встают поверх него. */
+function resolveContactsPage(api: PageData): ContactsPageView {
+  const title = api.title || contactsPage.title
   /** Блок `form` → плашка «Нужна помощь?»; модалка остаётся на моке (в API нет тем). */
-  const help = live?.form?.kind === 'feedback' ? live.form : null
-  const map = live?.mapRoute
+  const help = api.form?.kind === 'feedback' ? api.form : null
+  const map = api.mapRoute
 
   return {
     content: {
@@ -57,15 +49,15 @@ function resolveContactsPage(api: PageData | undefined, forceFallback: boolean):
       helpText: help?.description || contactsPage.helpText,
       mapPlace: map
         ? {
-            title: 'ТРЦ «Щёлковский»',
+            title: siteName,
             address: map.address,
             coordinates: map.coordinates,
           }
         : null,
     },
     feedback: contactsFeedback,
-    seoTitle: live?.seo?.title || title,
-    seoDescription: live?.seo?.description || undefined,
-    seoOgImage: live?.seo?.ogImage || undefined,
+    seoTitle: api.seo?.title || title,
+    seoDescription: api.seo?.description || undefined,
+    seoOgImage: api.seo?.ogImage || undefined,
   }
 }
