@@ -9,13 +9,18 @@ import type { ApiEvent } from './apiEvent'
  * `defineEventHandler`, `readBody`, `apiWriteFetch`, `createError` и `isError` — глобали
  * Nitro; вызываются без импорта, потому что серверные тесты подменяют их через `vi.stubGlobal`
  * (тот же приём, что в `apiProxy.ts`).
+ *
+ * Параметр обработчика не размечен намеренно: `defineEventHandler` и `readBody` берут событие
+ * из копии `h3` у Nitro, а `ApiEvent` — из копии nitropack (см. `apiEvent.ts`). Раскладку
+ * зависимостей мы не контролируем, поэтому границу нормализуем сами: событие принимаем как
+ * есть, а приведение делаем только перед `apiWriteFetch` — как в `apiQuery.ts`.
  */
 export function defineApiMutationProxy<Payload, Data>(mutation: ApiMutation<Payload, Data>) {
-  return defineEventHandler(async (event: ApiEvent) => {
+  return defineEventHandler(async (event) => {
     try {
       const payload = mutation.payload(await readBody(event))
 
-      return await mutation.load(apiWriteFetch(event), payload)
+      return await mutation.load(apiWriteFetch(event as unknown as ApiEvent), payload)
     } catch (error) {
       throw toApiMutationError(error, mutation.label)
     }
