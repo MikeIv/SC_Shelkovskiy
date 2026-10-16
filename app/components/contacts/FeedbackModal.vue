@@ -136,7 +136,8 @@ function validate(): FeedbackFormPayload | null {
   const website = websiteUrl.value.trim()
 
   return {
-    consent: true,
+    /** Контракт `/forms/feedback` знает одно согласие: сюда сворачиваются оба обязательных. */
+    consent: requiredConsentsOk.value,
     topic,
     name: form.fullName.trim(),
     phone: form.phone.trim(),
