@@ -23,7 +23,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "verify": "pnpm lint:all && pnpm typecheck",
+    "verify": "pnpm lint:all && pnpm rules:check && pnpm typecheck",
+    "rules:check": "node scripts/check-rules.mjs",
     "figma:meta": "node scripts/figma.mjs meta",
     "figma:nodes": "node scripts/figma.mjs nodes",
     "figma:png": "node scripts/figma.mjs png"
