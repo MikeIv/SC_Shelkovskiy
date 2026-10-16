@@ -45,6 +45,6 @@ docs/api/
 .env.*
 !.env.example
 
-# Рабочие файлы задач (шаблоны и PROJECT.md остаются в git)
+# Локальные файлы агента — вне git, как .cursor/ и весь .planning/
 AGENTS.local.md
 .dsh/

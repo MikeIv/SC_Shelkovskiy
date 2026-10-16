@@ -58,6 +58,9 @@ pnpm approve-builds --all
 | `pnpm test:e2e`       | Playwright на мок-API (`tests/e2e`, поднимает три сервера)               |
 | `pnpm verify`         | `lint:all` + `rules:check` + `typecheck`                                 |
 | `pnpm rules:check`    | рассинхрон правил: `.cursor/rules` ↔ `AGENTS.md` / `.dsh/skills`         |
+| `pnpm figma:meta`     | Figma REST: `fileKey`, страницы, дата правки                             |
+| `pnpm figma:nodes`    | узел макета: дерево, тексты, шрифты; `--json` — дамп                     |
+| `pnpm figma:png`      | рендер узла в PNG `@2x` → `.planning/figma/`                             |
 
 ## Качество кода и git-хуки
 
@@ -119,9 +122,16 @@ pnpm approve-builds --all
 - Сервер: **`serverApi(event?)`** — [`server/utils/serverApi.ts`](server/utils/serverApi.ts) (сейчас нигде не используется: ручки берут `apiFetch`); **`apiFetch(event?)`** — [`server/utils/apiFetch.ts`](server/utils/apiFetch.ts). URL — [`shared/utils/normalizeApiBaseUrl.ts`](shared/utils/normalizeApiBaseUrl.ts) (`normalizeApiBaseUrl`, `joinApiUrl`).
 - Типизация `public.apiBase` — [`types/nuxt-public.d.ts`](types/nuxt-public.d.ts). Приватные ключи `runtimeConfig` добавляйте в `nuxt.config` и отдельное расширение `RuntimeConfig` в `types/`.
 
+## Макет Figma
+
+- Ключ файла и узлы — в локальных правилах `.cursor/rules/90-project-context.mdc` (каталог вне git): хелпер берёт `fileKey` оттуда, переопределение — `--key` или `FIGMA_FILE_KEY`. У файла есть живые копии-двойники с тем же именем, поэтому перед вёрсткой — `pnpm figma:meta`.
+- Токен: переменная окружения `FIGMA_TOKEN` (в шелле; `.env` скрипт **не** читает) либо локальный файл `~/.dsh/figma-pat.txt`.
+- Хелпер — [`scripts/figma.mjs`](scripts/figma.mjs): `figma:meta` — страницы и дата правки, `figma:nodes` — дерево, тексты, шрифты, `figma:png` — рендер `@2x`.
+- Дампы и рендеры складываются в `.planning/figma/` (в `.gitignore`); вёрстка — один кадр за волну.
+
 ## Документация
 
 - Документация продукта — в **`docs/`** (по мере появления).
-- Макет: [Щёлковский сайт — в разработку (Copy)](https://www.figma.com/design/MUScp7tVggGUWenPq4EXFf/%D0%A9%D1%91%D0%BB%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%B8%D0%B9-%D1%81%D0%B0%D0%B9%D1%82---%D0%B2-%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D1%83--Copy-?node-id=148-15227)
+- Макет: [Щёлковский сайт — в разработку (Copy)](https://www.figma.com/design/KeUxbFvpJkqDdRgAdztQXe/%D0%A9%D1%91%D0%BB%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%B8%D0%B9-%D1%81%D0%B0%D0%B9%D1%82---%D0%B2-%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D1%83--Copy-?node-id=148-15227) (проверено 16.10.2026; у файла есть копия-двойник `MUScp7tVggGUWenPq4EXFf` — не использовать)
 - [Nuxt 4](https://nuxt.com/docs/4.x/getting-started/introduction)
 - [Деплой](https://nuxt.com/docs/getting-started/deployment)
