@@ -14,3 +14,7 @@ coverage
 
 # Сырые спека и ответы стенда, не исходники проекта
 docs/api
+
+# Сгенерировано из .cursor/rules (AGENTS.md, .dsh/skills) — формат задаёт генератор
+.dsh
+AGENTS.md
