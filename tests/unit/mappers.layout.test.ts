@@ -190,6 +190,7 @@ describe('mapLayout', () => {
     expect(mapped.contacts.phoneHref).toBe('tel:+74996774444')
     expect(mapped.contacts.emailHref).toBe('mailto:info@schelkovsky-trc.ru')
     expect(mapped.contacts.departments[0]).toMatchObject({
+      id: 'department-0',
       title: 'Аренда',
       phoneExt: '(5151)',
     })
@@ -201,6 +202,81 @@ describe('mapLayout', () => {
       title: 'MAX',
       imageAlt: 'MAX',
     })
+  })
+
+  it('маппит отделы как в админке: код → id, title/name, ext с пробелами', () => {
+    const mapped = mapLayout({
+      ...emptyDto,
+      data: {
+        ...emptyDto.data,
+        contacts: {
+          address: '107207 Москва, Щёлковское шоссе, 75',
+          metro: 'Щёлковская',
+          phone: '+7 (499) 677-44-44',
+          email: 'info@schelkovsky-trc.ru',
+          departments: [
+            {
+              id: 'lease',
+              title: 'Аренда',
+              phone: '+7 (499) 677-88-88 ',
+              ext: '5151',
+              email: 'arenda@schelkovsky-trc.ru',
+            },
+            {
+              id: 'ads',
+              title: 'Реклама',
+              phone: '+7 (499) 677-88-88',
+              ext: ' 4779',
+              email: 'reklama@schelkovsky-trc.ru',
+            },
+            {
+              code: 'press',
+              name: 'Для СМИ',
+              phone: '+7 (499) 677-88-88',
+              extension: '5181',
+              email: 'pr@schelkovsky-trc.ru',
+            },
+          ],
+        },
+      },
+    })
+
+    expect(mapped.contacts).toMatchObject({
+      address: '107207 Москва, Щёлковское шоссе, 75',
+      metro: 'Щёлковская',
+      phone: '+7 (499) 677-44-44',
+      phoneHref: 'tel:+74996774444',
+      email: 'info@schelkovsky-trc.ru',
+    })
+    expect(mapped.contacts.departments).toEqual([
+      {
+        id: 'lease',
+        title: 'Аренда',
+        phone: '+7 (499) 677-88-88',
+        phoneHref: 'tel:+74996778888',
+        phoneExt: '(5151)',
+        email: 'arenda@schelkovsky-trc.ru',
+        emailHref: 'mailto:arenda@schelkovsky-trc.ru',
+      },
+      {
+        id: 'ads',
+        title: 'Реклама',
+        phone: '+7 (499) 677-88-88',
+        phoneHref: 'tel:+74996778888',
+        phoneExt: '(4779)',
+        email: 'reklama@schelkovsky-trc.ru',
+        emailHref: 'mailto:reklama@schelkovsky-trc.ru',
+      },
+      {
+        id: 'press',
+        title: 'Для СМИ',
+        phone: '+7 (499) 677-88-88',
+        phoneHref: 'tel:+74996778888',
+        phoneExt: '(5181)',
+        email: 'pr@schelkovsky-trc.ru',
+        emailHref: 'mailto:pr@schelkovsky-trc.ru',
+      },
+    ])
   })
 })
 

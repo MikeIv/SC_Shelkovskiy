@@ -5,7 +5,7 @@ import type {
 } from '#shared/types/contacts'
 import { footerContacts } from '~/utils/siteFooter'
 
-/** Временные данные до контракта API. */
+/** Мок страницы «Контакты», пока `/pages/contacts` или поля layout пусты. */
 export const contactsPage = {
   title: 'Контакты',
   address: 'Москва, Щёлковское шоссе, 75',
@@ -17,6 +17,7 @@ export const contactsPage = {
   emailHref: footerContacts.emailHref,
   mapSrc: '/images/contacts/map.webp',
   mapAlt: 'Карта проезда к ТРЦ «Щёлковский»',
+  mapPlace: null,
   helpTitle: 'Нужна помощь?',
   helpText: 'Обратитесь к нам',
   helpCtaLabel: 'Написать нам',

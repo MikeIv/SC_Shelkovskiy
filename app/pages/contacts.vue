@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import {
-  contactsFeedback,
-  contactsPage,
-} from '~/data/contactsPage'
 import { groupWeekRanges } from '#shared/utils/groupWeekRanges'
 
 const layout = useLayoutStore()
+const { page } = await useContactsPage()
 
 const content = computed(() => ({
-  ...contactsPage,
+  ...page.value.content,
   address: layout.contacts.address,
   metroLabel: layout.contacts.metro,
   phone: layout.contacts.phone,
@@ -19,15 +16,15 @@ const content = computed(() => ({
 
 const hours = computed(() => groupWeekRanges(layout.hours.week))
 
-const pageTitle = contactsPage.title
-
-const breadcrumbItems = [
+const breadcrumbItems = computed(() => [
   { label: 'Главная', to: '/' },
-  { label: pageTitle },
-]
+  { label: page.value.content.title },
+])
 
 useSeoMeta({
-  title: pageTitle,
+  title: () => page.value.seoTitle,
+  description: () => page.value.seoDescription,
+  ogImage: () => page.value.seoOgImage,
 })
 </script>
 
@@ -39,7 +36,7 @@ useSeoMeta({
       :content="content"
       :hours="hours"
       :departments="layout.contacts.departments"
-      :feedback="contactsFeedback"
+      :feedback="page.feedback"
     />
   </div>
 </template>

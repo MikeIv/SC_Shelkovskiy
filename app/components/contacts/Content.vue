@@ -125,7 +125,13 @@ const labels = {
 
     <aside :class="$style.aside" aria-label="Карта и помощь">
       <div :class="$style.mapWrap">
+        <ContactsMap
+          v-if="content.mapPlace"
+          :place="content.mapPlace"
+          :map-alt="content.mapAlt"
+        />
         <img
+          v-else
           :class="$style.map"
           :src="content.mapSrc"
           :alt="content.mapAlt"

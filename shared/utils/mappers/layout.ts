@@ -168,6 +168,10 @@ function mapTenantRange(item: unknown): LayoutHoursRange | undefined {
   return { label, open: times.open, close: times.close }
 }
 
+/**
+ * Отдел из админки («Код» / «Название» / «Добавочный»).
+ * Код (`id`|`code`) — уникальный slug: lease | ads | press.
+ */
 function mapDepartment(item: unknown, index: number): ContactsDepartment | undefined {
   const record = asRecord(item)
   if (!record) return undefined
@@ -178,9 +182,10 @@ function mapDepartment(item: unknown, index: number): ContactsDepartment | undef
   const phone = text(record.phone)
   const email = text(record.email)
   const ext = text(record.phone_ext) || text(record.ext) || text(record.extension)
+  const code = text(record.id) || text(record.code)
 
   return {
-    id: text(record.id) || `department-${index}`,
+    id: code || `department-${index}`,
     title,
     phone,
     phoneHref: phoneHref(phone),

@@ -4,11 +4,13 @@ import type { FeedListResponseDto } from '#shared/types/dto/feed'
 import type { GalleryAlbumResponseDto } from '#shared/types/dto/gallery'
 import type { HomeResponseDto } from '#shared/types/dto/home'
 import type { LayoutResponseDto } from '#shared/types/dto/layout'
+import type { PageResponseDto } from '#shared/types/dto/pages'
 import type { TenantsListResponseDto } from '#shared/types/dto/tenants'
 import type { EventDetailItem, EventsListData } from '#shared/types/events'
 import type { GalleryAlbum } from '#shared/types/gallery'
 import type { HomePageData } from '#shared/types/home'
 import type { LayoutData } from '#shared/types/layout'
+import type { PageData } from '#shared/types/page'
 import type {
   NewsCardItem,
   NewsDetailData,
@@ -23,6 +25,7 @@ import { mapGalleryAlbumDetail } from '#shared/utils/mappers/gallery'
 import { mapHome, mapHomeFeed } from '#shared/utils/mappers/home'
 import { mapLayout } from '#shared/utils/mappers/layout'
 import { mapFeedList, mapNewsDetail } from '#shared/utils/mappers/news'
+import { mapPage } from '#shared/utils/mappers/pages'
 import { mapTenantDetail, mapTenantsList } from '#shared/utils/mappers/tenants'
 import { isTenantCatalog } from '#shared/utils/tenantPath'
 import { ApiContractError, invalidPayload } from './errors'
@@ -139,6 +142,33 @@ function isLayoutResponseDto(value: unknown): value is LayoutResponseDto {
     isObject(record.apps) &&
     isObject(record.cta_max)
   )
+}
+
+/**
+ * Страница-конструктор `GET /pages/{slug}`: title, seo, blocks.
+ * Контакты: title/seo, `form`, `map_route`; адрес и отделы — из `/layout`.
+ */
+export const pageEndpoint: ApiEndpoint<SlugParams, PageData> = {
+  route: '/api/pages/:slug',
+  cache: { name: 'api-page', ttl: 300 },
+  label: 'Page',
+  params: ({ slug }) => ({ slug: readSlugParam(slug, 'Page slug is invalid') }),
+  key: ({ slug }) => `page:${slug}`,
+  path: ({ slug }) => `/pages/${encodeURIComponent(slug)}`,
+  load: async (request, params) => {
+    const dto = await request<PageResponseDto>(pageEndpoint.path(params))
+
+    if (!isPageResponseDto(dto)) throw invalidPayload('Page')
+
+    return mapPage(dto)
+  },
+}
+
+function isPageResponseDto(value: unknown): value is PageResponseDto {
+  if (!isItemPayload(value)) return false
+
+  const record = value.data as Record<string, unknown>
+  return typeof record.slug === 'string' && Array.isArray(record.blocks)
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {

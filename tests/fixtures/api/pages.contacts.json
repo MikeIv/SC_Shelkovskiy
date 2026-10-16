@@ -1,0 +1,32 @@
+{
+  "data": {
+    "slug": "contacts",
+    "title": "Контакты",
+    "blocks": [
+      {
+        "id": "form-feedback",
+        "type": "form",
+        "data": {
+          "kind": "feedback",
+          "title": "Нужна помощь?",
+          "description": "Обратитесь к нам"
+        }
+      },
+      {
+        "id": "map-route",
+        "type": "map_route",
+        "data": {
+          "modes": [],
+          "address": "Москва, Щёлковское шоссе, 75",
+          "coordinates": [37.80108, 55.810966]
+        }
+      }
+    ],
+    "seo": {
+      "title": "Контакты — ТРЦ «Щёлковский»",
+      "description": "Адрес, телефон и режим работы ТРЦ «Щёлковский»",
+      "keywords": null,
+      "og_image": null
+    }
+  }
+}

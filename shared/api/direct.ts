@@ -8,6 +8,7 @@ import {
   galleryAlbumEndpoint,
   homeEndpoint,
   layoutEndpoint,
+  pageEndpoint,
   tenantEndpoint,
   tenantsEndpoint,
 } from './endpoints'
@@ -44,6 +45,7 @@ function routePattern<Params, Data>(endpoint: ApiEndpoint<Params, Data>): RouteP
 const ROUTE_PATTERNS: readonly RoutePattern[] = [
   routePattern(homeEndpoint),
   routePattern(layoutEndpoint),
+  routePattern(pageEndpoint),
   routePattern(eventsEndpoint),
   routePattern(eventEndpoint),
   routePattern(feedEndpoint),

@@ -93,6 +93,7 @@ describe('resolveApiRoute', () => {
   it('находит индексные и детальные ручки', () => {
     expect(resolveApiRoute('/api/home')?.route).toBe('/api/home')
     expect(resolveApiRoute('/api/layout')?.route).toBe('/api/layout')
+    expect(resolveApiRoute('/api/pages/contacts')?.route).toBe('/api/pages/:slug')
     expect(resolveApiRoute('/api/events?page=2&per_page=5')?.route).toBe('/api/events')
     expect(resolveApiRoute('/api/events/concert')?.route).toBe('/api/events/:slug')
     expect(resolveApiRoute('/api/feed?type=smi')?.route).toBe('/api/feed')
