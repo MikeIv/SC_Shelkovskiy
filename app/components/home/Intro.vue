@@ -203,7 +203,12 @@ onUnmounted(() => {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: rem(750);
+
+  /* Кап по наименьшей видимой области: шапка наложена, хром снизу в кадре.
+     `min-height`, а не `height` — длинный заголовок растит блок, а не уходит
+     под `overflow: clip`. `vh` — фолбэк для браузеров без `svh`. */
+  min-height: min(#{rem(750)}, 100vh);
+  min-height: min(#{rem(750)}, 100svh);
   color: var(--fs-color-white);
   background-color: var(--fs-color-black);
   overflow: clip;
@@ -211,7 +216,8 @@ onUnmounted(() => {
   border-end-end-radius: var(--fs-radius-3xl);
 
   @include from-desktop {
-    height: rem(900);
+    min-height: min(#{rem(900)}, 100vh);
+    min-height: min(#{rem(900)}, 100svh);
     border-end-start-radius: var(--fs-radius-4xl);
     border-end-end-radius: var(--fs-radius-4xl);
   }
