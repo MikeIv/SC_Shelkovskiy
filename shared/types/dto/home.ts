@@ -42,15 +42,27 @@ export type HomeGalleryItemDto = {
 }
 
 /**
+ * Плитка `data.categories[]`. В админке у категории две картинки под макет блока
+ * (прямоугольник и круг) и ссылка на отфильтрованный каталог.
+ */
+export type HomeCategoryDto = {
+  slug: string | null
+  title: string | null
+  image_left: string | null
+  image_right: string | null
+  url: string | null
+}
+
+/**
  * Тело `GET /home`.
- * `brands[]` и `categories[]` в OpenAPI без схемы элемента и на стенде пустые.
+ * `brands[]` в OpenAPI без схемы элемента и на стенде пуст.
  */
 export type HomeResponseDto = {
   data: {
     slides: HomeSlideDto[]
     feed: HomeFeedItemDto[]
     brands: unknown[]
-    categories: unknown[]
+    categories: HomeCategoryDto[]
     gallery: HomeGalleryItemDto[]
     video_url: string | null
   }

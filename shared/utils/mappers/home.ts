@@ -38,18 +38,44 @@ export function mapHomeFeed(items: readonly unknown[]): NewsCardItem[] {
 }
 
 /**
- * Схемы элементов `brands[]` и `categories[]` в OpenAPI нет, на стенде массивы пустые.
- * Поля макета (`shape`, пара картинок) в контракте не появляются — нераспознанный
- * элемент пропускается, и страница остаётся на моке.
+ * Схемы элементов `brands[]` в OpenAPI нет, на стенде массив пуст. Поля макета
+ * (`shape`, направление ленты) в контракте не появляются — нераспознанный элемент
+ * пропускается, и раздел остаётся на моке.
  */
 export function mapHomeBrands(items: readonly unknown[]): HomePageData['brands'] {
   void items
   return []
 }
 
+/**
+ * Плитки категорий: `slug`, `title` и пара картинок (`image_left` / `image_right`) —
+ * в админке их две под два кадра блока. Плитка без slug или без одной из картинок
+ * ломала бы кадр, поэтому пропускается: остальные показываются из API.
+ */
 export function mapHomeCategories(items: readonly unknown[]): HomePageData['categories'] {
-  void items
-  return []
+  return items.flatMap((item) => {
+    const record = asRecord(item)
+    if (!record) return []
+
+    const id = text(record.slug)
+    const leftImageSrc = text(record.image_left)
+    const rightImageSrc = text(record.image_right)
+    if (!id || !leftImageSrc || !rightImageSrc) return []
+
+    const title = text(record.title)
+    const imageAlt = resolveAlt(title)
+
+    return [
+      {
+        id,
+        title,
+        leftImageSrc,
+        leftImageAlt: imageAlt,
+        rightImageSrc,
+        rightImageAlt: imageAlt,
+      },
+    ]
+  })
 }
 
 export function mapHomeGallery(items: readonly unknown[]): HomeGalleryAlbum[] {

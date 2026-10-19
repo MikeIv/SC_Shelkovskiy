@@ -219,12 +219,67 @@ describe('mapHomeGallery', () => {
   })
 })
 
-describe('mapHomeBrands / mapHomeCategories', () => {
+describe('mapHomeBrands', () => {
   it('не собирает вёрстку из нераспознанных элементов', () => {
     const unknown = [{ name: 'EKONIKA', logo: '/storage/logo.png' }]
 
     expect(mapHomeBrands(unknown)).toEqual([])
     expect(mapHomeBrands([])).toEqual([])
-    expect(mapHomeCategories(unknown)).toEqual([])
+  })
+})
+
+describe('mapHomeCategories', () => {
+  const category = {
+    slug: 'zhenskaya-odezhda',
+    title: 'Женская одежда',
+    image_left: 'https://stand.invalid/storage/categories/women-left.jpg',
+    image_right: 'https://stand.invalid/storage/categories/women-right.jpg',
+    url: '/shops?category=zhenskaya-odezhda',
+  }
+
+  it('маппит плитку в UI-тип: пара картинок и alt из title', () => {
+    expect(mapHomeCategories([category])).toEqual([
+      {
+        id: 'zhenskaya-odezhda',
+        title: 'Женская одежда',
+        leftImageSrc: 'https://stand.invalid/storage/categories/women-left.jpg',
+        leftImageAlt: 'Женская одежда',
+        rightImageSrc: 'https://stand.invalid/storage/categories/women-right.jpg',
+        rightImageAlt: 'Женская одежда',
+      },
+    ])
+  })
+
+  it('обрезает пробелы и не тащит url в UI-тип', () => {
+    const [tile] = mapHomeCategories([
+      { ...category, title: '  Женская одежда  ', image_left: '  https://stand.invalid/a.jpg  ' },
+    ])
+
+    expect(tile).toMatchObject({
+      title: 'Женская одежда',
+      leftImageSrc: 'https://stand.invalid/a.jpg',
+    })
+    expect(tile).not.toHaveProperty('url')
+  })
+
+  it('пропускает плитку без slug или без одной из картинок', () => {
+    const tiles = mapHomeCategories([
+      { ...category, slug: '   ' },
+      { ...category, slug: 'no-right', image_right: null },
+      { ...category, slug: 'no-left', image_left: '   ' },
+      category,
+    ])
+
+    expect(tiles.map((tile) => tile.id)).toEqual(['zhenskaya-odezhda'])
+  })
+
+  it('без title плитка остаётся, alt декоративный', () => {
+    const [tile] = mapHomeCategories([{ ...category, title: null }])
+
+    expect(tile).toMatchObject({ title: '', leftImageAlt: '', rightImageAlt: '' })
+  })
+
+  it('пустой список — пустой результат', () => {
+    expect(mapHomeCategories([])).toEqual([])
   })
 })
