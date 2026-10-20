@@ -1,11 +1,11 @@
 import type { PageResponseDto } from '#shared/types/dto/pages'
-import type { PageData, PageFormBlock, PageMapRoute } from '#shared/types/page'
+import type { PageData, PageDocument, PageFormBlock, PageMapRoute } from '#shared/types/page'
 import { asRecord, text } from '#shared/utils/apiRecord'
 import { mapApiSeo } from '#shared/utils/mapApiSeo'
 
 const FORM_KINDS = ['lease', 'ads', 'feedback'] as const
 
-/** `GET /pages/{slug}` → UI: title, seo, form и map_route. */
+/** `GET /pages/{slug}` → UI: title, seo, form, map_route и документы. */
 export function mapPage(dto: PageResponseDto): PageData {
   const { slug, title, blocks, seo } = dto.data
 
@@ -24,6 +24,7 @@ export function mapPage(dto: PageResponseDto): PageData {
     seo: mapApiSeo(seo),
     form,
     mapRoute,
+    documents: mapDocuments(blocks),
   }
 }
 
@@ -81,4 +82,47 @@ function asCoord(value: unknown): number | null {
 
 function isFormKind(value: string): value is PageFormBlock['kind'] {
   return (FORM_KINDS as readonly string[]).includes(value)
+}
+
+/** Блоки `documents` в порядке вывода. Ссылки из `text` не подмешиваем. */
+function mapDocuments(blocks: readonly unknown[]): PageDocument[] {
+  const documents: PageDocument[] = []
+
+  for (const item of blocks) {
+    const record = asRecord(item)
+    if (!record || text(record.type) !== 'documents') continue
+
+    const data = asRecord(record.data)
+    if (!data) continue
+
+    documents.push(...mapDocumentItems(data.items))
+  }
+
+  return documents
+}
+
+function mapDocumentItems(value: unknown): PageDocument[] {
+  if (!Array.isArray(value)) return []
+
+  const items: PageDocument[] = []
+  for (const item of value) {
+    const record = asRecord(item)
+    if (!record) continue
+
+    const title = text(record.title)
+    const url = fileUrl(record.url)
+    if (!title || !url) continue
+
+    items.push({ title, url })
+  }
+
+  return items
+}
+
+function fileUrl(value: unknown): string {
+  const url = text(value)
+  if (!url || url === '#') return ''
+  if (url.startsWith('/') && !url.startsWith('//')) return url
+  if (url.startsWith('https://') || url.startsWith('http://')) return url
+  return ''
 }

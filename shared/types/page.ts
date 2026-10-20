@@ -16,6 +16,12 @@ export type PageMapRoute = {
   coordinates: [number, number]
 }
 
+/** Файл из блока `documents` страницы-конструктора. */
+export type PageDocument = {
+  title: string
+  url: string
+}
+
 /**
  * Страница CMS: заголовок, SEO и то, что уже читают готовые экраны.
  * Остальные типы блоков появятся вместе с конструктором страниц.
@@ -26,4 +32,5 @@ export type PageData = {
   seo: ApiSeo | null
   form: PageFormBlock | null
   mapRoute: PageMapRoute | null
+  documents: PageDocument[]
 }

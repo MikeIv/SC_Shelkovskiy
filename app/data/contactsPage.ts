@@ -34,6 +34,7 @@ export const contactsPageApi: PageData = {
   seo: null,
   form: null,
   mapRoute: null,
+  documents: [],
 }
 
 export const contactsFeedback = {

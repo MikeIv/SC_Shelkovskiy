@@ -2,6 +2,6 @@
 export interface RulesDocument {
   readonly id: string
   readonly title: string
-  /** Ссылка на файл. Заглушка «#» до появления документов. */
+  /** Абсолютный адрес файла. */
   readonly href: string
 }

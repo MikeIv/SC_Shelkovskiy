@@ -19,6 +19,7 @@ describe('mapPage', () => {
       seo: null,
       form: null,
       mapRoute: null,
+      documents: [],
     })
   })
 
@@ -81,6 +82,59 @@ describe('mapPage', () => {
         address: 'Москва, Щёлковское шоссе, 75',
         coordinates: [37.80108, 55.810966],
       },
+      documents: [],
     })
+  })
+
+  it('берёт items блока documents и не читает ссылки из text', () => {
+    const directory = mapPage({
+      data: {
+        ...baseDto.data,
+        slug: 'rules',
+        blocks: [
+          {
+            id: 'docs-0',
+            type: 'documents',
+            data: {
+              title: 'Правила',
+              items: [
+                { title: ' Посещение ', url: 'https://cdn.example/visit.pdf' },
+                { title: '', url: 'https://cdn.example/empty.pdf' },
+                { title: 'Без файла', url: '#' },
+              ],
+            },
+          },
+          {
+            id: 'text-0',
+            type: 'text',
+            data: {
+              html: '<a href="https://cdn.example/old.pdf">Старая ссылка</a>',
+            },
+          },
+        ],
+      },
+    })
+
+    expect(directory.documents).toEqual([
+      { title: 'Посещение', url: 'https://cdn.example/visit.pdf' },
+    ])
+
+    const fromText = mapPage({
+      data: {
+        ...baseDto.data,
+        slug: 'rules',
+        blocks: [
+          {
+            id: 'text-0',
+            type: 'text',
+            data: {
+              html: '<p><a title="x" href="https://cdn.example/a.pdf" target="_blank">Правила &laquo;А&raquo;</a></p>',
+            },
+          },
+        ],
+      },
+    })
+
+    expect(fromText.documents).toEqual([])
   })
 })

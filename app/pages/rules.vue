@@ -1,20 +1,23 @@
 <script setup lang="ts">
-import { rulesDocuments, rulesPageTitle } from '~/data/rulesPage'
+const { page } = await useRulesPage()
 
-const pageTitle = rulesPageTitle
-
-const breadcrumbItems = [
+const breadcrumbItems = computed(() => [
   { label: 'Главная', to: '/' },
-  { label: pageTitle },
-]
+  { label: page.value.title },
+])
+
+useSeoMeta({
+  description: () => page.value.seoDescription,
+  ogImage: () => page.value.seoOgImage,
+})
 </script>
 
 <template>
-  <LayoutInnerPage :title="pageTitle">
+  <LayoutInnerPage :title="page.title">
     <template #lead>
       <UiBreadcrumbs :items="breadcrumbItems" />
     </template>
 
-    <RulesList :items="rulesDocuments" />
+    <RulesList :items="page.documents" />
   </LayoutInnerPage>
 </template>

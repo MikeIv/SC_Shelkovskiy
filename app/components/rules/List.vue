@@ -18,6 +18,8 @@ defineProps<{
       <a
         :class="$style.link"
         :href="item.href"
+        target="_blank"
+        rel="noopener noreferrer"
       >
         <UIcon
           name="local:file-dock"
