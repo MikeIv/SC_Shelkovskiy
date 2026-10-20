@@ -8,14 +8,16 @@ const rulesPageTitle = 'Правила'
 export type RulesPageView = {
   title: string
   documents: RulesDocument[]
+  seoTitle: string
   seoDescription: string | undefined
+  seoKeywords: string | undefined
   seoOgImage: string | undefined
 }
 
 /**
  * Страница «Правила»: `GET /api/pages/rules`.
- * Файлы — из блока `documents`. Мок и ярлык «Демо-данные» не используем:
- * пустой или ошибочный ответ остаётся пустым списком.
+ * Файлы — из блока `documents`. Мок не подставляем: `href: '#'` на месте живых ссылок
+ * хуже пустого списка, поэтому пустой и ошибочный ответ показывает сама страница.
  */
 export function useRulesPage() {
   const result = useApiFetch<ApiEnvelope<PageData>>('/api/pages/rules')
@@ -40,7 +42,9 @@ function resolveRulesPage(api: PageData | undefined): RulesPageView {
       title: item.title,
       href: item.url,
     })),
+    seoTitle: api?.seo?.title || title,
     seoDescription: api?.seo?.description || undefined,
+    seoKeywords: api?.seo?.keywords || undefined,
     seoOgImage: api?.seo?.ogImage || undefined,
   }
 }

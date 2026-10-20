@@ -1,6 +1,11 @@
 <script setup lang="ts">
 const props = defineProps<{
   title?: string
+  /**
+   * `seoTitle` — `<title>` из CMS, когда он отличается от `<h1>`. H1 остаётся `title`:
+   * заголовок в шапке страницы рисуется из контента, а не из SEO-поля.
+   */
+  seoTitle?: string
 }>()
 
 /**
@@ -9,7 +14,7 @@ const props = defineProps<{
  * `useSeoMeta` → тега `<title>` не было вовсе).
  */
 if (props.title) {
-  useSeoMeta({ title: () => props.title })
+  useSeoMeta({ title: () => props.seoTitle || props.title })
 }
 </script>
 
