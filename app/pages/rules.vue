@@ -20,9 +20,18 @@ async function retry() {
 
 useSeoMeta({
   description: () => page.value.seoDescription,
-  keywords: () => page.value.seoKeywords,
   ogImage: () => page.value.seoOgImage,
 })
+
+/**
+ * `keywords` нет в `MetaFlat`/`UseSeoMetaInput` unhead 3, поэтому тег ставим через
+ * `useHead`: ключ известен схеме (`MetaNames`), ограничение только в типах `useSeoMeta`.
+ */
+useHead(() => ({
+  meta: page.value.seoKeywords
+    ? [{ name: 'keywords', content: page.value.seoKeywords }]
+    : [],
+}))
 </script>
 
 <template>
