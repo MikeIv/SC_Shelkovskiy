@@ -12,7 +12,7 @@ function contacts(name: string, phone: string, email: string): VacancyContacts {
   }
 }
 
-/** Временный контент до контракта API (макет Figma 580:31524). */
+/** Мок-фолбэк страницы «Вакансии», пока `GET /api/vacancies` не ответил (макет Figma 580:31524). */
 export const vacanciesItems: readonly VacancyItem[] = [
   {
     id: 'maag-cashier',

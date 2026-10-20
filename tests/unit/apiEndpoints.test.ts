@@ -6,6 +6,7 @@ import {
   galleryAlbumEndpoint,
   tenantEndpoint,
   tenantsEndpoint,
+  vacanciesEndpoint,
 } from '#shared/api/endpoints'
 import { ApiContractError } from '#shared/api/errors'
 
@@ -100,6 +101,14 @@ describe('контракты ручек: параметры и путь у Larav
     expect(galleryAlbumEndpoint.path(params)).toBe('/gallery/stars-time-party-2026')
     expect(galleryAlbumEndpoint.key(params)).toBe('gallery:stars-time-party-2026')
   })
+
+  it('вакансии: без параметров, путь у Laravel и ключ кэша', () => {
+    const params = vacanciesEndpoint.params({ query: {} })
+
+    expect(params).toEqual({})
+    expect(vacanciesEndpoint.path(params)).toBe('/vacancies')
+    expect(vacanciesEndpoint.key(params)).toBe('vacancies')
+  })
 })
 
 describe('контракты ручек: загрузка и маппинг', () => {
@@ -158,5 +167,33 @@ describe('контракты ручек: загрузка и маппинг', ()
     await expect(galleryAlbumEndpoint.load(request, { slug: 'party' })).rejects.toMatchObject({
       statusCode: 502,
     })
+  })
+
+  it('вакансии: маппит карточки и собирает ссылки контактов', async () => {
+    const { request, calls } = fakeRequest(() => ({
+      data: [
+        {
+          slug: 'svarschik',
+          title: 'Сварщик',
+          contacts: { name: null, phone: '+7 919 769-16-51', email: null },
+          sections: [{ title: 'Условия:', items: ['Официальное трудоустройство'] }],
+        },
+      ],
+    }))
+
+    const items = await vacanciesEndpoint.load(request, {})
+
+    expect(calls[0]?.path).toBe('/vacancies')
+    expect(items[0]).toMatchObject({
+      id: 'svarschik',
+      title: 'Сварщик',
+      contacts: { phoneHref: 'tel:+79197691651' },
+    })
+  })
+
+  it('вакансии: невалидное тело — 502', async () => {
+    const { request } = fakeRequest(() => ({ data: 'oops' }))
+
+    await expect(vacanciesEndpoint.load(request, {})).rejects.toMatchObject({ statusCode: 502 })
   })
 })

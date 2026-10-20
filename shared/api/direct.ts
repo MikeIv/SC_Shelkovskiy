@@ -11,6 +11,7 @@ import {
   pageEndpoint,
   tenantEndpoint,
   tenantsEndpoint,
+  vacanciesEndpoint,
 } from './endpoints'
 import { ApiContractError } from './errors'
 
@@ -53,6 +54,7 @@ const ROUTE_PATTERNS: readonly RoutePattern[] = [
   routePattern(galleryAlbumEndpoint),
   routePattern(tenantsEndpoint),
   routePattern(tenantEndpoint),
+  routePattern(vacanciesEndpoint),
 ]
 
 /** Путь `/api/*` с query — как его собирает `useApiFetch`; абсолютный URL тоже принимается. */

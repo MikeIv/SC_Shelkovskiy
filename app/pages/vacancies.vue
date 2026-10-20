@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { vacanciesItems, vacanciesPageTitle } from '~/data/vacanciesPage'
+import { vacanciesPageTitle } from '~/data/vacanciesPage'
+
+const { items } = await useVacancies()
 
 const pageTitle = vacanciesPageTitle
 
@@ -7,6 +9,11 @@ const breadcrumbItems = [
   { label: 'Главная', to: '/' },
   { label: pageTitle },
 ]
+
+/** Текст пустого ответа держим в странице: ручка отдаёт только список. */
+const labels = {
+  empty: 'Вакансии пока не опубликованы.',
+} as const
 </script>
 
 <template>
@@ -27,7 +34,17 @@ const breadcrumbItems = [
           <UiBreadcrumbs :items="breadcrumbItems" />
         </template>
 
-        <VacanciesList :items="vacanciesItems" />
+        <p
+          v-if="!items.length"
+          :class="$style.note"
+        >
+          {{ labels.empty }}
+        </p>
+
+        <VacanciesList
+          v-else
+          :items="items"
+        />
       </LayoutInnerPage>
     </div>
   </div>
@@ -65,5 +82,11 @@ const breadcrumbItems = [
 .page {
   position: relative;
   z-index: z('default');
+}
+
+.note {
+  margin: 0;
+  @include fs-text-lg;
+  color: var(--fs-color-gray);
 }
 </style>

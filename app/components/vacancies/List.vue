@@ -108,10 +108,21 @@ function isOpen(id: string) {
 
             <div :class="$style.contactsBody">
               <p :class="$style.contactsTitle">{{ labels.contacts }}</p>
-              <p :class="$style.contactsName">{{ item.contacts.name }}</p>
+              <p
+                v-if="item.contacts.name"
+                :class="$style.contactsName"
+              >
+                {{ item.contacts.name }}
+              </p>
 
-              <div :class="$style.contactsRows">
-                <div :class="$style.contactsRow">
+              <div
+                v-if="item.contacts.phone || item.contacts.email"
+                :class="$style.contactsRows"
+              >
+                <div
+                  v-if="item.contacts.phone"
+                  :class="$style.contactsRow"
+                >
                   <span :class="$style.contactsLabel">
                     <UIcon
                       name="local:phone"
@@ -127,7 +138,10 @@ function isOpen(id: string) {
                   </a>
                 </div>
 
-                <div :class="$style.contactsRow">
+                <div
+                  v-if="item.contacts.email"
+                  :class="$style.contactsRow"
+                >
                   <span :class="$style.contactsLabel">
                     <UIcon
                       name="local:message"
@@ -341,7 +355,8 @@ function isOpen(id: string) {
 .contactsIcon {
   width: rem(24);
   height: rem(24);
-  color: var(--fs-color-black);
+  /* Иконка в тон подписи: чёрной она перетягивает внимание с текста строки. */
+  color: var(--fs-color-gray);
 }
 
 .contactsValue {

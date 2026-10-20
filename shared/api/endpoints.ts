@@ -6,6 +6,7 @@ import type { HomeResponseDto } from '#shared/types/dto/home'
 import type { LayoutResponseDto } from '#shared/types/dto/layout'
 import type { PageResponseDto } from '#shared/types/dto/pages'
 import type { TenantsListResponseDto } from '#shared/types/dto/tenants'
+import type { VacanciesResponseDto } from '#shared/types/dto/vacancies'
 import type { EventDetailItem, EventsListData } from '#shared/types/events'
 import type { GalleryAlbum } from '#shared/types/gallery'
 import type { HomePageData } from '#shared/types/home'
@@ -19,6 +20,7 @@ import type {
   NewsListData,
 } from '#shared/types/news'
 import type { TenantCatalog, TenantDetail } from '#shared/types/tenantDetail'
+import type { VacancyItem } from '#shared/types/vacancies'
 import { isNewsFilterTab, newsRelatedKind } from '#shared/utils/newsTag'
 import { mapEventDetail, mapEventsList } from '#shared/utils/mappers/events'
 import { mapGalleryAlbumDetail } from '#shared/utils/mappers/gallery'
@@ -27,6 +29,7 @@ import { mapLayout } from '#shared/utils/mappers/layout'
 import { mapFeedList, mapNewsDetail } from '#shared/utils/mappers/news'
 import { mapPage } from '#shared/utils/mappers/pages'
 import { mapTenantDetail, mapTenantsList } from '#shared/utils/mappers/tenants'
+import { mapVacancies } from '#shared/utils/mappers/vacancies'
 import { isTenantCatalog } from '#shared/utils/tenantPath'
 import { ApiContractError, invalidPayload } from './errors'
 import { readNumberParam, readSlugParam } from './params'
@@ -419,6 +422,23 @@ async function loadTenantNews(request: ApiRequest, slug: string): Promise<NewsCa
   } catch {
     return []
   }
+}
+
+/** Вакансии: `GET /vacancies` — все открытые записи, без пагинации. */
+export const vacanciesEndpoint: ApiEndpoint<NoParams, VacancyItem[]> = {
+  route: '/api/vacancies',
+  cache: { name: 'api-vacancies', ttl: 300 },
+  label: 'Vacancies',
+  params: () => ({}),
+  key: () => 'vacancies',
+  path: () => '/vacancies',
+  load: async (request) => {
+    const dto = await request<VacanciesResponseDto>('/vacancies')
+
+    if (!isListPayload(dto)) throw invalidPayload('Vacancies')
+
+    return mapVacancies(dto.data)
+  },
 }
 
 /** Пагинация Laravel: порядок ключей фиксирован, чтобы URL был предсказуем в тестах и кэше. */

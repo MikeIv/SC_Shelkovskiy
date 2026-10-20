@@ -101,6 +101,7 @@ describe('resolveApiRoute', () => {
     expect(resolveApiRoute('/api/gallery/stars-time-party-2026')?.route).toBe('/api/gallery/:slug')
     expect(resolveApiRoute('/api/tenants?type=shops')?.route).toBe('/api/tenants')
     expect(resolveApiRoute('/api/tenants/test-shop')?.route).toBe('/api/tenants/:slug')
+    expect(resolveApiRoute('/api/vacancies')?.route).toBe('/api/vacancies')
   })
 
   it('принимает абсолютный URL и не путает лишний сегмент', () => {

@@ -139,6 +139,10 @@ const server = createServer((req, res) => {
     return json(res, 200, fixture('tenant.json'))
   }
 
+  if (pathname === '/api/v1/vacancies') {
+    return json(res, 200, fixture('vacancies.json'))
+  }
+
   if (pathname === '/api/v1/feed') {
     if (url.searchParams.get('tenant')) return json(res, 200, fixture('tenant.feed.json'))
     return json(res, 200, feedListFixture(url))
