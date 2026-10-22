@@ -70,8 +70,9 @@ const patternSide = computed<'left' | 'right' | null>(() => {
   padding-bottom: var(--fs-space-section);
 }
 
-/* Орнамент разделов: Mob — крупный, смещён влево (Figma −194 / 374);
-   tablet+ — по центру вьюпорта. Кадр клипует выход за край. */
+/* Орнамент разделов: Mob — крупный, смещён к краю (Figma −194 / 374);
+   tablet+ на списках — по центру вьюпорта. Кадр клипует выход за край.
+   Карточка (data-side=right): центр узора на правом крае, Desk 1001×999. */
 .patternFrame {
   position: absolute;
   top: rem(-80);
@@ -121,9 +122,14 @@ const patternSide = computed<'left' | 'right' | null>(() => {
   left: auto;
 
   @include from-tablet {
-    right: auto;
-    left: 50%;
-    transform: translateX(-50%);
+    right: 0;
+    left: auto;
+    transform: translateX(50%);
+  }
+
+  @include from-desktop {
+    width: rem(1001);
+    height: rem(999);
   }
 }
 
