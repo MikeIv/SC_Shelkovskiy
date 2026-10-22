@@ -11,6 +11,7 @@ import {
   isPositiveAmount,
   isPositiveAmountChars,
   maskPersonName,
+  maskPhone,
   parsePositiveAmount,
 } from '#shared/utils/formFields'
 import { isEmail } from '#shared/utils/isEmail'
@@ -194,7 +195,7 @@ function onFileChange(event: Event) {
 }
 
 function setFullName(value: string): void {
-  form.fullName = maskPersonName(value)
+  applyMask('fullName', maskPersonName(value))
 }
 
 function fullNameMessage(value: string, isTouched: boolean): string {
@@ -211,6 +212,30 @@ function fullNameMessage(value: string, isTouched: boolean): string {
 function blockFullNameDigit(event: KeyboardEvent): void {
   if (event.ctrlKey || event.metaKey || event.altKey) return
   if (/^\p{Nd}$/u.test(event.key)) event.preventDefault()
+}
+
+function setPhone(value: string): void {
+  applyMask('phone', maskPhone(value))
+}
+
+function blockPhoneKey(event: KeyboardEvent): void {
+  if (event.ctrlKey || event.metaKey || event.altKey) return
+  if (event.key.length === 1 && !/^\d$/u.test(event.key)) event.preventDefault()
+}
+
+/**
+ * Насыщенная маска возвращает то же значение, что уже в форме: модель не меняется,
+ * Vue поле не перерисовывает, и в нём остаётся сырой ввод (лишние цифры, символы).
+ * Поэтому после маски приводим DOM к модели руками.
+ */
+function applyMask(field: 'fullName' | 'phone', value: string): void {
+  form[field] = value
+
+  const input = formEl.value?.querySelector<HTMLInputElement>(`input[name="${field}"]`)
+
+  if (input && input.value !== value) {
+    input.value = value
+  }
 }
 
 function phoneMessage(value: string, isTouched: boolean): string {
@@ -403,7 +428,7 @@ async function onSubmit(): Promise<void> {
 
             <div :class="$style.row">
               <UiInput
-                v-model="form.phone"
+                :model-value="form.phone"
                 type="tel"
                 name="phone"
                 autocomplete="tel"
@@ -412,6 +437,8 @@ async function onSubmit(): Promise<void> {
                 label="Телефон"
                 :error="errors.phone"
                 required
+                @update:model-value="setPhone"
+                @keydown="blockPhoneKey"
                 @blur="touch('phone')"
               />
               <UiInput

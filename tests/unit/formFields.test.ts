@@ -11,6 +11,7 @@ import {
   isPositiveAmount,
   isPositiveAmountChars,
   maskPersonName,
+  maskPhone,
   parsePositiveAmount,
 } from '#shared/utils/formFields'
 
@@ -69,6 +70,41 @@ describe('isPhone', () => {
     expect(isPhone('499abc')).toBe(false)
     expect(isPhone('+7 499')).toBe(false)
     expect(isPhone('99912345678')).toBe(false)
+  })
+})
+
+describe('maskPhone', () => {
+  it('форматирует номер через +7 по мере ввода', () => {
+    expect(maskPhone('9')).toBe('+7 (9')
+    expect(maskPhone('999')).toBe('+7 (999')
+    expect(maskPhone('9996')).toBe('+7 (999) 6')
+    expect(maskPhone('9996778')).toBe('+7 (999) 677-8')
+    expect(maskPhone('9996778888')).toBe('+7 (999) 677-88-88')
+  })
+
+  it('считает ведущие 8 и 7 кодом страны', () => {
+    expect(maskPhone('89996778888')).toBe('+7 (999) 677-88-88')
+    expect(maskPhone('79996778888')).toBe('+7 (999) 677-88-88')
+    expect(maskPhone('+7 (999) 677-88-88')).toBe('+7 (999) 677-88-88')
+  })
+
+  it('отбрасывает буквы и лишние цифры', () => {
+    expect(maskPhone('')).toBe('')
+    expect(maskPhone('abc')).toBe('')
+    expect(maskPhone('9a9b9')).toBe('+7 (999')
+    expect(maskPhone('999677888812')).toBe('+7 (999) 677-88-88')
+  })
+
+  it('верный номер проходит проверку, неполный — нет', () => {
+    expect(isPhone(maskPhone('9996778888'))).toBe(true)
+    expect(isPhone(maskPhone('999677'))).toBe(false)
+  })
+
+  it('идемпотентна: лишние цифры сверх 10 не меняют значение', () => {
+    const masked = maskPhone('89996778888')
+
+    expect(maskPhone(masked)).toBe(masked)
+    expect(maskPhone(`${masked}9`)).toBe(masked)
   })
 })
 

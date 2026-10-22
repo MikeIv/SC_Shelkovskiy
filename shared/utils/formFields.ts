@@ -61,6 +61,22 @@ export function isPhone(value: string): boolean {
   return digits.length === 11 && (digits.startsWith('7') || digits.startsWith('8'))
 }
 
+/**
+ * Маска российского номера «+7 (999) 123-45-67»: всё, кроме цифр, отбрасывается,
+ * ведущие 8/7 считаются кодом страны, номер обрезается до 10 цифр.
+ */
+export function maskPhone(value: string): string {
+  const digits = value.replace(/\D/g, '')
+  const national = (/^[78]/u.test(digits) ? digits.slice(1) : digits).slice(0, 10)
+
+  if (!national) return ''
+
+  const area = national.slice(0, 3)
+  const tail = [national.slice(3, 6), national.slice(6, 8), national.slice(8, 10)].filter(Boolean)
+
+  return tail.length > 0 ? `+7 (${area}) ${tail.join('-')}` : `+7 (${area}`
+}
+
 const hostLabel = /^[\p{L}\d](?:[\p{L}\d-]*[\p{L}\d])?$/u
 
 /** http(s)-адрес или домен с точкой, без пробелов. */
