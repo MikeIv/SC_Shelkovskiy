@@ -121,6 +121,7 @@ const consentPolicies = ref(false)
 const consentMailing = ref(false)
 const fileName = ref('')
 const fileInput = ref<HTMLInputElement | null>(null)
+const formEl = ref<HTMLFormElement | null>(null)
 
 const presentationTo = computed(() =>
   presentationHref && presentationHref !== '#' ? presentationHref : undefined,
@@ -129,15 +130,14 @@ const presentationTo = computed(() =>
 const requiredConsentsOk = computed(
   () => consentPersonal.value && consentPolicies.value,
 )
+const consentError = ref('')
+
+watch(requiredConsentsOk, (ok) => {
+  if (ok) consentError.value = ''
+})
 
 const activeFields = computed(() =>
   activeTab.value === 'ads' ? adsFields : leaseFields,
-)
-
-const canSubmit = computed(
-  () =>
-    requiredConsentsOk.value
-    && activeFields.value.every((field) => fieldMessage(field, true) === ''),
 )
 
 for (const field of leaseFields) {
@@ -327,9 +327,15 @@ function validate(): boolean {
   return activeFields.value.every((field) => errors[field] === '')
 }
 
-function onSubmit() {
-  // Guard на Enter в поле при disabled submit в отдельных браузерах.
-  if (!validate() || !requiredConsentsOk.value) {
+async function onSubmit(): Promise<void> {
+  const fieldsOk = validate()
+
+  consentError.value = requiredConsentsOk.value ? '' : requiredError
+
+  if (!fieldsOk || consentError.value) {
+    // Поля получают aria-invalid только после рендера — ждём кадр и уводим фокус к первой ошибке.
+    await nextTick()
+    formEl.value?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus()
     return
   }
 
@@ -366,6 +372,7 @@ function onSubmit() {
 
     <div :class="$style.layout">
       <form
+        ref="formEl"
         :class="$style.form"
         novalidate
         @submit.prevent="onSubmit"
@@ -627,9 +634,10 @@ function onSubmit() {
             v-model:policies="consentPolicies"
             v-model:mailing="consentMailing"
             :privacy-href="privacyHref"
+            :error="consentError"
           />
 
-          <UiButton type="submit" :disabled="!canSubmit">
+          <UiButton type="submit">
             Отправить
           </UiButton>
         </div>
