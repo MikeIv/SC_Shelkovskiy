@@ -12,21 +12,29 @@ export function isPersonName(value: string): boolean {
   return trimmed.length > 0 && isPersonNameChars(trimmed) && /\p{L}/u.test(trimmed)
 }
 
-/** ФИО: минимум две части через пробел, в каждой не меньше двух букв. */
+/**
+ * ФИО: минимум две части через пробел, в каждой есть буква,
+ * хотя бы в одной — две буквы (инициалы допускаются).
+ */
 export function isFullName(value: string): boolean {
   const trimmed = value.trim()
 
   if (!isPersonNameChars(trimmed)) return false
 
   const parts = trimmed.split(/\s+/).filter(Boolean)
+  const letterCounts = parts.map((part) => part.match(/\p{L}/gu)?.length ?? 0)
 
-  return parts.length >= 2 && parts.every((part) => (part.match(/\p{L}/gu)?.length ?? 0) >= 2)
+  if (parts.length < 2) return false
+  if (letterCounts.some((count) => count === 0)) return false
+
+  return letterCounts.some((count) => count >= 2)
 }
 
-/** Цифры отбрасываются, первая буква становится заглавной. */
+/** Лишние символы отбрасываются, пробелы схлопываются, первая буква становится заглавной. */
 export function maskPersonName(value: string): string {
   return value
-    .replace(/\p{Nd}/gu, '')
+    .replace(/[^\p{L}\s.'’-]/gu, '')
+    .replace(/\s+/gu, ' ')
     .replace(/^\p{L}/u, (letter) => letter.toLocaleUpperCase('ru-RU'))
 }
 
@@ -53,6 +61,8 @@ export function isPhone(value: string): boolean {
   return digits.length === 11 && (digits.startsWith('7') || digits.startsWith('8'))
 }
 
+const hostLabel = /^[\p{L}\d](?:[\p{L}\d-]*[\p{L}\d])?$/u
+
 /** http(s)-адрес или домен с точкой, без пробелов. */
 export function isHttpUrl(value: string): boolean {
   const trimmed = value.trim()
@@ -67,9 +77,12 @@ export function isHttpUrl(value: string): boolean {
     if (url.protocol !== 'http:' && url.protocol !== 'https:') return false
     if (url.username || url.password) return false
 
-    const host = url.hostname
+    const labels = url.hostname.split('.')
 
-    return host.includes('.') && /\p{L}/u.test(host) && /^[\p{L}\d.-]+$/u.test(host)
+    if (labels.length < 2) return false
+    if (!/\p{L}/u.test(url.hostname)) return false
+
+    return labels.every((label) => hostLabel.test(label))
   } catch {
     return false
   }

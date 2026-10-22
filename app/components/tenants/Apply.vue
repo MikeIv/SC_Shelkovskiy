@@ -5,7 +5,6 @@ import {
   isHttpUrl,
   isNonNegativeInt,
   isNonNegativeIntChars,
-  isPersonName,
   isPersonNameChars,
   isPhone,
   isPhoneChars,
@@ -81,7 +80,6 @@ const form = reactive({
 })
 const errors = reactive({
   fullName: '',
-  position: '',
   phone: '',
   email: '',
   website: '',
@@ -93,7 +91,6 @@ const errors = reactive({
 })
 const touched = reactive({
   fullName: false,
-  position: false,
   phone: false,
   email: false,
   website: false,
@@ -108,7 +105,6 @@ type CheckedField = keyof typeof errors
 
 const leaseFields = [
   'fullName',
-  'position',
   'phone',
   'email',
   'website',
@@ -197,17 +193,6 @@ function onFileChange(event: Event) {
   fileName.value = input.files?.[0]?.name ?? ''
 }
 
-function personMessage(value: string, isTouched: boolean): string {
-  if (!isPersonNameChars(value)) return lettersError
-
-  const trimmed = value.trim()
-
-  if (!trimmed || !isTouched) return ''
-  if (!isPersonName(trimmed)) return lettersError
-
-  return ''
-}
-
 function setFullName(value: string): void {
   form.fullName = maskPersonName(value)
 }
@@ -226,25 +211,6 @@ function fullNameMessage(value: string, isTouched: boolean): string {
 function blockFullNameDigit(event: KeyboardEvent): void {
   if (event.ctrlKey || event.metaKey || event.altKey) return
   if (/^\p{Nd}$/u.test(event.key)) event.preventDefault()
-}
-
-function blockFullNameDigitInput(event: InputEvent): void {
-  const data = event.data
-
-  if (!data || !/\p{Nd}/u.test(data)) return
-
-  event.preventDefault()
-
-  if (event.inputType !== 'insertFromPaste' && event.inputType !== 'insertFromDrop') return
-
-  const input = event.target
-
-  if (!(input instanceof HTMLInputElement)) return
-
-  const start = input.selectionStart ?? input.value.length
-  const end = input.selectionEnd ?? start
-
-  setFullName(input.value.slice(0, start) + data + input.value.slice(end))
 }
 
 function phoneMessage(value: string, isTouched: boolean): string {
@@ -318,8 +284,6 @@ function fieldMessage(field: CheckedField, isTouched: boolean): string {
   switch (field) {
     case 'fullName':
       return fullNameMessage(form.fullName, isTouched)
-    case 'position':
-      return personMessage(form.position, isTouched)
     case 'phone':
       return phoneMessage(form.phone, isTouched)
     case 'email':
@@ -419,7 +383,6 @@ function onSubmit() {
                 required
                 @update:model-value="setFullName"
                 @keydown="blockFullNameDigit"
-                @beforeinput="blockFullNameDigitInput"
                 @blur="touch('fullName')"
               />
               <UiInput
@@ -428,8 +391,6 @@ function onSubmit() {
                 autocomplete="organization-title"
                 placeholder="Должность"
                 label="Должность"
-                :error="errors.position"
-                @blur="touch('position')"
               />
             </div>
 

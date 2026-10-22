@@ -30,25 +30,28 @@ describe('isPersonName', () => {
 })
 
 describe('isFullName', () => {
-  it('принимает минимум две части по две буквы', () => {
+  it('принимает две части и инициалы', () => {
     expect(isFullName('Ли Су')).toBe(true)
     expect(isFullName('Иванов Иван Иванович')).toBe(true)
     expect(isFullName('Анна-Мария Петрова')).toBe(true)
+    expect(isFullName('Иванов И.')).toBe(true)
+    expect(isFullName('Иванов И.И.')).toBe(true)
+    expect(isFullName('Ли С')).toBe(true)
   })
 
-  it('отклоняет одну часть и части короче двух букв', () => {
+  it('отклоняет одну часть, одни инициалы и цифры', () => {
     expect(isFullName('Ли')).toBe(false)
-    expect(isFullName('И Су')).toBe(false)
-    expect(isFullName('Ли С')).toBe(false)
     expect(isFullName('Анна-Мария')).toBe(false)
+    expect(isFullName('И С')).toBe(false)
     expect(isFullName('Иван1 Петров')).toBe(false)
   })
 })
 
 describe('maskPersonName', () => {
-  it('убирает цифры и поднимает первую букву', () => {
+  it('убирает цифры и лишние символы, поднимает первую букву', () => {
     expect(maskPersonName('ли су')).toBe('Ли су')
     expect(maskPersonName('иван2')).toBe('Иван')
+    expect(maskPersonName('иван2 петров3')).toBe('Иван петров')
     expect(maskPersonName('123')).toBe('')
     expect(maskPersonName('Ли Су')).toBe('Ли Су')
   })
@@ -72,12 +75,18 @@ describe('isPhone', () => {
 describe('isHttpUrl', () => {
   it('принимает домен и http(s)', () => {
     expect(isHttpUrl('example.com')).toBe(true)
+    expect(isHttpUrl('мой-сайт.рф')).toBe(true)
     expect(isHttpUrl('https://example.com/path')).toBe(true)
   })
 
-  it('отклоняет текст без домена', () => {
+  it('отклоняет текст без домена и битый хост', () => {
     expect(isHttpUrl('не сайт')).toBe(false)
     expect(isHttpUrl('example')).toBe(false)
+    expect(isHttpUrl('example..com')).toBe(false)
+    expect(isHttpUrl('example.com.')).toBe(false)
+    expect(isHttpUrl('-example.com')).toBe(false)
+    expect(isHttpUrl('12.34')).toBe(false)
+    expect(isHttpUrl('user@example.com')).toBe(false)
   })
 })
 
