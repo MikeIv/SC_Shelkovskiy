@@ -211,6 +211,7 @@ onBeforeUnmount(() => {
   padding: var(--fs-space-3);
   border-radius: var(--fs-radius-xl);
   background-color: var(--fs-color-light);
+  box-shadow: 0 #{rem(8)} #{rem(40)} rgb(172 172 172 / 25%);
   overflow: clip;
 }
 

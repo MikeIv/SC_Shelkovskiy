@@ -194,50 +194,53 @@ function onSubmit() {
         @submit.prevent="onSubmit"
       >
         <div :class="$style.fields">
-          <div :class="$style.row">
-            <UiInput
-              v-model="form.fullName"
-              name="fullName"
-              autocomplete="name"
-              placeholder="ФИО"
-              label="ФИО"
-              :error="errors.fullName"
-              required
-            />
-            <UiInput
-              v-model="form.position"
-              name="position"
-              autocomplete="organization-title"
-              placeholder="Должность"
-              label="Должность"
-            />
-          </div>
-
-          <div :class="$style.row">
-            <UiInput
-              v-model="form.phone"
-              type="tel"
-              name="phone"
-              autocomplete="tel"
-              placeholder="Телефон"
-              label="Телефон"
-              :error="errors.phone"
-              required
-            />
-            <UiInput
-              v-model="form.email"
-              type="email"
-              name="email"
-              autocomplete="email"
-              placeholder="Почта"
-              label="Почта"
-              :error="errors.email"
-              required
-            />
-          </div>
-
-          <template v-if="activeTab === 'lease'">
+          <div :class="$style.contactRows">
             <div :class="$style.row">
+              <UiInput
+                v-model="form.fullName"
+                name="fullName"
+                autocomplete="name"
+                placeholder="ФИО"
+                label="ФИО"
+                :error="errors.fullName"
+                required
+              />
+              <UiInput
+                v-model="form.position"
+                name="position"
+                autocomplete="organization-title"
+                placeholder="Должность"
+                label="Должность"
+              />
+            </div>
+
+            <div :class="$style.row">
+              <UiInput
+                v-model="form.phone"
+                type="tel"
+                name="phone"
+                autocomplete="tel"
+                placeholder="Телефон"
+                label="Телефон"
+                :error="errors.phone"
+                required
+              />
+              <UiInput
+                v-model="form.email"
+                type="email"
+                name="email"
+                autocomplete="email"
+                placeholder="Почта"
+                label="Почта"
+                :error="errors.email"
+                required
+              />
+            </div>
+
+            <div
+              v-if="activeTab === 'lease'"
+              :class="$style.row"
+            >
               <UiInput
                 v-model="form.website"
                 type="url"
@@ -254,8 +257,10 @@ function onSubmit() {
                 label="Фактический адрес"
               />
             </div>
+          </div>
 
-            <div :class="$style.row">
+          <template v-if="activeTab === 'lease'">
+            <div :class="[$style.row, $style.rowLoose]">
               <div :class="$style.fieldGroup">
                 <p :class="$style.fieldLabel">
                   Полное название компании:
@@ -528,7 +533,7 @@ function onSubmit() {
 .layout {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-5);
+  gap: var(--fs-space-4);
 
   @include from-desktop {
     flex-direction: row;
@@ -551,9 +556,21 @@ function onSubmit() {
 }
 
 .fields {
+  --tenants-field-gap: #{rem(12)};
+
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-3);
+
+  @include from-desktop {
+    --tenants-field-gap: var(--fs-space-2);
+  }
+}
+
+.contactRows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-2);
 }
 
 .row {
@@ -566,9 +583,27 @@ function onSubmit() {
   }
 }
 
+.rowLoose {
+  gap: var(--fs-space-3);
+
+  @include from-tablet {
+    gap: var(--fs-space-2);
+  }
+}
+
 .rowTriple {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  > :last-child {
+    grid-column: 1 / -1;
+  }
+
   @include from-tablet {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    > :last-child {
+      grid-column: auto;
+    }
   }
 }
 
@@ -576,7 +611,7 @@ function onSubmit() {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  gap: var(--fs-space-2);
+  gap: var(--tenants-field-gap);
   min-width: 0;
 }
 
@@ -586,13 +621,15 @@ function onSubmit() {
 }
 
 .fieldset {
-  display: flex;
-  flex-direction: column;
-  gap: rem(24);
   min-width: 0;
   margin: 0;
   padding: 0;
   border: 0;
+
+  /* legend не участвует в gap, поэтому отступ задаётся снаружи блока чекбоксов */
+  > .fieldLabel {
+    margin-bottom: var(--tenants-field-gap);
+  }
 }
 
 .profiles {

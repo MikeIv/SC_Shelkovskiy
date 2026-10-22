@@ -36,6 +36,9 @@ const viewMode = defineModel<CatalogCardLayout>('viewMode', { default: 'card' })
 
 const filtersOpen = ref(false)
 const texts = computed(() => catalogFilterTexts(props.variant))
+const categorySelectOptions = computed(() =>
+  props.categoryOptions.map((option) => ({ value: option.value, label: option.label })),
+)
 
 const hasActiveFilters = computed(
   () =>
@@ -77,7 +80,7 @@ function closeFilters(): void {
         :class="$style.category"
         :label="texts.categoryLabel"
         :placeholder="texts.categoryPlaceholder"
-        :options="categoryOptions"
+        :options="categorySelectOptions"
       />
 
       <UiDropdown
@@ -145,7 +148,7 @@ function closeFilters(): void {
       v-model:breakfast-only="breakfastOnly"
       v-model:business-lunch-only="businessLunchOnly"
       :open="filtersOpen"
-      :category-options="categoryOptions"
+      :category-options="categorySelectOptions"
       :floor-options="floorOptions"
       :show-breakfast="showBreakfast"
       :show-business-lunch="showBusinessLunch"
