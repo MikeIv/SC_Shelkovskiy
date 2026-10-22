@@ -10,6 +10,9 @@ stages:
 
 .nodejs:
   image: node:22
+  # Свой раннер проекта, а не общие раннеры GitLab: у них ограничен запас минут.
+  tags:
+    - docker
   interruptible: true
   cache:
     key:
