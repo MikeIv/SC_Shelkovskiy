@@ -1,5 +1,19 @@
 <script setup lang="ts">
 import type { TenantsFormTab, TenantsTradeProfile } from '#shared/types/tenants'
+import {
+  isFullName,
+  isHttpUrl,
+  isNonNegativeInt,
+  isNonNegativeIntChars,
+  isPersonName,
+  isPersonNameChars,
+  isPhone,
+  isPhoneChars,
+  isPositiveAmount,
+  isPositiveAmountChars,
+  maskPersonName,
+  parsePositiveAmount,
+} from '#shared/utils/formFields'
 import { isEmail } from '#shared/utils/isEmail'
 
 const {
@@ -38,6 +52,14 @@ const {
 
 const requiredError = 'Обязательное поле'
 const emailFormatError = 'Некорректный email'
+const lettersError = 'Допустимы только буквы'
+const fullNameFormatError = 'Введите корректные данные'
+const phoneFormatError = 'Некорректный телефон'
+const urlFormatError = 'Некорректный адрес сайта'
+const digitsError = 'Допустимы только цифры'
+const intFormatError = 'Укажите целое число'
+const amountFormatError = 'Некорректное число'
+const areaRangeError = '«От» не может быть больше «До»'
 
 const activeTab = ref<TenantsFormTab>('lease')
 const form = reactive({
@@ -59,10 +81,44 @@ const form = reactive({
 })
 const errors = reactive({
   fullName: '',
+  position: '',
   phone: '',
   email: '',
+  website: '',
+  storesCount: '',
+  areaFrom: '',
+  areaTo: '',
+  areaOptimal: '',
   adsMessage: '',
 })
+const touched = reactive({
+  fullName: false,
+  position: false,
+  phone: false,
+  email: false,
+  website: false,
+  storesCount: false,
+  areaFrom: false,
+  areaTo: false,
+  areaOptimal: false,
+  adsMessage: false,
+})
+
+type CheckedField = keyof typeof errors
+
+const leaseFields = [
+  'fullName',
+  'position',
+  'phone',
+  'email',
+  'website',
+  'storesCount',
+  'areaFrom',
+  'areaTo',
+  'areaOptimal',
+] as const satisfies readonly CheckedField[]
+
+const adsFields = ['fullName', 'phone', 'email', 'adsMessage'] as const satisfies readonly CheckedField[]
 const selectedProfiles = ref<string[]>([])
 const consentPersonal = ref(false)
 const consentPolicies = ref(false)
@@ -78,31 +134,35 @@ const requiredConsentsOk = computed(
   () => consentPersonal.value && consentPolicies.value,
 )
 
-const canSubmit = computed(() => {
-  const base =
-    form.fullName.trim().length > 0
-    && form.phone.trim().length > 0
-    && isEmail(form.email)
-    && requiredConsentsOk.value
+const activeFields = computed(() =>
+  activeTab.value === 'ads' ? adsFields : leaseFields,
+)
 
-  if (activeTab.value === 'ads') {
-    return base && form.adsMessage.trim().length > 0
-  }
+const canSubmit = computed(
+  () =>
+    requiredConsentsOk.value
+    && activeFields.value.every((field) => fieldMessage(field, true) === ''),
+)
 
-  return base
-})
-
-for (const field of ['fullName', 'phone', 'email', 'adsMessage'] as const) {
+for (const field of leaseFields) {
   watch(
     () => form[field],
     () => {
-      errors[field] = ''
+      refresh(field)
     },
   )
 }
 
+watch(
+  () => form.adsMessage,
+  () => {
+    refresh('adsMessage')
+  },
+)
+
 watch(activeTab, () => {
   errors.adsMessage = ''
+  touched.adsMessage = false
 })
 
 function isProfileSelected(id: string) {
@@ -137,18 +197,170 @@ function onFileChange(event: Event) {
   fileName.value = input.files?.[0]?.name ?? ''
 }
 
-function validate(): boolean {
-  errors.fullName = form.fullName.trim() ? '' : requiredError
-  errors.phone = form.phone.trim() ? '' : requiredError
-  errors.email = !form.email.trim()
-    ? requiredError
-    : isEmail(form.email)
-      ? ''
-      : emailFormatError
-  errors.adsMessage =
-    activeTab.value === 'ads' && !form.adsMessage.trim() ? requiredError : ''
+function personMessage(value: string, isTouched: boolean): string {
+  if (!isPersonNameChars(value)) return lettersError
 
-  return !errors.fullName && !errors.phone && !errors.email && !errors.adsMessage
+  const trimmed = value.trim()
+
+  if (!trimmed || !isTouched) return ''
+  if (!isPersonName(trimmed)) return lettersError
+
+  return ''
+}
+
+function setFullName(value: string): void {
+  form.fullName = maskPersonName(value)
+}
+
+function fullNameMessage(value: string, isTouched: boolean): string {
+  if (!isPersonNameChars(value)) return lettersError
+
+  const trimmed = value.trim()
+
+  if (!trimmed) return isTouched ? requiredError : ''
+  if (!isTouched) return ''
+
+  return isFullName(trimmed) ? '' : fullNameFormatError
+}
+
+function blockFullNameDigit(event: KeyboardEvent): void {
+  if (event.ctrlKey || event.metaKey || event.altKey) return
+  if (/^\p{Nd}$/u.test(event.key)) event.preventDefault()
+}
+
+function blockFullNameDigitInput(event: InputEvent): void {
+  const data = event.data
+
+  if (!data || !/\p{Nd}/u.test(data)) return
+
+  event.preventDefault()
+
+  if (event.inputType !== 'insertFromPaste' && event.inputType !== 'insertFromDrop') return
+
+  const input = event.target
+
+  if (!(input instanceof HTMLInputElement)) return
+
+  const start = input.selectionStart ?? input.value.length
+  const end = input.selectionEnd ?? start
+
+  setFullName(input.value.slice(0, start) + data + input.value.slice(end))
+}
+
+function phoneMessage(value: string, isTouched: boolean): string {
+  if (!isPhoneChars(value)) return phoneFormatError
+
+  const trimmed = value.trim()
+
+  if (!trimmed) return isTouched ? requiredError : ''
+  if (!isPhone(trimmed)) return isTouched ? phoneFormatError : ''
+
+  return ''
+}
+
+function emailMessage(value: string, isTouched: boolean): string {
+  const trimmed = value.trim()
+
+  if (!trimmed) return isTouched ? requiredError : ''
+  if (!isTouched) return ''
+
+  return isEmail(trimmed) ? '' : emailFormatError
+}
+
+function websiteMessage(value: string, isTouched: boolean): string {
+  const trimmed = value.trim()
+
+  if (!trimmed || !isTouched) return ''
+
+  return isHttpUrl(trimmed) ? '' : urlFormatError
+}
+
+function countMessage(value: string, isTouched: boolean): string {
+  if (!isNonNegativeIntChars(value)) return digitsError
+
+  const trimmed = value.trim()
+
+  if (!trimmed || !isTouched) return ''
+
+  return isNonNegativeInt(trimmed) ? '' : intFormatError
+}
+
+function amountMessage(value: string, isTouched: boolean): string {
+  if (!isPositiveAmountChars(value)) return digitsError
+
+  const trimmed = value.trim()
+
+  if (!trimmed || !isTouched) return ''
+
+  return isPositiveAmount(trimmed) ? '' : amountFormatError
+}
+
+function areaToMessage(isTouched: boolean): string {
+  const own = amountMessage(form.areaTo, isTouched)
+
+  if (own) return own
+
+  const from = parsePositiveAmount(form.areaFrom)
+  const to = parsePositiveAmount(form.areaTo)
+
+  if (from != null && to != null && from > to) return areaRangeError
+
+  return ''
+}
+
+function adsTextMessage(isTouched: boolean): string {
+  if (activeTab.value !== 'ads' || !isTouched) return ''
+
+  return form.adsMessage.trim() ? '' : requiredError
+}
+
+function fieldMessage(field: CheckedField, isTouched: boolean): string {
+  switch (field) {
+    case 'fullName':
+      return fullNameMessage(form.fullName, isTouched)
+    case 'position':
+      return personMessage(form.position, isTouched)
+    case 'phone':
+      return phoneMessage(form.phone, isTouched)
+    case 'email':
+      return emailMessage(form.email, isTouched)
+    case 'website':
+      return websiteMessage(form.website, isTouched)
+    case 'storesCount':
+      return countMessage(form.storesCount, isTouched)
+    case 'areaFrom':
+      return amountMessage(form.areaFrom, isTouched)
+    case 'areaTo':
+      return areaToMessage(isTouched)
+    case 'areaOptimal':
+      return amountMessage(form.areaOptimal, isTouched)
+    case 'adsMessage':
+      return adsTextMessage(isTouched)
+  }
+}
+
+function refresh(field: CheckedField): void {
+  if (field === 'areaFrom' || field === 'areaTo') {
+    errors.areaFrom = fieldMessage('areaFrom', touched.areaFrom)
+    errors.areaTo = fieldMessage('areaTo', touched.areaTo)
+    return
+  }
+
+  errors[field] = fieldMessage(field, touched[field])
+}
+
+function touch(field: CheckedField): void {
+  touched[field] = true
+  refresh(field)
+}
+
+function validate(): boolean {
+  for (const field of activeFields.value) {
+    touched[field] = true
+    refresh(field)
+  }
+
+  return activeFields.value.every((field) => errors[field] === '')
 }
 
 function onSubmit() {
@@ -191,19 +403,24 @@ function onSubmit() {
     <div :class="$style.layout">
       <form
         :class="$style.form"
+        novalidate
         @submit.prevent="onSubmit"
       >
         <div :class="$style.fields">
           <div :class="$style.contactRows">
             <div :class="$style.row">
               <UiInput
-                v-model="form.fullName"
+                :model-value="form.fullName"
                 name="fullName"
                 autocomplete="name"
                 placeholder="ФИО"
                 label="ФИО"
                 :error="errors.fullName"
                 required
+                @update:model-value="setFullName"
+                @keydown="blockFullNameDigit"
+                @beforeinput="blockFullNameDigitInput"
+                @blur="touch('fullName')"
               />
               <UiInput
                 v-model="form.position"
@@ -211,6 +428,8 @@ function onSubmit() {
                 autocomplete="organization-title"
                 placeholder="Должность"
                 label="Должность"
+                :error="errors.position"
+                @blur="touch('position')"
               />
             </div>
 
@@ -220,20 +439,24 @@ function onSubmit() {
                 type="tel"
                 name="phone"
                 autocomplete="tel"
+                inputmode="tel"
                 placeholder="Телефон"
                 label="Телефон"
                 :error="errors.phone"
                 required
+                @blur="touch('phone')"
               />
               <UiInput
                 v-model="form.email"
                 type="email"
                 name="email"
                 autocomplete="email"
+                inputmode="email"
                 placeholder="Почта"
                 label="Почта"
                 :error="errors.email"
                 required
+                @blur="touch('email')"
               />
             </div>
 
@@ -248,6 +471,8 @@ function onSubmit() {
                 autocomplete="url"
                 placeholder="Сайт"
                 label="Сайт"
+                :error="errors.website"
+                @blur="touch('website')"
               />
               <UiInput
                 v-model="form.address"
@@ -283,6 +508,8 @@ function onSubmit() {
                   inputmode="numeric"
                   placeholder="Введите количество"
                   label="Количество открытых магазинов"
+                  :error="errors.storesCount"
+                  @blur="touch('storesCount')"
                 />
               </div>
             </div>
@@ -353,6 +580,8 @@ function onSubmit() {
                   inputmode="decimal"
                   placeholder="От"
                   label="Площадь от"
+                  :error="errors.areaFrom"
+                  @blur="touch('areaFrom')"
                 />
                 <UiInput
                   v-model="form.areaTo"
@@ -360,6 +589,8 @@ function onSubmit() {
                   inputmode="decimal"
                   placeholder="До"
                   label="Площадь до"
+                  :error="errors.areaTo"
+                  @blur="touch('areaTo')"
                 />
                 <UiInput
                   v-model="form.areaOptimal"
@@ -367,6 +598,8 @@ function onSubmit() {
                   inputmode="decimal"
                   placeholder="Оптимальный"
                   label="Оптимальная площадь"
+                  :error="errors.areaOptimal"
+                  @blur="touch('areaOptimal')"
                 />
               </div>
             </div>
@@ -387,6 +620,7 @@ function onSubmit() {
               label="Описание рекламной заявки"
               :error="errors.adsMessage"
               required
+              @blur="touch('adsMessage')"
             />
           </div>
         </div>

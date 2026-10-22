@@ -17,6 +17,9 @@ withDefaults(
 )
 
 const model = defineModel<string>({ default: '' })
+const emit = defineEmits<{
+  blur: [event: FocusEvent]
+}>()
 const attrs = useAttrs()
 const generatedId = useId()
 
@@ -47,6 +50,7 @@ const inputAttrs = computed(() => {
       :class="$style.field"
       :aria-invalid="error ? true : undefined"
       :aria-describedby="error ? `${inputId}-error` : undefined"
+      @blur="emit('blur', $event)"
     >
     <p
       v-if="error"
@@ -71,6 +75,10 @@ const inputAttrs = computed(() => {
   flex-direction: column;
   gap: var(--fs-space-1);
   width: 100%;
+
+  &:has(.error) .field {
+    box-shadow: 0 0 0 rem(2) var(--fs-color-error);
+  }
 
   &[data-variant='white'] {
     --fs-input-bg: var(--fs-color-white);
