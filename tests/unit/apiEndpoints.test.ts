@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import type { ApiQuery, ApiRequest } from '#shared/api/endpoints'
 import {
+  awardEndpoint,
+  awardsEndpoint,
   eventsEndpoint,
   feedEndpoint,
   galleryAlbumEndpoint,
@@ -109,6 +111,17 @@ describe('контракты ручек: параметры и путь у Larav
     expect(vacanciesEndpoint.path(params)).toBe('/vacancies')
     expect(vacanciesEndpoint.key(params)).toBe('vacancies')
   })
+
+  it('награды: без пагинации, slug детальной обязателен', () => {
+    const params = awardsEndpoint.params({ query: {} })
+
+    expect(params).toEqual({})
+    expect(awardsEndpoint.path(params)).toBe('/awards')
+    expect(awardsEndpoint.key(params)).toBe('awards')
+    expect(() => awardEndpoint.params({ query: {} })).toThrow(ApiContractError)
+    expect(awardEndpoint.path({ slug: 'cre' })).toBe('/awards/cre')
+    expect(awardEndpoint.key({ slug: 'cre' })).toBe('award:cre')
+  })
 })
 
 describe('контракты ручек: загрузка и маппинг', () => {
@@ -195,5 +208,87 @@ describe('контракты ручек: загрузка и маппинг', ()
     const { request } = fakeRequest(() => ({ data: 'oops' }))
 
     await expect(vacanciesEndpoint.load(request, {})).rejects.toMatchObject({ statusCode: 502 })
+  })
+
+  it('награды: маппит карточки, дату и пропускает запись без slug', async () => {
+    const { request, calls } = fakeRequest(() => ({
+      data: [
+        { slug: 'cre', title: 'CRE', date: '2024-06-26', url: '/awards/cre' },
+        { slug: 'no-date', title: 'Без даты', date: null, url: '/awards/no-date' },
+        { title: 'Без slug' },
+      ],
+    }))
+
+    const items = await awardsEndpoint.load(request, {})
+
+    expect(calls[0]?.path).toBe('/awards')
+    expect(items).toEqual([
+      { id: 'cre', title: 'CRE', date: '26.06.2024', dateIso: '2024-06-26' },
+      { id: 'no-date', title: 'Без даты', date: '', dateIso: '' },
+    ])
+  })
+
+  it('награда: маппит текст и догружает остальные без текущей', async () => {
+    const { request, calls } = fakeRequest((path) => {
+      if (path === '/awards') {
+        return {
+          data: [{ slug: 'other', title: 'Другая', date: '2022-01-01', url: '/awards/other' }],
+        }
+      }
+
+      return {
+        data: {
+          slug: 'cre',
+          title: 'CRE',
+          date: '2021-04-04',
+          url: '/awards/cre',
+          subtitle: 'Зеленая повестка',
+          image: 'https://cdn.example/a.jpg',
+          text: '<p>Текст</p><p> </p><script>alert(1)</script>',
+          seo: { title: 'SEO', description: 'Описание', keywords: null, og_image: null },
+        },
+      }
+    })
+
+    const data = await awardEndpoint.load(request, { slug: 'cre' })
+
+    expect(calls[0]?.path).toBe('/awards/cre')
+    expect(calls[1]).toEqual({ path: '/awards', query: { exclude: 'cre' } })
+    expect(data.item).toMatchObject({
+      id: 'cre',
+      date: '04.04.2021',
+      subtitle: 'Зеленая повестка',
+      bodyHtml: '<p>Текст</p>',
+      imageSrc: 'https://cdn.example/a.jpg',
+      seo: { title: 'SEO', description: 'Описание' },
+    })
+    expect(data.related).toEqual([
+      { id: 'other', title: 'Другая', date: '01.01.2022', dateIso: '2022-01-01' },
+    ])
+  })
+
+  it('награда: сбой связанных не роняет карточку', async () => {
+    const request: ApiRequest = <Dto>(path: string) => {
+      if (path === '/awards') return Promise.reject(new Error('down')) as Promise<Dto>
+
+      return Promise.resolve({
+        data: { slug: 'cre', title: 'CRE', date: '2021-04-04', subtitle: null, text: null },
+      }) as Promise<Dto>
+    }
+
+    const data = await awardEndpoint.load(request, { slug: 'cre' })
+
+    expect(data.item.id).toBe('cre')
+    expect(data.item.bodyHtml).toBe('')
+    expect(data.related).toEqual([])
+  })
+
+  it('награды: невалидное тело — 502', async () => {
+    const { request } = fakeRequest(() => ({ data: {} }))
+
+    await expect(awardsEndpoint.load(request, {})).rejects.toMatchObject({ statusCode: 502 })
+    await expect(awardEndpoint.load(request, { slug: 'cre' })).rejects.toMatchObject({
+      statusCode: 502,
+    })
   })
 })

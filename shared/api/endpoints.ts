@@ -1,4 +1,6 @@
+import type { AwardsDetailData, AwardsItem } from '#shared/types/awards'
 import type { CatalogListData } from '#shared/types/catalog'
+import type { AwardItemResponseDto, AwardsListResponseDto } from '#shared/types/dto/awards'
 import type { EventItemResponseDto, EventsListResponseDto } from '#shared/types/dto/events'
 import type { FeedListResponseDto } from '#shared/types/dto/feed'
 import type { GalleryAlbumResponseDto } from '#shared/types/dto/gallery'
@@ -22,6 +24,7 @@ import type {
 import type { TenantCatalog, TenantDetail } from '#shared/types/tenantDetail'
 import type { VacancyItem } from '#shared/types/vacancies'
 import { isNewsFilterTab, newsRelatedKind } from '#shared/utils/newsTag'
+import { mapAwardCards, mapAwardDetail } from '#shared/utils/mappers/awards'
 import { mapEventDetail, mapEventsList } from '#shared/utils/mappers/events'
 import { mapGalleryAlbumDetail } from '#shared/utils/mappers/gallery'
 import { mapHome, mapHomeFeed } from '#shared/utils/mappers/home'
@@ -419,6 +422,64 @@ async function loadTenantNews(request: ApiRequest, slug: string): Promise<NewsCa
     if (!isListPayload(dto)) return []
 
     return mapHomeFeed(dto.data)
+  } catch {
+    return []
+  }
+}
+
+/**
+ * Награды: `GET /awards` — все записи без пагинации.
+ * `page` и `per_page` в спеке относятся к афише и галерее, здесь их не передаём.
+ */
+export const awardsEndpoint: ApiEndpoint<NoParams, AwardsItem[]> = {
+  route: '/api/awards',
+  cache: { name: 'api-awards', ttl: 300 },
+  label: 'Awards',
+  params: () => ({}),
+  key: () => 'awards',
+  path: () => '/awards',
+  load: async (request) => {
+    const dto = await request<AwardsListResponseDto>('/awards')
+
+    if (!isListPayload(dto)) throw invalidPayload('Awards')
+
+    return mapAwardCards(dto.data)
+  },
+}
+
+/**
+ * Карточка награды и остальные записи `GET /awards?exclude={slug}`.
+ * Сбой связанных не роняет карточку: слайдер просто не выводится.
+ */
+export const awardEndpoint: ApiEndpoint<SlugParams, AwardsDetailData> = {
+  route: '/api/awards/:slug',
+  cache: { name: 'api-award', ttl: 300 },
+  label: 'Awards',
+  params: ({ slug }) => ({ slug: readSlugParam(slug, 'Award slug is invalid') }),
+  key: ({ slug }) => `award:${slug}`,
+  path: ({ slug }) => `/awards/${encodeURIComponent(slug)}`,
+  load: async (request, params) => {
+    const dto = await request<AwardItemResponseDto>(awardEndpoint.path(params))
+
+    if (!isItemPayload(dto)) throw invalidPayload('Awards')
+
+    const item = mapAwardDetail(dto.data)
+
+    if (!item) throw invalidPayload('Awards')
+
+    const related = await loadAwardRelated(request, params.slug)
+
+    return { item, related }
+  },
+}
+
+async function loadAwardRelated(request: ApiRequest, slug: string): Promise<AwardsItem[]> {
+  try {
+    const dto = await request<AwardsListResponseDto>('/awards', { query: { exclude: slug } })
+
+    if (!isListPayload(dto)) return []
+
+    return mapAwardCards(dto.data)
   } catch {
     return []
   }

@@ -102,7 +102,7 @@ const awardsUniqueItems: readonly AwardsItem[] = [
   },
 ]
 
-/** Временный контент до контракта API (макет Figma 679:29390). */
+/** Демо-карточки, если ручка `/api/awards` недоступна (макет Figma 679:29390). */
 export const awardsItems: readonly AwardsItem[] = [
   ...awardsUniqueItems,
   { ...itemShelterNewYear, id: 'shelter-new-year-2' },
@@ -131,8 +131,10 @@ export function getAwardsDetailBySlug(slug: string): AwardsDetailItem | undefine
     dateIso: content.dateIso ?? card.dateIso,
     subtitle: content.subtitle,
     paragraphs: content.paragraphs,
+    bodyHtml: '',
     imageSrc: content.imageSrc ?? DEFAULT_IMAGE,
     imageAlt: content.imageAlt ?? card.title,
+    seo: null,
   }
 }
 

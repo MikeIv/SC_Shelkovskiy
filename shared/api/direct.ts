@@ -1,6 +1,8 @@
 import type { ApiEnvelope } from '#shared/types/api'
 import type { ApiEndpoint, ApiQuery, ApiRequest, ApiRouteInput } from './endpoints'
 import {
+  awardEndpoint,
+  awardsEndpoint,
   eventEndpoint,
   eventsEndpoint,
   feedEndpoint,
@@ -54,6 +56,8 @@ const ROUTE_PATTERNS: readonly RoutePattern[] = [
   routePattern(galleryAlbumEndpoint),
   routePattern(tenantsEndpoint),
   routePattern(tenantEndpoint),
+  routePattern(awardsEndpoint),
+  routePattern(awardEndpoint),
   routePattern(vacanciesEndpoint),
 ]
 

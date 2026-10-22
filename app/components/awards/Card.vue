@@ -29,6 +29,7 @@ const { item } = defineProps<{
 
     <div :class="$style.body">
       <time
+        v-if="item.date"
         :class="$style.date"
         :datetime="item.dateIso"
       >{{ item.date }}</time>

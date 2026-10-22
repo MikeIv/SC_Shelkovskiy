@@ -101,6 +101,8 @@ describe('resolveApiRoute', () => {
     expect(resolveApiRoute('/api/gallery/stars-time-party-2026')?.route).toBe('/api/gallery/:slug')
     expect(resolveApiRoute('/api/tenants?type=shops')?.route).toBe('/api/tenants')
     expect(resolveApiRoute('/api/tenants/test-shop')?.route).toBe('/api/tenants/:slug')
+    expect(resolveApiRoute('/api/awards')?.route).toBe('/api/awards')
+    expect(resolveApiRoute('/api/awards/cre')?.route).toBe('/api/awards/:slug')
     expect(resolveApiRoute('/api/vacancies')?.route).toBe('/api/vacancies')
   })
 

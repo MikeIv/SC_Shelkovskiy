@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { awardsItems, awardsPageTitle } from '~/data/awardsPage'
+import { awardsPageTitle } from '~/data/awardsPage'
 
 const pageTitle = awardsPageTitle
 
@@ -7,6 +7,8 @@ const breadcrumbItems = [
   { label: 'Главная', to: '/' },
   { label: pageTitle },
 ]
+
+const { items } = await useAwards()
 
 useSeoMeta({
   title: pageTitle,
@@ -20,7 +22,7 @@ useSeoMeta({
         <UiBreadcrumbs :items="breadcrumbItems" />
       </template>
 
-      <AwardsGrid :items="awardsItems" />
+      <AwardsGrid :items="items" />
     </LayoutInnerPage>
   </div>
 </template>

@@ -1,24 +1,16 @@
 <script setup lang="ts">
-import { awardsPageTitle, getAwardsDetailBySlug, getRelatedAwardsItems } from '~/data/awardsPage'
+import { awardsPageTitle } from '~/data/awardsPage'
 
 const route = useRoute()
+const slug = String(route.params.slug ?? '')
+const { item, related } = await useAward(slug)
 
-const slug = computed(() => String(route.params.slug ?? ''))
-const item = computed(() => getAwardsDetailBySlug(slug.value))
-const relatedItems = computed(() => (item.value ? getRelatedAwardsItems(item.value.id) : []))
-
-watch(
-  item,
-  (value) => {
-    if (!value) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Страница не найдена',
-      })
-    }
-  },
-  { immediate: true },
-)
+if (!item.value) {
+  throw createError({
+    statusCode: 404,
+    statusMessage: 'Страница не найдена',
+  })
+}
 
 const breadcrumbItems = computed(() => [
   { label: 'Главная', to: '/' },
@@ -27,7 +19,21 @@ const breadcrumbItems = computed(() => [
 ])
 
 useSeoMeta({
-  title: () => item.value?.title ?? '',
+  title: () => item.value?.seo?.title || item.value?.title,
+  description: () => item.value?.seo?.description || undefined,
+  ogImage: () => item.value?.seo?.ogImage || undefined,
+})
+
+/**
+ * `keywords` нет в `MetaFlat`/`UseSeoMetaInput` unhead 3, поэтому тег ставим через
+ * `useHead`: ключ известен схеме (`MetaNames`), ограничение только в типах `useSeoMeta`.
+ */
+useHead(() => {
+  const keywords = item.value?.seo?.keywords
+
+  return {
+    meta: keywords ? [{ name: 'keywords', content: keywords }] : [],
+  }
 })
 </script>
 
@@ -56,8 +62,8 @@ useSeoMeta({
           <AwardsDetailArticle :item="item" />
 
           <AwardsRelated
-            v-if="relatedItems.length"
-            :items="relatedItems"
+            v-if="related.length"
+            :items="related"
           />
         </div>
       </LayoutInnerPage>

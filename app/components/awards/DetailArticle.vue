@@ -1,15 +1,20 @@
 <script setup lang="ts">
 import type { AwardsDetailItem } from '#shared/types/awards'
 
-defineProps<{
+const props = defineProps<{
   item: AwardsDetailItem
 }>()
+
+/** Картинки API (`/storage/…` стенда) идут через ipx: прямой запрос к хранилищу без Basic не отдаётся. */
+const mediaSrc = useMediaSrc()
+const imageSrc = computed(() => mediaSrc(props.item.imageSrc, 1536))
 </script>
 
 <template>
   <article :class="$style.root">
     <header :class="$style.header">
       <time
+        v-if="item.date"
         :class="$style.date"
         :datetime="item.dateIso"
       >
@@ -18,10 +23,26 @@ defineProps<{
       <h1 :class="$style.title">{{ item.title }}</h1>
     </header>
 
-    <div :class="$style.layout">
-      <div :class="$style.content">
-        <h2 :class="$style.subtitle">{{ item.subtitle }}</h2>
-        <div :class="$style.paragraphs">
+    <div
+      v-if="item.subtitle || item.bodyHtml || item.paragraphs.length || imageSrc"
+      :class="$style.layout"
+    >
+      <div
+        v-if="item.subtitle || item.bodyHtml || item.paragraphs.length"
+        :class="$style.content"
+      >
+        <h2
+          v-if="item.subtitle"
+          :class="$style.subtitle"
+        >
+          {{ item.subtitle }}
+        </h2>
+        <!-- eslint-disable-next-line vue/no-v-html -- HTML из CMS прошёл sanitizeApiHtml: script/style сняты, из атрибутов остаётся только безопасный href -->
+        <div v-if="item.bodyHtml" :class="$style.body" v-html="item.bodyHtml" />
+        <div
+          v-else-if="item.paragraphs.length"
+          :class="$style.paragraphs"
+        >
           <p
             v-for="(paragraph, index) in item.paragraphs"
             :key="index"
@@ -31,10 +52,13 @@ defineProps<{
         </div>
       </div>
 
-      <div :class="$style.media">
+      <div
+        v-if="imageSrc"
+        :class="$style.media"
+      >
         <img
           :class="$style.image"
-          :src="item.imageSrc"
+          :src="imageSrc"
           :alt="item.imageAlt"
           width="768"
           height="512"
@@ -118,6 +142,40 @@ defineProps<{
   p {
     margin: 0;
     @include fs-text-lg;
+    color: var(--fs-color-black);
+  }
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-2);
+
+  p,
+  li {
+    margin: 0;
+    @include fs-text-lg;
+    color: var(--fs-color-black);
+  }
+
+  ul,
+  ol {
+    display: flex;
+    flex-direction: column;
+    gap: rem(12);
+    margin: 0;
+    padding-left: rem(20);
+  }
+
+  h2,
+  h3 {
+    margin: 0;
+    @include fs-text-lg;
+    font-weight: 700;
+    color: var(--fs-color-black);
+  }
+
+  a {
     color: var(--fs-color-black);
   }
 }
