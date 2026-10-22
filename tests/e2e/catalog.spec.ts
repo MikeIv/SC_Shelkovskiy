@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 test.describe('Каталог арендаторов', () => {
-  test('список, счётчик фильтра и алфавит приходят из API', async ({ page }) => {
+  test('список, фильтр и алфавит приходят из API', async ({ page }) => {
     await page.goto('/shops')
 
     await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1)
@@ -14,16 +14,18 @@ test.describe('Каталог арендаторов', () => {
     expect(src).toContain('/_ipx/')
 
     const category = page.getByRole('combobox', { name: 'Категория' })
-    const clothes = page.getByRole('option', { name: /Одежда/ })
+    const clothes = page.getByRole('option', { name: 'Одежда', exact: true })
+    const fromApi = page.getByRole('option', { name: 'Продукты', exact: true })
 
     /**
-     * Клик до гидратации теряется: открываем список, пока пункт с счётчиком не появится.
+     * Клик до гидратации теряется. «Продукты» есть только в ответе API:
+     * в пункте категории счётчик больше не показывается.
      */
     await expect(async () => {
-      if (!(await clothes.isVisible())) {
+      if (!(await fromApi.isVisible())) {
         await category.click()
       }
-      await expect(clothes).toContainText('6', { timeout: 1_000 })
+      await expect(fromApi).toBeVisible({ timeout: 1_000 })
     }).toPass({ timeout: 15_000 })
 
     await clothes.click()
