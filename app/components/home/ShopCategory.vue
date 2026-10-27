@@ -167,15 +167,15 @@ onUnmounted(() => {
         <template v-for="(item, index) in items" :key="`${item.id}-left`">
           <img
             v-if="isRevealed(index)"
-            :src="mediaSrc(item.leftImageSrc, 700)"
+            :src="mediaSrc(item.leftImageSrc, 534)"
             alt=""
             :class="[
               $style.image,
               item.leftImageCrop === 'wide' && $style.imageWide,
               activeIndex === index && $style.imageVisible,
             ]"
-            width="350"
-            height="420"
+            width="267"
+            height="321"
             loading="lazy"
             decoding="async"
           >
@@ -186,14 +186,14 @@ onUnmounted(() => {
         <template v-for="(item, index) in items" :key="`${item.id}-right`">
           <img
             v-if="isRevealed(index)"
-            :src="mediaSrc(item.rightImageSrc, 880)"
+            :src="mediaSrc(item.rightImageSrc, 644)"
             alt=""
             :class="[
               $style.image,
               activeIndex === index && $style.imageVisible,
             ]"
-            width="440"
-            height="470"
+            width="322"
+            height="344"
             loading="lazy"
             decoding="async"
           >
@@ -240,16 +240,19 @@ onUnmounted(() => {
 
 $shop-category-ease: cubic-bezier(0.33, 1, 0.18, 1);
 $shop-category-duration: 0.55s;
-$shop-category-left-width: 350;
-$shop-category-left-height: 420;
-$shop-category-right-width: 440;
-$shop-category-right-height: 470;
-$shop-category-left-inset: rem(545 + $shop-category-left-width * 0.5);
-$shop-category-right-inset: rem(540 + $shop-category-right-width * 0.5);
+$shop-category-left-width: 267;
+$shop-category-left-height: 321;
+$shop-category-right-width: 322;
+$shop-category-right-height: 344;
+/* Центры фото в кадре 1560×618: левое на 586.5px левее середины, правое на 583px правее. */
+$shop-category-left-inset: rem(586.5 + $shop-category-left-width * 0.5);
+$shop-category-right-inset: rem(583 + $shop-category-right-width * 0.5);
+$shop-category-right-bottom: 47;
 $shop-category-pattern-desktop: 1220;
 $shop-category-pattern-offset: rem(
   ($shop-category-pattern-desktop - $shop-category-right-width) * 0.5
 );
+$shop-category-pattern-bottom: $shop-category-right-bottom + ($shop-category-right-height - $shop-category-pattern-desktop) * 0.5;
 
 .root {
   position: relative;
@@ -284,7 +287,7 @@ $shop-category-pattern-offset: rem(
 
   @include from-desktop {
     right: calc(max(0px, 50% - #{$shop-category-right-inset}) - #{$shop-category-pattern-offset});
-    bottom: rem(($shop-category-right-height - $shop-category-pattern-desktop) * 0.5);
+    bottom: rem($shop-category-pattern-bottom);
     width: rem($shop-category-pattern-desktop);
     height: rem($shop-category-pattern-desktop);
   }
@@ -338,6 +341,7 @@ $shop-category-pattern-offset: rem(
 
   @include from-desktop {
     right: max(0px, calc(50% - #{$shop-category-right-inset}));
+    bottom: rem($shop-category-right-bottom);
     width: rem($shop-category-right-width);
     height: rem($shop-category-right-height);
   }
