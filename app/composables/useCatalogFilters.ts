@@ -7,13 +7,17 @@ function buildSelectOptions(values: string[], placeholder: string): UiDropdownOp
   return [{ value: '', label: placeholder }, ...values.map((value) => ({ value, label: value }))]
 }
 
-function choicesToOptions(choices: CatalogFilterChoice[], placeholder: string): UiDropdownOption[] {
+function choicesToOptions(
+  choices: CatalogFilterChoice[],
+  placeholder: string,
+  withCount = true,
+): UiDropdownOption[] {
   return [
     { value: '', label: placeholder },
     ...choices.map((choice) => ({
       value: choice.value,
       label: choice.label,
-      count: choice.count,
+      ...(withCount ? { count: choice.count } : {}),
     })),
   ]
 }
@@ -58,7 +62,7 @@ export function useCatalogFilters(catalog: TenantCatalog, options: UseCatalogFil
 
   const floorOptions = computed(() => {
     const fromApi = apiFilters.value?.floors ?? []
-    if (fromApi.length) return choicesToOptions(fromApi, 'Все этажи')
+    if (fromApi.length) return choicesToOptions(fromApi, 'Все этажи', false)
 
     return buildSelectOptions(
       [...new Set(source.value.map((item) => item.floor).filter(Boolean))].sort(),
