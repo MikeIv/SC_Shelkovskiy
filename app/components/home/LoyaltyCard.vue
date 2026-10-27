@@ -103,9 +103,7 @@ $loyalty-hover-duration: 0.65s;
   transition: border-radius $loyalty-hover-duration $loyalty-hover-ease;
 
   &[data-variant='gift'] {
-    border-radius: var(--fs-radius-pill);
-
-    /* Mob Figma 343×414: текст ниже и уже из‑за круга. */
+    /* Mob Figma 343×414: текст ниже и уже. */
     .content {
       top: rem(124);
       width: min(calc(100% - rem(60)), rem(284));
