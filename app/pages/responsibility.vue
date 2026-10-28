@@ -24,6 +24,7 @@ useSeoMeta({
       :breadcrumbs="breadcrumbItems"
     />
     <ResponsibilityPrinciples />
+    <ResponsibilityInitiatives />
   </div>
 </template>
 
