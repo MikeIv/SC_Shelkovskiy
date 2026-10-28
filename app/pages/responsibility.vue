@@ -25,6 +25,7 @@ useSeoMeta({
     />
     <ResponsibilityPrinciples />
     <ResponsibilityInitiatives />
+    <ResponsibilityActivities />
   </div>
 </template>
 
