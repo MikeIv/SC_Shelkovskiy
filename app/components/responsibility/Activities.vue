@@ -1,34 +1,7 @@
 <script setup lang="ts">
-interface Activity {
-  id: string
-  date: string
-  dateIso: string
-  title: string
-}
+import { getAwardsDetailPath } from '#shared/utils/awardsPath'
 
-const activities: Activity[] = [
-  {
-    id: 'kp',
-    date: '26.06.2024',
-    dateIso: '2024-06-26',
-    title:
-      'Издание «Комсомольская правда» включило ТРЦ «Щёлковский» в топ-20 лучших торговых центров Москвы 2024 года',
-  },
-  {
-    id: 'cre',
-    date: '26.06.2024',
-    dateIso: '2024-06-26',
-    title:
-      'ТРЦ «Щёлковский» стал лауреатом премии CRE Awards в номинации «Зелёный кирпич»',
-  },
-  {
-    id: 'energy',
-    date: '26.06.2024',
-    dateIso: '2024-06-26',
-    title:
-      'ТРЦ «Щёлковский» стал победителем национальной премии потребителей электроэнергии «Золотая опора» 2023 в номинации «Лучший потребитель энергоресурсов в регионе присутствия АО «Мосэнергосбыт»',
-  },
-]
+const { items } = await useAwards()
 
 const {
   viewportRef,
@@ -68,6 +41,7 @@ const {
       </div>
 
       <div
+        v-if="items.length"
         ref="viewportRef"
         :class="$style.viewport"
         :aria-roledescription="isDesktop ? 'carousel' : undefined"
@@ -75,11 +49,14 @@ const {
       >
         <ul ref="trackRef" :class="$style.track">
           <li
-            v-for="item in activities"
+            v-for="item in items"
             :key="item.id"
             :class="$style.slide"
           >
-            <article :class="$style.card">
+            <NuxtLink
+              :to="getAwardsDetailPath(item.id)"
+              :class="$style.card"
+            >
               <div :class="$style.pattern" aria-hidden="true">
                 <img
                   :class="$style.patternImage"
@@ -87,21 +64,33 @@ const {
                   alt=""
                   width="651"
                   height="649"
+                  loading="lazy"
                   decoding="async"
                 >
                 <div :class="$style.patternFade" />
               </div>
 
               <div :class="$style.body">
-                <time :class="$style.date" :datetime="item.dateIso">{{ item.date }}</time>
+                <time
+                  v-if="item.date"
+                  :class="$style.date"
+                  :datetime="item.dateIso"
+                >{{ item.date }}</time>
                 <p :class="$style.cardTitle">{{ item.title }}</p>
               </div>
-            </article>
+            </NuxtLink>
           </li>
         </ul>
       </div>
 
-      <UiButton type="button">Смотреть все</UiButton>
+      <p
+        v-else
+        :class="$style.empty"
+      >
+        Пока нет материалов
+      </p>
+
+      <UiButton to="/awards">Смотреть все</UiButton>
     </div>
   </section>
 </template>
@@ -186,6 +175,15 @@ const {
   display: flex;
   min-width: 0;
 
+  /* Ниже desktop секция — превью из трёх карточек, полный список на /awards. */
+  &:nth-child(n + 4) {
+    display: none;
+
+    @include from-desktop {
+      display: flex;
+    }
+  }
+
   @include from-desktop {
     flex: 0 0 rem(560);
     scroll-snap-align: start;
@@ -203,8 +201,21 @@ const {
   width: 100%;
   padding: var(--fs-space-2);
   border-radius: var(--fs-radius-2xl);
+  color: inherit;
+  text-decoration: none;
   background-color: var(--fs-color-light);
   overflow: clip;
+
+  &:focus-visible {
+    outline: rem(2) solid var(--fs-color-black);
+    outline-offset: rem(2);
+  }
+}
+
+.empty {
+  margin: 0;
+  @include fs-text-lg;
+  color: var(--fs-color-gray);
 }
 
 .pattern {
