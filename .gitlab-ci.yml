@@ -8,12 +8,19 @@ stages:
   - build
   - deploy
 
+variables:
+  # Версия образа Playwright обязана совпадать с `@playwright/test` в package.json:
+  # в образе лежат браузеры ровно этой ревизии, поэтому скачивать их не нужно.
+  PLAYWRIGHT_VERSION: '1.64.0'
+
 .nodejs:
   image: node:22
   # Свой раннер проекта, а не общие раннеры GitLab: у них ограничен запас минут.
   tags:
     - docker
   interruptible: true
+  # Стор пишет только `verify`; остальные джобы читают его с `policy: pull`,
+  # чтобы не загружать один и тот же кэш из каждой джобы.
   cache:
     key:
       files:
@@ -22,6 +29,18 @@ stages:
       - .pnpm-store
   before_script:
     - corepack enable
+    - pnpm config set store-dir .pnpm-store
+    - pnpm install --frozen-lockfile
+
+.playwright:
+  extends: .nodejs
+  # Браузеры и системные зависимости Chromium уже в образе: `playwright install --with-deps`
+  # не нужен, а значит нет и скачивания ~300 МБ с cdn.playwright.dev на каждом прогоне.
+  image: mcr.microsoft.com/playwright:v$PLAYWRIGHT_VERSION-noble
+  before_script:
+    # В образе Playwright corepack может отсутствовать — тогда pnpm ставим через npm,
+    # версия берётся из поля `packageManager` в package.json.
+    - corepack enable || npm install -g "pnpm@$(node -p "require('./package.json').packageManager.split('@')[1].split('+')[0]")"
     - pnpm config set store-dir .pnpm-store
     - pnpm install --frozen-lockfile
 
@@ -34,12 +53,25 @@ verify:
 test:
   extends: .nodejs
   stage: test
+  cache:
+    policy: pull
   script:
-    - pnpm exec playwright install --with-deps chromium
     - pnpm test
+  needs:
+    - verify
+
+e2e:
+  extends: .playwright
+  stage: test
+  cache:
+    policy: pull
+  script:
     - pnpm test:e2e
   needs:
     - verify
+  # В e2e поднимаются три сервера и оба Nuxt-приложения компилируются на ходу;
+  # отдельный таймаут не даёт джобе тихо съесть общий час пайплайна.
+  timeout: 40m
 
 .nuxt_api:
   variables:
@@ -51,11 +83,14 @@ build:
     - .nodejs
     - .nuxt_api
   stage: build
+  cache:
+    policy: pull
   script:
     - pnpm build
   needs:
     - verify
     - test
+    - e2e
 
 deploy develop:
   stage: deploy
