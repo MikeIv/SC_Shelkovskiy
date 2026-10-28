@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest'
-import type { ApiQuery, ApiRequest } from '#shared/api/request'
 import { asApiRequest } from '#shared/api/request'
 import { loadDirectApi, resolveApiRoute } from '#shared/api/direct'
 import { isDirectApiBase } from '#shared/api/directBase'
@@ -7,26 +6,13 @@ import type { ApiEnvelope } from '#shared/types/api'
 import type { GalleryAlbum } from '#shared/types/gallery'
 import type { HomePageData } from '#shared/types/home'
 import type { NewsDetailData } from '#shared/types/news'
+import { fakeRequest } from './support/fakeRequest'
 
 /**
  * Прямой режим (статический хостинг): клиент сам разбирает путь `/api/*` по контракту
- * ручек и ходит в Laravel. Здесь проверяем сопоставление путей и сборку конверта.
+ * ручек и ходит в Laravel. Здесь проверяем сопоставление путей, сборку конверта и догрузки;
+ * поля ответа проверяют тесты мапперов.
  */
-
-type RecordedRequest = { path: string; query?: ApiQuery }
-
-function fakeRequest(resolve: (path: string) => unknown): {
-  request: ApiRequest
-  calls: RecordedRequest[]
-} {
-  const calls: RecordedRequest[] = []
-  const request: ApiRequest = <Dto>(path: string, options?: { query?: ApiQuery }) => {
-    calls.push({ path, query: options?.query })
-    return Promise.resolve(resolve(path)) as Promise<Dto>
-  }
-
-  return { request, calls }
-}
 
 const homeDto = {
   data: {
@@ -123,7 +109,7 @@ describe('loadDirectApi', () => {
     })
 
     expect(calls.map((call) => call.path)).toEqual(['/home'])
-    expect(body.data.slides[0]).toMatchObject({ id: '472', imageSrc: '/images/home/intro-1.png' })
+    expect(body.data.slides).toHaveLength(1)
   })
 
   it('детальная ленты догружает связанные материалы', async () => {
@@ -136,7 +122,7 @@ describe('loadDirectApi', () => {
 
     expect(calls[0]).toEqual({ path: '/feed/winter', query: undefined })
     expect(calls[1]).toEqual({ path: '/feed', query: { exclude: 'winter', per_page: 4 } })
-    expect(body.data.item).toMatchObject({ id: 'winter', title: 'Зимняя коллекция' })
+    expect(body.data.item.id).toBe('winter')
     expect(body.data.related).toHaveLength(1)
   })
 
@@ -162,11 +148,7 @@ describe('loadDirectApi', () => {
     })
 
     expect(calls[0]).toEqual({ path: '/gallery/party', query: undefined })
-    expect(body.data).toMatchObject({
-      id: 'party',
-      photoCount: 1,
-      photos: ['/storage/media-gallery/a.jpg'],
-    })
+    expect(body.data.id).toBe('party')
   })
 
   it('query поверх URL — для императивных вызовов («показать ещё»)', async () => {
@@ -191,13 +173,9 @@ describe('loadDirectApi', () => {
 
 describe('asApiRequest', () => {
   it('передаёт путь и query в клиент', async () => {
-    const calls: RecordedRequest[] = []
-    const request = asApiRequest((path, options) => {
-      calls.push({ path, query: options?.query })
-      return Promise.resolve({ data: [] })
-    })
+    const { request, calls } = fakeRequest(() => ({ data: [] }))
 
-    await request('/api/feed', { query: { page: 2 } })
+    await asApiRequest(request)('/api/feed', { query: { page: 2 } })
 
     expect(calls[0]).toEqual({ path: '/api/feed', query: { page: 2 } })
   })
