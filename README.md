@@ -1,6 +1,6 @@
 # SC_Shelkovskiy
 
-Фронтенд **Щёлковский** на **Nuxt 4.5.x** (Vue 3, TypeScript, Nitro): `srcDir: app/`, ESLint + Prettier + Stylelint, Husky, глобальные SCSS-токены, **HTTP API** (`useApi` / `useApiFetch` / `serverApi`). Пакетный менеджер — **pnpm** (см. `packageManager` в `package.json`).
+Фронтенд **Щёлковский** на **Nuxt 4.6.x** (Vue 3, TypeScript, Nitro): `srcDir: app/`, ESLint + Prettier + Stylelint, Husky, глобальные SCSS-токены, **HTTP API** (`useApi` / `useApiFetch` / `serverApi`). Пакетный менеджер — **pnpm** (см. `packageManager` в `package.json`).
 
 Каркас развёрнут из шаблона Grand `NUXT4_Template`. GitLab: [`grandfs/schelkovsky-frontend`](https://gitlab.com/grandfs/schelkovsky-frontend).
 
@@ -12,7 +12,7 @@
 
 ## Требования
 
-- Node.js LTS (рекомендуется актуальная LTS; Nuxt 4.5 — Node `^22.19.0 || ^24.11.0 || >=26.0.0`)
+- Node.js LTS (рекомендуется актуальная LTS; Nuxt 4.6 — Node `^22.22.3 || ^24.15.0 || >=26.0.0`)
 - [pnpm](https://pnpm.io/) 11.x (в репозитории зафиксирована версия через поле `packageManager` и Corepack)
 
 ## Установка
