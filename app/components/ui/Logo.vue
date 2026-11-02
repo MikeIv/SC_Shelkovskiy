@@ -42,7 +42,6 @@ const logoNode = createStaticVNode(
   width: rem(161);
   aspect-ratio: 303 / 46;
   color: var(--fs-color-black);
-  overflow: clip;
 
   &[data-variant='white'] {
     color: var(--fs-color-white);
@@ -52,7 +51,14 @@ const logoNode = createStaticVNode(
     width: rem(303);
   }
 
-  :deep(svg) {
+  /*
+   * Селектор потомка без `:deep()`: в `<style module>` псевдо-класс `:deep()` не обрабатывается
+   * (он из scoped-CSS) и правило отбрасывается целиком — SVG оставался со своей высотой 46px.
+   * Дальше коробка с `aspect-ratio` (24.4px) в WebKit обрезала его снизу, а Chrome растягивался
+   * под SVG и дефект прятал. `overflow: clip` убран: при совпадающих размерах он не нужен,
+   * а при расхождении молча срезает логотип вместо заметного переполнения.
+   */
+  svg {
     display: block;
     width: 100%;
     height: 100%;

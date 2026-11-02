@@ -98,7 +98,12 @@ withDefaults(
 .actions {
   align-items: center;
 
-  :deep([data-variant]) {
+  /*
+   * Кнопки приходят в слот из родителя, поэтому `[data-variant]` ищется потомком.
+   * Без `:deep()`: в `<style module>` этот псевдо-класс не обрабатывается
+   * (он из scoped-CSS), и браузер выбрасывал правило целиком — кнопка не растягивалась.
+   */
+  [data-variant] {
     width: 100%;
   }
 }
