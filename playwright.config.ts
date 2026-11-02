@@ -2,16 +2,17 @@ import { defineConfig, devices } from '@playwright/test'
 
 const MOCK_API_PORT = Number(process.env.MOCK_API_PORT ?? 4788)
 const APP_PORT = Number(process.env.E2E_PORT ?? 4789)
-const DIRECT_APP_PORT = Number(process.env.E2E_DIRECT_PORT ?? 4790)
 
 const MOCK_API_URL = `http://127.0.0.1:${MOCK_API_PORT}`
 const APP_URL = `http://127.0.0.1:${APP_PORT}`
-const DIRECT_APP_URL = `http://127.0.0.1:${DIRECT_APP_PORT}`
 
 /**
- * E2E идёт против dev-сервера Nitro с мок-API на фикстурах: наполнение стенда не должно
- * влиять на зелёный прогон. Поднимаются три сервера — мок Laravel и два приложения:
- * в режиме прокси (`NUXT_PUBLIC_API_BASE` пуст) и в прямом (браузер ходит в API сам).
+ * Прокси-режим: `pnpm test:e2e` идёт против dev-сервера Nitro с мок-API на фикстурах,
+ * наполнение стенда не должно влиять на зелёный прогон.
+ *
+ * Прямой режим (браузер ходит в API сам) вынесен в отдельный прогон —
+ * `playwright.direct.config.ts`: Nuxt CLI v4 держит блокировку на `.nuxt`, и второй
+ * `nuxt dev` на том же проекте не стартует, поэтому приложения поднимаются по очереди.
  */
 export default defineConfig({
   testDir: './tests/e2e',
@@ -27,14 +28,9 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      /** Спецификации прямого режима проверяются отдельным проектом на своём приложении. */
+      /** Спецификации прямого режима живут в `direct/` и проверяются своим прогоном. */
       testIgnore: /direct[\\/]/,
       use: { ...devices['Desktop Chrome'] },
-    },
-    {
-      name: 'chromium-direct',
-      testDir: './tests/e2e/direct',
-      use: { ...devices['Desktop Chrome'], baseURL: DIRECT_APP_URL },
     },
   ],
   webServer: [
@@ -53,18 +49,6 @@ export default defineConfig({
         NUXT_API_UPSTREAM: `${MOCK_API_URL}/api/v1`,
         NUXT_API_AUTH: '',
         NUXT_PUBLIC_API_BASE: '',
-      },
-      reuseExistingServer: !process.env.CI,
-      timeout: 120_000,
-    },
-    {
-      /** Прямой режим: абсолютный `apiBase`, ручек Nitro у статического стенда нет. */
-      command: `node node_modules/nuxt/bin/nuxt.mjs dev --host 127.0.0.1 --port ${DIRECT_APP_PORT}`,
-      url: DIRECT_APP_URL,
-      env: {
-        NUXT_API_UPSTREAM: '',
-        NUXT_API_AUTH: '',
-        NUXT_PUBLIC_API_BASE: `${MOCK_API_URL}/api/v1`,
       },
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,

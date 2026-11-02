@@ -55,7 +55,7 @@ pnpm approve-builds --all
 | `pnpm test`           | Vitest: `test:unit` + `test:component` — то же, что стадия `test` в CI   |
 | `pnpm test:unit`      | Vitest, проект `node`: `tests/unit`, `tests/server`                      |
 | `pnpm test:component` | Vitest, проект `nuxt`: `tests/nuxt` (окружение Nuxt)                     |
-| `pnpm test:e2e`       | Playwright на мок-API (`tests/e2e`, поднимает три сервера)               |
+| `pnpm test:e2e`       | Playwright на мок-API (`tests/e2e`, два прогона: прокси- и прямой режим) |
 | `pnpm verify`         | `lint:all` + `rules:check` + `typecheck`                                 |
 | `pnpm rules:check`    | рассинхрон правил: `.cursor/rules` ↔ `AGENTS.md` / `.dsh/skills`         |
 | `pnpm figma:meta`     | Figma REST: `fileKey`, страницы, дата правки                             |
@@ -68,7 +68,8 @@ pnpm approve-builds --all
 - **Prettier**: [`prettier.config.mjs`](prettier.config.mjs); файлы `*.vue` в Prettier **не** форматируются (см. [`.prettierignore`](.prettierignore)).
 - **Stylelint**: минимальная конфигурация для стилей в SFC — [`stylelint.config.mjs`](stylelint.config.mjs).
 - **Husky, pre-commit**: хук [`.husky/pre-commit`](.husky/pre-commit) вызывает [`scripts/pre-commit.mjs`](scripts/pre-commit.mjs) — баннер с именем из `package.json`, проверка рассинхрона правил, lint-staged с флагом `--concurrent false`.
-- **Husky, pre-push**: хук [`.husky/pre-push`](.husky/pre-push) вызывает [`scripts/pre-push.mjs`](scripts/pre-push.mjs) — `pnpm test` (unit + component). E2E остаётся за CI: ему нужны браузеры и три сервера.
+- **Husky, pre-push**: хук [`.husky/pre-push`](.husky/pre-push) вызывает [`scripts/pre-push.mjs`](scripts/pre-push.mjs) — `pnpm test` (unit + component). E2E остаётся за CI: ему нужны браузеры и запуск dev-серверов.
+- **E2E и `pnpm dev`**: Nuxt CLI держит блокировку на `.nuxt`, пока работает dev-сервер, поэтому `pnpm test:e2e` запускается при остановленном `pnpm dev` (иначе Playwright не поднимет свой сервер). Два режима данных проверяются двумя прогонами подряд — [`playwright.config.ts`](playwright.config.ts) и [`playwright.direct.config.ts`](playwright.direct.config.ts).
 - **lint-staged**: [`lint-staged.config.mjs`](lint-staged.config.mjs). Если в коммите только файлы вне типов для линта, проверки **пропускаются** с пояснением.
 
 ## Зависимости
