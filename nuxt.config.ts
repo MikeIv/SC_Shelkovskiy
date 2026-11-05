@@ -168,6 +168,17 @@ export default defineNuxtConfig({
     },
   },
 
+  /**
+   * Nuxt 4.6.4 сломал резолв `devServer.host`: в конфиг попадает служебный объект
+   * `{ $resolve }` вместо строки, `@nuxt/cli` пишет его в
+   * `node_modules/.cache/nuxt/dev-server.json`, и следующий `nuxt dev` падает с
+   * `options.hostname.toLowerCase is not a function`. Явная строка обходит
+   * сломанный резолвер; убрать, когда выйдет патч.
+   */
+  devServer: {
+    host: 'localhost',
+  },
+
   devtools: {
     /** В production-сборке DevTools не подключаем — меньше шум и размер. */
     enabled: isDev,
