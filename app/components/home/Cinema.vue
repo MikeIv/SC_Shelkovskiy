@@ -35,6 +35,18 @@ const widgetFailed = ref(false)
 const showWidget = computed(
   () => !widgetFailed.value && (isDemo || items.length === 0),
 )
+
+const { openPlaceSchedule } = useAfishaWidget()
+
+/**
+ * «Смотреть все» открывает модальное расписание кинотеатра из виджета Афиши — те же фильмы
+ * и сеансы, что в карточках. SDK не поднялся — уводим в общий каталог развлечений.
+ */
+async function onShowAll() {
+  const opened = await openPlaceSchedule(placeId)
+
+  if (!opened) await navigateTo('/entertainment')
+}
 </script>
 
 <template>
@@ -92,7 +104,7 @@ const showWidget = computed(
         </ul>
       </div>
 
-      <UiButton v-if="!showWidget" to="/entertainment">Смотреть все</UiButton>
+      <UiButton v-if="!showWidget" type="button" @click="onShowAll">Смотреть все</UiButton>
     </div>
   </section>
 </template>

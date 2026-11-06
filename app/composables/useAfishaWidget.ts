@@ -1,4 +1,8 @@
-import type { AfishaWidgetInstance, AfishaWidgetManager } from '#shared/types/afishaWidget'
+import type {
+  AfishaWidgetInstance,
+  AfishaWidgetManager,
+  AfishaWidgetParams,
+} from '#shared/types/afishaWidget'
 
 /** Скрипт SDK виджета Афиши: после загрузки даёт глобальный `window.widgetManager`. */
 const WIDGET_SCRIPT_SRC = 'https://afisha.ru/w/afishaWidgetManager.global.js'
@@ -24,8 +28,8 @@ export type AfishaTicketParams = {
 }
 
 /**
- * Виджет Афиши в двух видах: модальное окно покупки по клику на карточку и встроенное
- * расписание кинотеатра для разделов без серверных данных (статический стенд).
+ * Виджет Афиши в трёх видах: модальное окно покупки по клику на карточку, модальное
+ * расписание всей площадки и встроенное расписание для разделов без серверных данных.
  *
  * SDK грузится по требованию: сторонний скрипт в `head` главной не нужен, пока он не понадобился.
  */
@@ -43,46 +47,54 @@ export function useAfishaWidget() {
 
       return (window as AfishaWidgetWindow).widgetManager
     } catch (error) {
-      if (import.meta.dev) {
-        console.error('[useAfishaWidget]', error)
-      }
+      logWidgetError(error)
 
       return undefined
     }
   }
 
-  async function openTicket(params: AfishaTicketParams): Promise<boolean> {
+  /** Модальное окно виджета: SDK открывает его сам и закрывает предыдущее. */
+  async function openModal(params: AfishaWidgetParams): Promise<boolean> {
     const manager = await getManager()
     if (!manager) return false
 
     try {
-      /** `modal` SDK открывает сам и закрывает предыдущее окно, поэтому результат не нужен. */
-      await manager.appendWidget(
-        {
-          route: WIDGET_ROUTE,
-          embedType: 'modal',
-          creationType: 'movie',
-          creationId: params.creationId,
-          ...(params.cityId ? { cityId: params.cityId } : {}),
-          ...(params.placeId ? { placeId: params.placeId } : {}),
-        },
-        document.body,
-      )
+      await manager.appendWidget(params, document.body)
 
       return true
     } catch (error) {
-      if (import.meta.dev) {
-        console.error('[useAfishaWidget]', error)
-      }
+      logWidgetError(error)
 
       return false
     }
   }
 
+  async function openTicket(params: AfishaTicketParams): Promise<boolean> {
+    return openModal({
+      route: WIDGET_ROUTE,
+      embedType: 'modal',
+      creationType: 'movie',
+      creationId: params.creationId,
+      ...(params.cityId ? { cityId: params.cityId } : {}),
+      ...(params.placeId ? { placeId: params.placeId } : {}),
+    })
+  }
+
   /**
-   * Встроенное расписание кинотеатра. Нужен только `place-id`: экран `place` в виджете
-   * показывает все сеансы площадки, без города и без доступа к партнёрскому API.
-   * Возвращает экземпляр, чтобы раздел снял iframe при размонтировании.
+   * Вся афиша кинотеатра в модальном окне — кнопка «Смотреть все». `placeId` из данных ручки
+   * важнее конфига: он приходит от Афиши вместе с фильмами.
+   */
+  async function openPlaceSchedule(placeIdOverride?: string | null): Promise<boolean> {
+    const target = placeIdOverride?.trim() || placeId.value
+    if (!target) return false
+
+    return openModal({ route: WIDGET_PLACE_ROUTE, embedType: 'modal', placeId: target })
+  }
+
+  /**
+   * Встроенное расписание кинотеатра — для разделов без серверных данных. Нужен только
+   * `place-id`: экран `place` показывает все сеансы площадки. Возвращает экземпляр,
+   * чтобы раздел снял iframe при размонтировании.
    */
   async function mountPlaceWidget(
     container: HTMLElement,
@@ -98,15 +110,19 @@ export function useAfishaWidget() {
         container,
       )
     } catch (error) {
-      if (import.meta.dev) {
-        console.error('[useAfishaWidget]', error)
-      }
+      logWidgetError(error)
 
       return undefined
     }
   }
 
-  return { openTicket, mountPlaceWidget }
+  return { openTicket, openPlaceSchedule, mountPlaceWidget }
+}
+
+function logWidgetError(error: unknown): void {
+  if (import.meta.dev) {
+    console.error('[useAfishaWidget]', error)
+  }
 }
 
 /**
