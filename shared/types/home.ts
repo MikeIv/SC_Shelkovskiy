@@ -71,6 +71,10 @@ export type HomeCinemaFilm = {
   creationId?: string
   /** Продажа билетов открыта: карточка включает кнопку «Купить билет» */
   onSale?: boolean
+  /** Время ближайшего сеанса `22:00` по Москве */
+  sessionTime?: string
+  /** Минимальная цена билета на ближайшие сеансы, ₽ */
+  priceFrom?: number
 }
 
 export type HomeGalleryAlbum = {

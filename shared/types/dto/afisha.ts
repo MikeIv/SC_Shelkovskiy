@@ -1,20 +1,24 @@
 /**
- * Тела ответов Афиши API v3 (`https://api.afisha.ru/v3`).
+ * Тело ответа внутреннего API виджета Афиши (`https://mapi.afisha.ru/api/v21`).
  *
- * Контракт — вендорский swagger (`/swagger/v3/swagger.json`). Перечисления в нём объявлены
- * целыми, но по правилам вендора приходят текстом (`"Movie"`, `"Audience18"`), поэтому
- * элементы массивов маппер читает как `unknown` и сверяет с известными значениями.
+ * Это тот же запрос, которым живёт iframe виджета: `GET /places/{placeId}/schedule?limit=N`
+ * с заголовком `X-Application-key: <ключ виджета>` — ключ публичный, партнёрский не нужен,
+ * белый список IP тоже (проверено запросом с машины разработчика). Документации у эндпоинта
+ * нет, поэтому поля читаем как `unknown` и сверяем их в маппере.
  *
- * Поля, которые мы используем:
- * - `GET /v3/cities` → `{ Id, Name }`;
- * - `GET /v3/places?CityId&CreationType&WidgetKey` → `{ Id, CityId, Type, Name }`;
- * - `GET /v3/places/{id}/schedule?WidgetKey` → `{ Creation, Sessions[] }`, где у `Creation`
- *   есть `Id`, `Name`, `Genres[]`, `AgeRestriction`, `Images[]` (`Type: 'Poster'`), `AfishaCreationUrl`,
- *   а у сеанса — `IsSaleAvailable` и `SessionDateTime`.
+ * Поля, которые использует раздел:
+ * - `creationSchedules[]` → `{ creation, sessions[] }`;
+ * - `creation`: `id`, `name`, `genres` (JSON-строка с русскими подписями), `ageRestriction`
+ *   (число), `isSaleAvailable`, `siteLink`, `imageUrl` / `thumbnailUrl`,
+ *   `mainPhotoCrops[]` с `aspectRatio: '1:2'` — постер под рамку карточки;
+ * - `sessions[]`: `time` (`2026-11-06T22:00:00`, время московское, без часового пояса),
+ *   `minPrice`, `hasAvailablePlaces`.
+ *
+ * Размер страницы задаёт `limit`: по умолчанию площадка отдаёт только три фильма.
  */
 
-export type AfishaCitiesResponseDto = unknown[]
-
-export type AfishaPlacesResponseDto = unknown[]
-
-export type AfishaPlaceScheduleResponseDto = unknown[]
+export type AfishaPlaceScheduleResponseDto = {
+  creationSchedules?: unknown[]
+  place?: unknown
+  pageInfo?: unknown
+}

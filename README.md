@@ -125,13 +125,15 @@ pnpm approve-builds --all
 
 ### Кино на главной — Афиша
 
-Раздел «Кино» берёт расписание кинотеатра ТРЦ из Афиши API v3 (`https://api.afisha.ru/v3`), а покупку отдаёт её виджету:
+Раздел «Кино» берёт расписание кинотеатра ТРЦ из Афиши, а покупку отдаёт её виджету:
 
 - Ручка — [`server/api/cinema.get.ts`](server/api/cinema.get.ts), клиент API — [`server/utils/afishaApi.ts`](server/utils/afishaApi.ts), маппер — [`shared/utils/mappers/afisha.ts`](shared/utils/mappers/afisha.ts), composable — [`useCinema`](app/composables/api/useCinema.ts).
-- API вызывается **только с сервера**: партнёрский ключ (`X-ApiAuth-PartnerKey`) секретный, а `api.afisha.ru` закрыт белым списком IP. Ошибка (ключа нет, IP не в списке, вендор недоступен) — это моки `~/data/homeCinemaItems` и ярлык «Демо-данные», как у остальных секций главной.
+- Источник данных — внутренний API виджета (`https://mapi.afisha.ru/api/v21/places/{id}/schedule`): постеры, жанры, возраст, ближайший сеанс и цена. Запрос идёт **только с сервера** (браузеру Афиша такие вызовы не разрешает — CORS), авторизация — публичный ключ виджета в заголовке `X-Application-key`, партнёрский ключ и белый список IP не нужны.
+- Документированный API v3 (`api.afisha.ru/v3`) отдаёт то же самое, но закрыт белым списком IP — его подключаем, только если понадобится официальный контракт.
+- Ошибка ручки (нет ключа или площадки, вендор недоступен) — моки `~/data/homeCinemaItems` и ярлык «Демо-данные», как у остальных секций главной.
 - **Статический стенд** (прямой режим): серверной ручки там нет, поэтому вместо заглушек раздел показывает встроенное расписание кинотеатра из виджета Афиши — [`CinemaWidget`](app/components/home/CinemaWidget.vue) и экран `place` ([`useAfishaWidget`](app/composables/useAfishaWidget.ts)). Виджет клиентский: партнёрский ключ и белый список IP ему не нужны, достаточно `NUXT_PUBLIC_AFISHA_WIDGET_PLACE_ID`. Если SDK не поднялся — снова карточки-заглушки.
 - Виджет покупки — [`useAfishaWidget`](app/composables/useAfishaWidget.ts): SDK `afisha.ru/w/afishaWidgetManager.global.js` грузится по клику на «Купить билет»; если он не поднялся, карточка открывает страницу фильма на Афише.
-- Переменные — `NUXT_AFISHA_PARTNER_KEY`, `NUXT_AFISHA_CITY_ID`, `NUXT_AFISHA_PLACE_ID`, `NUXT_AFISHA_PLACE_NAME`, `NUXT_PUBLIC_AFISHA_WIDGET_KEY`, `NUXT_PUBLIC_AFISHA_WIDGET_PLACE_ID` ([`.env.example`](.env.example)). Без `CITY_ID`/`PLACE_ID` ручка ищет Москву и площадку по вхождению в название.
+- Переменные — `NUXT_PUBLIC_AFISHA_WIDGET_KEY`, `NUXT_PUBLIC_AFISHA_WIDGET_PLACE_ID`, `NUXT_PUBLIC_AFISHA_WIDGET_CITY_ID` ([`.env.example`](.env.example)); по умолчанию — ключ из договора, «Кино Окко Щелковский» и Москва.
 
 ## Макет Figma
 

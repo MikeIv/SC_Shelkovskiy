@@ -199,15 +199,6 @@ export default defineNuxtConfig({
     apiUpstream: '',
     apiAuth: '',
     /**
-     * Афиша (раздел «Кино»): партнёрский ключ уходит только в Nitro-прокси заголовком
-     * `X-ApiAuth-PartnerKey` — см. `server/utils/afishaApi.ts`. id города и площадки
-     * необязательны: без них ручка ищет Москву и кинотеатр ТРЦ по `afishaPlaceName`.
-     */
-    afishaPartnerKey: '',
-    afishaCityId: '',
-    afishaPlaceId: '',
-    afishaPlaceName: 'ОККО',
-    /**
      * `headers` намеренно пустой: Basic для ipx приходит только из рантайма
      * (`NUXT_IPX_HTTP_FETCH_OPTIONS_HEADERS='{"Authorization":"Basic …"}'`), иначе секрет
      * вшивается в серверный бандл и ротация кредов требует пересборки. Вложенное имя
@@ -229,10 +220,15 @@ export default defineNuxtConfig({
        */
       afishaWidgetKey: '845f4063-1686-4aa8-bdd9-2c3bac410835',
       /**
-       * Площадка Афиши для встроенного расписания кинотеатра: «Кино Окко Щелковский».
-       * Нужна в браузере, партнёрский API не требует — см. `useAfishaWidget`.
+       * Площадка Афиши для расписания кинотеатра: «Кино Окко Щелковский». Нужна и серверной
+       * ручке `/api/cinema`, и встроенному виджету — партнёрский API не требует.
        */
       afishaWidgetPlaceId: '125570',
+      /**
+       * Город площадки (Москва) — `cityId` в параметрах виджета покупки. Проверено
+       * публичным справочником городов Афиши, перекрывается `NUXT_PUBLIC_AFISHA_WIDGET_CITY_ID`.
+       */
+      afishaWidgetCityId: '2',
     },
   },
 

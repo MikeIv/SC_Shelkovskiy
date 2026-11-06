@@ -1,15 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import {
+  AFISHA_WIDGET_API_BASE,
   buildAfishaFetchOptions,
   fetchAfishaCinema,
   readAfishaSettings,
-  resolveCityId,
-  resolvePlaceId,
 } from '../../server/utils/afishaApi'
 
 /**
- * Клиент Афиши: настройки из `runtimeConfig`, справочники города и площадки, расписание.
- * HTTP не поднимаем — запросы к API подменяет `fakeAfisha`.
+ * Клиент Афиши: настройки из `runtimeConfig` и запрос расписания площадки.
+ * HTTP не поднимаем — запросы подменяет `fakeAfisha`.
  */
 
 type AfishaCall = { path: string; query?: Record<string, string> }
@@ -28,133 +27,101 @@ function fakeAfisha(respond: (call: AfishaCall) => unknown) {
 }
 
 const SETTINGS = {
-  partnerKey: 'partner-key',
   widgetKey: 'widget-key',
-  cityId: '',
-  placeId: '',
-  placeName: 'ОККО',
+  placeId: '125570',
+  cityId: '2',
 }
 
-const CITIES = [{ Id: 2, Name: 'Москва' }]
-const PLACES = [
-  { Id: 10, CityId: 2, Type: 'Theatre', Name: 'Театр' },
-  { Id: 4242, CityId: 2, Type: 'Cinema', Name: 'КИНО ОККО' },
-]
-const SCHEDULE = [
-  {
-    Creation: {
-      Id: '989798',
-      Type: 'Movie',
-      Name: 'Кодекс Данте',
-      Genres: ['Mystery'],
-      AgeRestriction: 'Audience18',
-      Images: [{ Url: 'https://cdn.afisha.ru/poster.jpg', Type: 'Poster' }],
-      AfishaCreationUrl: 'https://www.afisha.ru/movie/kodeks-dante/',
+const SCHEDULE = {
+  creationSchedules: [
+    {
+      creation: {
+        id: 28_309,
+        name: 'Сумерки. Сага. Новолуние',
+        ageRestriction: 18,
+        genres: '["Триллер"]',
+        imageUrl: 'https://kassa.rambler.ru/poster.jpg',
+        isSaleAvailable: true,
+        siteLink: 'https://www.afisha.ru/movie/28309',
+      },
+      sessions: [{ time: '2026-11-06T22:00:00', minPrice: 670, hasAvailablePlaces: true }],
     },
-    Sessions: [{ Id: 1, IsSaleAvailable: true, SessionDateTime: '2026-11-01T18:00:00+03:00' }],
-  },
-]
+  ],
+  pageInfo: { hasNextPage: false },
+}
 
 describe('readAfishaSettings', () => {
-  it('читает приватные ключи и подставляет кинотеатр по умолчанию', () => {
+  it('читает публичные ключ, площадку и город, обрезая пробелы', () => {
     const settings = readAfishaSettings({
-      afishaPartnerKey: ' partner ',
-      afishaCityId: ' 2 ',
-      afishaPlaceId: '',
-      afishaPlaceName: '',
-      public: { afishaWidgetKey: 'widget' },
+      public: {
+        afishaWidgetKey: ' widget ',
+        afishaWidgetPlaceId: ' 125570 ',
+        afishaWidgetCityId: ' 2 ',
+      },
     })
 
     expect(settings).toEqual({
-      partnerKey: 'partner',
       widgetKey: 'widget',
+      placeId: '125570',
       cityId: '2',
-      placeId: '',
-      placeName: 'ОККО',
     })
   })
 
-  it('без партнёрского ключа — 503, а не запрос без авторизации', () => {
-    expect(() => buildAfishaFetchOptions({ ...SETTINGS, partnerKey: '' })).toThrowError(
+  it('пустой конфиг — пустые значения, без исключений', () => {
+    expect(readAfishaSettings({})).toEqual({ widgetKey: '', placeId: '', cityId: '' })
+  })
+})
+
+describe('buildAfishaFetchOptions', () => {
+  it('ставит ключ виджета в X-Application-key и базу внутреннего API', () => {
+    expect(buildAfishaFetchOptions(SETTINGS)).toEqual({
+      baseURL: AFISHA_WIDGET_API_BASE,
+      timeout: 10_000,
+      headers: {
+        Accept: 'application/json',
+        'X-Application-key': 'widget-key',
+      },
+    })
+  })
+
+  it('без ключа — 503, а не запрос без авторизации', () => {
+    expect(() => buildAfishaFetchOptions({ ...SETTINGS, widgetKey: '' })).toThrowError(
       expect.objectContaining({ statusCode: 503 }),
     )
   })
 })
 
-describe('buildAfishaFetchOptions', () => {
-  it('ставит партнёрский ключ в заголовок и базу API Афиши', () => {
-    expect(buildAfishaFetchOptions(SETTINGS)).toEqual({
-      baseURL: 'https://api.afisha.ru',
-      timeout: 10_000,
-      headers: {
-        Accept: 'application/json',
-        'X-ApiAuth-PartnerKey': 'partner-key',
-      },
-    })
-  })
-})
-
-describe('справочники Афиши', () => {
-  it('город ищется по названию, площадка — по вхождению в название', async () => {
-    const { request, calls } = fakeAfisha((call) => (call.path === '/v3/cities' ? CITIES : PLACES))
-
-    await expect(resolveCityId(request)).resolves.toBe('2')
-
-    const placeId = await resolvePlaceId(request, SETTINGS, '2')
-
-    expect(placeId).toBe('4242')
-    expect(calls[1]).toEqual({
-      path: '/v3/places',
-      query: { CityId: '2', CreationType: 'Movie', WidgetKey: 'widget-key' },
-    })
-  })
-
-  it('не нашёл город или площадку — 502', async () => {
-    const empty = fakeAfisha(() => [])
-
-    await expect(resolveCityId(empty.request)).rejects.toMatchObject({ statusCode: 502 })
-    await expect(resolvePlaceId(empty.request, SETTINGS, '2')).rejects.toMatchObject({
-      statusCode: 502,
-    })
-  })
-})
-
 describe('fetchAfishaCinema', () => {
-  it('сам находит город и площадку и берёт их расписание', async () => {
-    const { request, calls } = fakeAfisha((call) => {
-      if (call.path === '/v3/cities') return CITIES
-      if (call.path === '/v3/places') return PLACES
-
-      return SCHEDULE
-    })
+  it('берёт расписание площадки с размером страницы и собирает карточки', async () => {
+    const { request, calls } = fakeAfisha(() => SCHEDULE)
 
     const data = await fetchAfishaCinema(request, SETTINGS)
 
-    expect(calls.at(-1)).toEqual({
-      path: '/v3/places/4242/schedule',
-      query: { WidgetKey: 'widget-key' },
-    })
+    expect(calls).toEqual([{ path: '/places/125570/schedule', query: { limit: '24' } }])
     expect(data.cityId).toBe('2')
-    expect(data.placeId).toBe('4242')
-    expect(data.items[0]).toMatchObject({ id: '989798', title: 'Кодекс Данте', ageRating: '18+' })
+    expect(data.placeId).toBe('125570')
+    expect(data.items[0]).toMatchObject({
+      id: '28309',
+      title: 'Сумерки. Сага. Новолуние',
+      ageRating: '18+',
+      sessionTime: '22:00',
+      priceFrom: 670,
+    })
   })
 
-  it('с заданными id не ходит в справочники', async () => {
-    const { request, calls } = fakeAfisha(() => SCHEDULE)
-
-    const data = await fetchAfishaCinema(request, { ...SETTINGS, cityId: '2', placeId: '4242' })
-
-    expect(calls).toEqual([
-      { path: '/v3/places/4242/schedule', query: { WidgetKey: 'widget-key' } },
-    ])
-    expect(data.items).toHaveLength(1)
-  })
-
-  it('без ключа виджета — 503: Афиша требует WidgetKey в запросах расписания', async () => {
+  it('без id площадки — 503: искать площадку по названию API виджета не умеет', async () => {
     const { request } = fakeAfisha(() => SCHEDULE)
 
-    await expect(fetchAfishaCinema(request, { ...SETTINGS, widgetKey: '' })).rejects.toMatchObject({
+    await expect(fetchAfishaCinema(request, { ...SETTINGS, placeId: '' })).rejects.toMatchObject({
       statusCode: 503,
     })
+  })
+
+  it('пустой ответ площадки — пустой список, а не ошибка', async () => {
+    const { request } = fakeAfisha(() => ({}))
+
+    const data = await fetchAfishaCinema(request, SETTINGS)
+
+    expect(data.items).toEqual([])
   })
 })

@@ -1,54 +1,41 @@
 import type { CinemaListData } from '#shared/types/cinema'
 import type { AfishaPlaceScheduleResponseDto } from '#shared/types/dto/afisha'
-import { asRecord, text } from '#shared/utils/apiRecord'
 import { mapAfishaSchedule } from '#shared/utils/mappers/afisha'
 import type { ApiEvent } from './apiEvent'
 
 /**
- * Афиша API v3 (`https://api.afisha.ru/v3`) — расписание площадки для раздела «Кино».
+ * Кино на главной: расписание кинотеатра ТРЦ из Афиши.
  *
- * Вендор запрещает вызывать API с клиента (ключ и белый список IP — на нашей стороне),
- * поэтому клиент берёт данные только из ручки Nitro `/api/cinema`. Расписание вендор
- * обновляет раз в 10 минут и просит не запрашивать чаще раза в 30 минут — кэш ручки 1800 с.
- *
- * Сценарий вендора для нашего случая: расписание и описания берём из API, а покупку
- * отдаём его виджету — идентификаторы города и площадки нужны и там.
+ * Данные берём из внутреннего API её виджета (`https://mapi.afisha.ru/api/v21`) — тем же
+ * запросом, которым живёт iframe. Партнёрский ключ и белый список IP не нужны: заголовок
+ * `X-Application-key` содержит публичный ключ виджета. Документированный API v3
+ * (`api.afisha.ru/v3`) отдаёт то же самое, но закрыт белым списком IP, поэтому его
+ * используем, только если понадобится официальный контракт.
  */
-
-/** Адрес API Афиши: без версии, она в пути (`/v3/...`). */
-export const AFISHA_API_BASE = 'https://api.afisha.ru'
+export const AFISHA_WIDGET_API_BASE = 'https://mapi.afisha.ru/api/v21'
 
 const UPSTREAM_TIMEOUT_MS = 10_000
 
-const CREATION_TYPE_MOVIE = 'Movie'
+/** По умолчанию площадка отдаёт три фильма: размер страницы задаёт `limit`. */
+const SCHEDULE_LIMIT = 24
 
-/** Москва в списке городов; сравниваем в нижнем регистре по вхождению. */
-const CITY_NAME = 'москв'
-
-/** Кинотеатр ТРЦ — по вхождению в название площадки Афиши. */
-const DEFAULT_PLACE_NAME = 'ОККО'
-
-/** Настройки раздела из `runtimeConfig`: приватные ключи и необязательные id. */
+/** Настройки раздела: всё публичное — ключ виджета и id площадки из `runtimeConfig`. */
 export type AfishaSettings = {
-  /** Партнёрский ключ — заголовок `X-ApiAuth-PartnerKey`, только на сервере. */
-  partnerKey: string
-  /** Ключ виджета — query-параметр `WidgetKey`, публичный. */
+  /** Публичный ключ виджета Афиши — заголовок `X-Application-key`. */
   widgetKey: string
-  /** id города, если он зафиксирован настройкой; иначе ищем Москву. */
-  cityId: string
-  /** id площадки, если он известен; иначе ищем кинотеатр по названию. */
+  /** Площадка Афиши — кинотеатр ТРЦ (`afishaWidgetPlaceId`). */
   placeId: string
-  /** Часть названия площадки для поиска (по умолчанию `ОККО`). */
-  placeName: string
+  /** Город площадки (`afishaWidgetCityId`): модальный виджет покупки собирает путь с ним. */
+  cityId: string
 }
 
-/** Часть `runtimeConfig`, которую читает раздел (приватное + `public`). */
+/** Часть `runtimeConfig`, которую читает раздел. */
 export type AfishaRuntimeConfig = {
-  afishaPartnerKey?: unknown
-  afishaCityId?: unknown
-  afishaPlaceId?: unknown
-  afishaPlaceName?: unknown
-  public?: { afishaWidgetKey?: unknown }
+  public?: {
+    afishaWidgetKey?: unknown
+    afishaWidgetPlaceId?: unknown
+    afishaWidgetCityId?: unknown
+  }
 }
 
 export type AfishaFetchOptions = {
@@ -69,36 +56,34 @@ function configText(value: unknown): string {
 
 export function readAfishaSettings(config: AfishaRuntimeConfig): AfishaSettings {
   return {
-    partnerKey: configText(config.afishaPartnerKey),
     widgetKey: configText(config.public?.afishaWidgetKey),
-    cityId: configText(config.afishaCityId),
-    placeId: configText(config.afishaPlaceId),
-    placeName: configText(config.afishaPlaceName) || DEFAULT_PLACE_NAME,
+    placeId: configText(config.public?.afishaWidgetPlaceId),
+    cityId: configText(config.public?.afishaWidgetCityId),
   }
 }
 
-/** Опции клиента; без партнёрского ключа ручка отвечает 503, а не идёт в API без авторизации. */
+/** Опции клиента; без ключа виджета ручка отвечает 503, а не идёт в API без авторизации. */
 export function buildAfishaFetchOptions(settings: AfishaSettings): AfishaFetchOptions {
-  if (!settings.partnerKey) {
+  if (!settings.widgetKey) {
     throw createError({
       statusCode: 503,
-      statusMessage: 'Afisha partner key is not configured',
+      statusMessage: 'Afisha widget key is not configured',
     })
   }
 
   return {
-    baseURL: AFISHA_API_BASE,
+    baseURL: AFISHA_WIDGET_API_BASE,
     timeout: UPSTREAM_TIMEOUT_MS,
     headers: {
       Accept: 'application/json',
-      'X-ApiAuth-PartnerKey': settings.partnerKey,
+      'X-Application-key': settings.widgetKey,
     },
   }
 }
 
 /**
- * HTTP-клиент Nitro к Афише. В лог пишется только статус: тело может содержать данные
- * партнёра, а ключ — секрет.
+ * HTTP-клиент Nitro к Афише. В лог пишется только статус: ответ может быть большим,
+ * а ключ виджета — единственное, что мы передаём наверх.
  */
 export function createAfishaRequest(settings: AfishaSettings): AfishaRequest {
   return $fetch.create({
@@ -111,64 +96,27 @@ export function createAfishaRequest(settings: AfishaSettings): AfishaRequest {
   }) as unknown as AfishaRequest
 }
 
-/** Id Москвы из справочника городов. */
-export async function resolveCityId(request: AfishaRequest): Promise<string> {
-  const cities = await request<unknown[]>('/v3/cities')
-  const id = asRecord(cities.find((city) => matchesName(asRecord(city)?.Name, CITY_NAME)))?.Id
-
-  if (typeof id !== 'number') {
-    throw createError({ statusCode: 502, statusMessage: 'Afisha city is not found' })
-  }
-
-  return String(id)
-}
-
-/** Id кинотеатра ТРЦ среди площадок города, где идут фильмы. */
-export async function resolvePlaceId(
-  request: AfishaRequest,
-  settings: AfishaSettings,
-  cityId: string,
-): Promise<string> {
-  const places = await request<unknown[]>('/v3/places', {
-    query: {
-      CityId: cityId,
-      CreationType: CREATION_TYPE_MOVIE,
-      WidgetKey: settings.widgetKey,
-    },
-  })
-  const id = asRecord(
-    places.find((place) => matchesName(asRecord(place)?.Name, settings.placeName)),
-  )?.Id
-
-  if (typeof id !== 'number') {
-    throw createError({ statusCode: 502, statusMessage: 'Afisha place is not found' })
-  }
-
-  return String(id)
-}
-
-/**
- * Расписание кинотеатра → карточки раздела. `cityId` / `placeId` из настроек не запрашивают
- * справочники: прод задаёт их явно, dev ищет по названию.
- */
+/** Расписание кинотеатра → карточки раздела. */
 export async function fetchAfishaCinema(
   request: AfishaRequest,
   settings: AfishaSettings,
 ): Promise<CinemaListData> {
-  if (!settings.widgetKey) {
+  if (!settings.placeId) {
     throw createError({
       statusCode: 503,
-      statusMessage: 'Afisha widget key is not configured',
+      statusMessage: 'Afisha place id is not configured',
     })
   }
 
-  const cityId = settings.cityId || (await resolveCityId(request))
-  const placeId = settings.placeId || (await resolvePlaceId(request, settings, cityId))
-  const schedule = await request<AfishaPlaceScheduleResponseDto>(`/v3/places/${placeId}/schedule`, {
-    query: { WidgetKey: settings.widgetKey },
-  })
+  const schedule = await request<AfishaPlaceScheduleResponseDto>(
+    `/places/${settings.placeId}/schedule`,
+    { query: { limit: String(SCHEDULE_LIMIT) } },
+  )
 
-  return mapAfishaSchedule(schedule, { cityId, placeId })
+  return mapAfishaSchedule(schedule.creationSchedules ?? [], {
+    cityId: settings.cityId,
+    placeId: settings.placeId,
+  })
 }
 
 /**
@@ -179,10 +127,4 @@ export async function fetchAfishaCinemaFromEvent(event?: ApiEvent): Promise<Cine
   const settings = readAfishaSettings(event ? useRuntimeConfig(event) : useRuntimeConfig())
 
   return fetchAfishaCinema(createAfishaRequest(settings), settings)
-}
-
-function matchesName(value: unknown, needle: string): boolean {
-  const name = text(value).toLowerCase()
-
-  return name !== '' && name.includes(needle.toLowerCase())
 }

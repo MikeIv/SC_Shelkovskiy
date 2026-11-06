@@ -5,86 +5,92 @@ import { mapAfishaSchedule } from '#shared/utils/mappers/afisha'
 /**
  * Расписание площадки Афиши → карточки раздела «Кино».
  *
- * Перечисления вендор отдаёт текстом (`"Movie"`, `"Audience18"`), хотя в swagger они целые —
- * поэтому фикстуры повторяют ответ как есть, строками.
+ * Фикстуры повторяют ответ внутреннего API виджета как есть: `genres` приходит JSON-строкой,
+ * `ageRestriction` — числом, `time` — без часового пояса.
  */
 
-const CONTEXT = { cityId: '2', placeId: '4242' }
+const CONTEXT = { cityId: '2', placeId: '125570' }
 
 function schedule(
   overrides: {
-    id?: string
+    id?: number
     name?: string
     genres?: unknown
     age?: unknown
-    images?: unknown
-    afishaUrl?: unknown
+    crops?: unknown
+    imageUrl?: unknown
+    siteLink?: unknown
+    isSaleAvailable?: boolean
     sessions?: unknown
   } = {},
 ): unknown {
   return {
-    Creation: {
-      Id: overrides.id ?? '989798',
-      Type: 'Movie',
-      Name: overrides.name ?? 'Кодекс Данте',
-      Genres: overrides.genres ?? ['Mystery', 'DramaFilms', 'Thrillers'],
-      AgeRestriction: overrides.age ?? 'Audience18',
-      Images: overrides.images ?? [
-        { Url: 'https://cdn.afisha.ru/poster.jpg', Type: 'Poster' },
-        { Url: 'https://cdn.afisha.ru/frame.jpg', Type: 'Frame' },
+    creation: {
+      id: overrides.id ?? 28_309,
+      name: overrides.name ?? 'Сумерки. Сага. Новолуние',
+      type: 'movie',
+      ageRestriction: overrides.age ?? 18,
+      genres: overrides.genres ?? '["Триллер","Фэнтези","Фильмы","Мелодрама"]',
+      imageUrl: overrides.imageUrl ?? 'https://kassa.rambler.ru/poster.jpg',
+      mainPhotoCrops: overrides.crops ?? [
+        {
+          aspectRatio: '1:2',
+          url: 'https://img07.rl0.ru/kassa/poster-1x2.jpg',
+        },
+        { aspectRatio: '7:4', url: 'https://img05.rl0.ru/kassa/frame-7x4.jpg' },
       ],
-      AfishaCreationUrl: overrides.afishaUrl ?? 'https://www.afisha.ru/movie/kodeks-dante/',
+      isSaleAvailable: overrides.isSaleAvailable ?? true,
+      siteLink: overrides.siteLink ?? 'https://www.afisha.ru/movie/28309',
     },
-    Sessions: overrides.sessions ?? [
-      { Id: 1, IsSaleAvailable: true, SessionDateTime: '2026-11-01T18:00:00+03:00' },
+    sessions: overrides.sessions ?? [
+      { id: 137_422_121, time: '2026-11-06T22:00:00', minPrice: 670, hasAvailablePlaces: true },
     ],
   }
 }
 
 describe('mapAfishaSchedule', () => {
-  it('собирает карточку из постера, жанров и возрастного ограничения', () => {
+  it('собирает карточку с постером-кропом, жанрами, возрастом, сеансом и ценой', () => {
     const data = mapAfishaSchedule([schedule()], CONTEXT)
 
     expect(data).toEqual<CinemaListData>({
       cityId: '2',
-      placeId: '4242',
+      placeId: '125570',
       items: [
         {
-          id: '989798',
-          title: 'Кодекс Данте',
-          genres: 'Детектив, Драма, Триллер',
-          posterSrc: 'https://cdn.afisha.ru/poster.jpg',
-          posterAlt: 'Постер фильма «Кодекс Данте»',
+          id: '28309',
+          title: 'Сумерки. Сага. Новолуние',
+          genres: 'Триллер, Фэнтези, Фильмы',
+          posterSrc: 'https://img07.rl0.ru/kassa/poster-1x2.jpg',
+          posterAlt: 'Постер фильма «Сумерки. Сага. Новолуние»',
           ageRating: '18+',
-          creationId: '989798',
+          creationId: '28309',
           onSale: true,
-          ticketUrl: 'https://www.afisha.ru/movie/kodeks-dante/',
+          ticketUrl: 'https://www.afisha.ru/movie/28309',
+          sessionTime: '22:00',
+          priceFrom: 670,
         },
       ],
     })
   })
 
-  it('без постер-картинки берёт первое изображение, без изображений — карточку пропускает', () => {
-    const withFrame = mapAfishaSchedule(
-      [schedule({ images: [{ Url: 'https://cdn.afisha.ru/frame.jpg', Type: 'Frame' }] })],
+  it('без кропа 1:2 берёт общую картинку Афиши, без картинок — карточку пропускает', () => {
+    const withImage = mapAfishaSchedule(
+      [schedule({ crops: [{ aspectRatio: '7:4', url: 'https://img05.rl0.ru/frame.jpg' }] })],
       CONTEXT,
     )
-    const withoutImages = mapAfishaSchedule([schedule({ images: [] })], CONTEXT)
+    const withoutImages = mapAfishaSchedule([schedule({ crops: [], imageUrl: '' })], CONTEXT)
 
-    expect(withFrame.items[0]?.posterSrc).toBe('https://cdn.afisha.ru/frame.jpg')
+    expect(withImage.items[0]?.posterSrc).toBe('https://kassa.rambler.ru/poster.jpg')
     expect(withoutImages.items).toEqual([])
   })
 
   it('без названия или id карточка не выводится', () => {
     expect(mapAfishaSchedule([schedule({ name: '  ' })], CONTEXT).items).toEqual([])
-    expect(mapAfishaSchedule([{ Creation: null, Sessions: [] }], CONTEXT).items).toEqual([])
+    expect(mapAfishaSchedule([{ creation: null, sessions: [] }], CONTEXT).items).toEqual([])
   })
 
-  it('незнакомые жанры схлопываются в подпись «Фильм», возраст неизвестен — тега нет', () => {
-    const [item] = mapAfishaSchedule(
-      [schedule({ genres: ['A3250'], age: 'Unknown' })],
-      CONTEXT,
-    ).items
+  it('незнакомые жанры схлопываются в подпись «Фильм», возраст вне списка — тега нет', () => {
+    const [item] = mapAfishaSchedule([schedule({ genres: '[]', age: 21 })], CONTEXT).items
 
     expect(item?.genres).toBe('Фильм')
     expect(item?.ageRating).toBeUndefined()
@@ -92,41 +98,67 @@ describe('mapAfishaSchedule', () => {
 
   it('жанры без повторов и не длиннее трёх', () => {
     const [item] = mapAfishaSchedule(
-      [schedule({ genres: ['Comedies', 'Comedies', 'Adventure', 'Fantasy', 'Anime'] })],
+      [schedule({ genres: '["Комедия","Комедия","Приключение","Фэнтези"]' })],
       CONTEXT,
     ).items
 
     expect(item?.genres).toBe('Комедия, Приключение, Фэнтези')
   })
 
-  it('ссылка на билеты — только когда есть сеанс в продаже', () => {
-    const [onSale] = mapAfishaSchedule([schedule()], CONTEXT).items
+  it('без продажи и без мест на сеансах — нет ссылки и кнопка неактивна', () => {
     const [closed] = mapAfishaSchedule(
       [
         schedule({
-          sessions: [
-            { Id: 1, IsSaleAvailable: false, SessionDateTime: '2026-11-01T18:00:00+03:00' },
-          ],
+          isSaleAvailable: false,
+          sessions: [{ time: '2026-11-06T22:00:00', minPrice: 670, hasAvailablePlaces: false }],
         }),
       ],
       CONTEXT,
     ).items
 
-    expect(onSale?.ticketUrl).toBeDefined()
     expect(closed?.onSale).toBeUndefined()
     expect(closed?.ticketUrl).toBeUndefined()
   })
 
-  it('фильмы идут по ближайшему сеансу и обрезаются до десяти', () => {
+  it('свободные места на сеансе включают продажу, даже если флаг произведения снят', () => {
+    const [item] = mapAfishaSchedule([schedule({ isSaleAvailable: false })], CONTEXT).items
+
+    expect(item?.onSale).toBe(true)
+  })
+
+  it('ближайший сеанс задаёт время, цену и порядок карточек', () => {
+    const entries = [
+      schedule({
+        id: 1,
+        name: 'Поздний',
+        sessions: [
+          { time: '2026-11-06T23:30:00', minPrice: 800, hasAvailablePlaces: true },
+          { time: '2026-11-06T21:15:00', minPrice: 500, hasAvailablePlaces: true },
+        ],
+      }),
+      schedule({
+        id: 2,
+        name: 'Ранний',
+        sessions: [{ time: '2026-11-06T10:00:00', minPrice: 300, hasAvailablePlaces: true }],
+      }),
+    ]
+
+    const { items } = mapAfishaSchedule(entries, CONTEXT)
+
+    expect(items.map((item) => item.title)).toEqual(['Ранний', 'Поздний'])
+    expect(items[1]).toMatchObject({ sessionTime: '21:15', priceFrom: 500 })
+  })
+
+  it('фильмы обрезаются до десяти', () => {
     const entries = Array.from({ length: 12 }, (_, index) =>
       schedule({
-        id: String(index),
+        id: index,
         name: `Фильм ${index}`,
         sessions: [
           {
-            Id: index,
-            IsSaleAvailable: true,
-            SessionDateTime: `2026-11-${String(20 - index).padStart(2, '0')}T18:00:00+03:00`,
+            time: `2026-11-${String(20 - index).padStart(2, '0')}T18:00:00`,
+            minPrice: 400,
+            hasAvailablePlaces: true,
           },
         ],
       }),
@@ -136,7 +168,6 @@ describe('mapAfishaSchedule', () => {
 
     expect(items).toHaveLength(10)
     expect(items[0]?.title).toBe('Фильм 11')
-    expect(items[9]?.title).toBe('Фильм 2')
   })
 
   it('без города и площадки контекст остаётся пустым — виджет покупки не соберётся', () => {

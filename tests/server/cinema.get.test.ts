@@ -4,7 +4,7 @@ import type { CinemaListData } from '#shared/types/cinema'
 
 /**
  * Ручка «Кино»: единственная в `server/api`, которая ходит не в Laravel, а в Афишу.
- * Здесь проверяем обвязку — конверт, кэш и перевод ошибок; справочники и расписание —
+ * Здесь проверяем обвязку — конверт, кэш и перевод ошибок; настройки и запрос расписания —
  * в `tests/unit/afishaApi.test.ts`, разбор ответа — в `tests/unit/mappers.afisha.test.ts`.
  *
  * Клиент Афиши подменяем модулем: он тянет `$fetch` и `useRuntimeConfig` из рантайма Nitro,
@@ -29,18 +29,20 @@ type Handler = (event: unknown) => Promise<unknown>
 
 const CINEMA: CinemaListData = {
   cityId: '2',
-  placeId: '4242',
+  placeId: '125570',
   items: [
     {
-      id: '989798',
-      title: 'Кодекс Данте',
-      genres: 'Детектив',
-      posterSrc: 'https://cdn.afisha.ru/poster.jpg',
-      posterAlt: 'Постер фильма «Кодекс Данте»',
+      id: '28309',
+      title: 'Сумерки. Сага. Новолуние',
+      genres: 'Триллер',
+      posterSrc: 'https://img07.rl0.ru/kassa/poster-1x2.jpg',
+      posterAlt: 'Постер фильма «Сумерки. Сага. Новолуние»',
       ageRating: '18+',
-      creationId: '989798',
+      creationId: '28309',
       onSale: true,
-      ticketUrl: 'https://www.afisha.ru/movie/kodeks-dante/',
+      ticketUrl: 'https://www.afisha.ru/movie/28309',
+      sessionTime: '22:00',
+      priceFrom: 670,
     },
   ],
 }
@@ -72,16 +74,16 @@ async function loadRoute(): Promise<Handler> {
 }
 
 describe('GET /api/cinema', () => {
-  it('отдаёт расписание кинотеатра конвертом и кэширует на 30 минут', async () => {
+  it('отдаёт расписание кинотеатра конвертом и кэширует на 10 минут', async () => {
     const handler = await loadRoute()
 
     await expect(handler({})).resolves.toEqual({ data: CINEMA })
-    expect(state.cache).toMatchObject({ maxAge: 1800, name: 'api-cinema' })
+    expect(state.cache).toMatchObject({ maxAge: 600, name: 'api-cinema' })
     expect(state.cache?.getKey?.()).toBe('cinema')
   })
 
   it('ошибка Афиши уходит наружу кодом, чтобы клиент подставил моки', async () => {
-    afisha.error = createError({ statusCode: 502, statusMessage: 'Afisha place is not found' })
+    afisha.error = createError({ statusCode: 502, statusMessage: 'Afisha request failed' })
 
     const handler = await loadRoute()
 

@@ -12,6 +12,10 @@ const props = withDefaults(
     creationId?: string
     /** Продажа открыта по данным Афиши: кнопка активна даже без ссылки на билеты. */
     onSale?: boolean
+    /** Время ближайшего сеанса, `22:00` по Москве. */
+    sessionTime?: string
+    /** Минимальная цена билета на ближайшие сеансы, ₽. */
+    priceFrom?: number
     /** id города и площадки Афиши для виджета: показывает сеансы кинотеатра ТРЦ. */
     cityId?: string | null
     placeId?: string | null
@@ -21,12 +25,24 @@ const props = withDefaults(
     ticketUrl: undefined,
     creationId: undefined,
     onSale: undefined,
+    sessionTime: undefined,
+    priceFrom: undefined,
     cityId: null,
     placeId: null,
   },
 )
 
 const { openTicket } = useAfishaWidget()
+
+/** Строка под жанрами: сеанс и цена, если Афиша их отдала. */
+const sessionLabel = computed(() => {
+  const parts = [
+    props.sessionTime,
+    props.priceFrom ? `от ${props.priceFrom} ₽` : undefined,
+  ].filter((part): part is string => Boolean(part))
+
+  return parts.join(' · ')
+})
 
 /**
  * Кнопка активна, если у фильма есть продажа: либо Афиша прислала ссылку на билеты,
@@ -90,6 +106,7 @@ async function onBuyTicket() {
       <div :class="$style.copy">
         <h3 :class="$style.title">{{ title }}</h3>
         <p :class="$style.genres">{{ genres }}</p>
+        <p v-if="sessionLabel" :class="$style.session">{{ sessionLabel }}</p>
       </div>
     </div>
   </article>
@@ -164,5 +181,11 @@ async function onBuyTicket() {
   @include fs-text-lg;
   @include fs-line-clamp(2);
   color: var(--fs-color-black);
+}
+
+.session {
+  margin: 0;
+  @include fs-text-md;
+  color: var(--fs-color-gray);
 }
 </style>
