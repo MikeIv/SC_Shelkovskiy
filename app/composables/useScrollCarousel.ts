@@ -69,12 +69,22 @@ export function useScrollCarousel() {
     isDesktop.value = desktopMedia.matches
     desktopMedia.addEventListener('change', onDesktopChange)
 
-    viewportRef.value?.addEventListener('scroll', updateNavState, {
-      passive: true,
-    })
     window.addEventListener('resize', updateNavState)
-    updateNavState()
   })
+
+  /**
+   * Слушатель скролла вешаем на сам ref, а не в `onMounted`: лента может появиться позже —
+   * например, когда виджет Афиши не поднялся и вместо него отрисовались карточки.
+   */
+  watch(
+    viewportRef,
+    (viewport, previous) => {
+      previous?.removeEventListener('scroll', updateNavState)
+      viewport?.addEventListener('scroll', updateNavState, { passive: true })
+      updateNavState()
+    },
+    { flush: 'post', immediate: true },
+  )
 
   onUnmounted(() => {
     tabletMedia?.removeEventListener('change', onTabletChange)

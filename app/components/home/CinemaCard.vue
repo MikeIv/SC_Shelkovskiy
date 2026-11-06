@@ -34,11 +34,18 @@ const props = withDefaults(
 
 const { openTicket } = useAfishaWidget()
 
+/** Разряды цены: «от 1 200 ₽» — так же, как в виджете Афиши. */
+const PRICE_GROUPS = /\B(?=(\d{3})+(?!\d))/g
+
+function formatPrice(value: number): string {
+  return String(value).replace(PRICE_GROUPS, ' ')
+}
+
 /** Строка под жанрами: сеанс и цена, если Афиша их отдала. */
 const sessionLabel = computed(() => {
   const parts = [
     props.sessionTime,
-    props.priceFrom ? `от ${props.priceFrom} ₽` : undefined,
+    props.priceFrom ? `от ${formatPrice(props.priceFrom)} ₽` : undefined,
   ].filter((part): part is string => Boolean(part))
 
   return parts.join(' · ')

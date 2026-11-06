@@ -41,4 +41,15 @@ describe('HomeCinema', () => {
     expect(wrapper.text()).not.toContain('Демо-данные')
     expect(wrapper.text()).toContain('Смотреть все')
   })
+
+  it('в карточке показывает ближайший сеанс и цену с разрядами', async () => {
+    const [mock] = homeCinemaItems
+    const wrapper = await mountSuspended(HomeCinema, {
+      props: {
+        items: [{ ...mock!, sessionTime: '11:25', priceFrom: 1200 }],
+      },
+    })
+
+    expect(wrapper.text()).toContain('11:25 · от 1 200 ₽')
+  })
 })
