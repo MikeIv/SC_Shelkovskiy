@@ -1,8 +1,19 @@
 <script setup lang="ts">
 import type { HomeCinemaFilm } from '#shared/types/home'
 
-const { items } = defineProps<{
+const {
+  items,
+  cityId = null,
+  placeId = null,
+  isDemo = false,
+} = defineProps<{
   items: HomeCinemaFilm[]
+  /** id города Афиши — нужен её виджету покупки. */
+  cityId?: string | null
+  /** id площадки Афиши — фильтр расписания в виджете. */
+  placeId?: string | null
+  /** Раздел подставлен из мока — ярлык «Демо-данные». */
+  isDemo?: boolean
 }>()
 
 const {
@@ -19,7 +30,10 @@ const {
   <section :class="$style.root" aria-labelledby="home-cinema-title">
     <div :class="$style.inner">
       <div :class="$style.head">
-        <h2 id="home-cinema-title" :class="$style.title">Кино</h2>
+        <div :class="$style.headTitle">
+          <h2 id="home-cinema-title" :class="$style.title">Кино</h2>
+          <UiDemoDataBadge v-if="isDemo" />
+        </div>
 
         <div v-if="showNav" :class="$style.nav">
           <UiButtonArrow
@@ -51,7 +65,11 @@ const {
             :key="item.id"
             :class="$style.slide"
           >
-            <HomeCinemaCard v-bind="item" />
+            <HomeCinemaCard
+              v-bind="item"
+              :city-id="cityId"
+              :place-id="placeId"
+            />
           </li>
         </ul>
       </div>
@@ -99,6 +117,14 @@ const {
   margin: 0;
   @include fs-h1;
   color: var(--fs-color-black);
+}
+
+.headTitle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(12);
+  align-items: center;
+  min-width: 0;
 }
 
 .nav {

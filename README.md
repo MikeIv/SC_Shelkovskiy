@@ -123,6 +123,16 @@ pnpm approve-builds --all
 - Сервер: **`serverApi(event?)`** — [`server/utils/serverApi.ts`](server/utils/serverApi.ts) (сейчас нигде не используется: ручки берут `apiFetch`); **`apiFetch(event?)`** — [`server/utils/apiFetch.ts`](server/utils/apiFetch.ts). URL — [`shared/utils/normalizeApiBaseUrl.ts`](shared/utils/normalizeApiBaseUrl.ts) (`normalizeApiBaseUrl`, `joinApiUrl`).
 - Типизация `public.apiBase` — [`types/nuxt-public.d.ts`](types/nuxt-public.d.ts). Приватные ключи `runtimeConfig` добавляйте в `nuxt.config` и отдельное расширение `RuntimeConfig` в `types/`.
 
+### Кино на главной — Афиша
+
+Раздел «Кино» берёт расписание кинотеатра ТРЦ из Афиши API v3 (`https://api.afisha.ru/v3`), а покупку отдаёт её виджету:
+
+- Ручка — [`server/api/cinema.get.ts`](server/api/cinema.get.ts), клиент API — [`server/utils/afishaApi.ts`](server/utils/afishaApi.ts), маппер — [`shared/utils/mappers/afisha.ts`](shared/utils/mappers/afisha.ts), composable — [`useCinema`](app/composables/api/useCinema.ts).
+- API вызывается **только с сервера**: партнёрский ключ (`X-ApiAuth-PartnerKey`) секретный, а `api.afisha.ru` закрыт белым списком IP. Ошибка (ключа нет, IP не в списке, вендор недоступен) — это моки `~/data/homeCinemaItems` и ярлык «Демо-данные», как у остальных секций главной.
+- Виджет покупки — [`useAfishaWidget`](app/composables/useAfishaWidget.ts): SDK `afisha.ru/w/afishaWidgetManager.global.js` грузится по клику на «Купить билет»; если он не поднялся, карточка открывает страницу фильма на Афише.
+- Переменные — `NUXT_AFISHA_PARTNER_KEY`, `NUXT_AFISHA_CITY_ID`, `NUXT_AFISHA_PLACE_ID`, `NUXT_AFISHA_PLACE_NAME`, `NUXT_PUBLIC_AFISHA_WIDGET_KEY` ([`.env.example`](.env.example)). Без `CITY_ID`/`PLACE_ID` ручка ищет Москву и площадку по вхождению в название.
+- В прямом режиме (статический стенд) серверной ручки нет — раздел остаётся на заглушках.
+
 ## Макет Figma
 
 - Ключ файла и узлы — в локальных правилах `.cursor/rules/90-project-context.mdc` (каталог вне git): хелпер берёт `fileKey` оттуда, переопределение — `--key` или `FIGMA_FILE_KEY`. У файла есть живые копии-двойники с тем же именем, поэтому перед вёрсткой — `pnpm figma:meta`.

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { siteDescription, siteName, siteOgImage, siteUrl } from '~/data/siteMeta'
-import { homeCinemaItems } from '~/data/homeCinemaItems'
 import { homeLoyaltyItems } from '~/data/homeLoyaltyItems'
 import { footerContacts } from '~/utils/siteFooter'
 
@@ -10,6 +9,12 @@ definePageMeta({
 
 const layout = useLayoutStore()
 const { data: home, demo: homeDemo } = await useHome()
+const {
+  items: cinemaItems,
+  cityId: cinemaCityId,
+  placeId: cinemaPlaceId,
+  isDemo: cinemaDemo,
+} = useCinema()
 
 /** Корневой URL площадки (rutube.ru/) — не профиль центра, в sameAs не публикуем. */
 function hasSocialProfilePath(href: string): boolean {
@@ -96,7 +101,12 @@ useHead(() => ({
       <HomeBrands :rows="home.brands" :is-demo="homeDemo.brands" flush />
       <HomeLoyalty :items="homeLoyaltyItems" flush />
       <HomeShopCategories :items="home.categories" :is-demo="homeDemo.categories" />
-      <HomeCinema :items="homeCinemaItems" />
+      <HomeCinema
+        :items="cinemaItems"
+        :city-id="cinemaCityId"
+        :place-id="cinemaPlaceId"
+        :is-demo="cinemaDemo"
+      />
       <HomeGallery :items="home.gallery" :is-demo="homeDemo.gallery" />
     </div>
   </div>

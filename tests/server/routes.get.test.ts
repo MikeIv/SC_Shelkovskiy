@@ -113,6 +113,8 @@ describe('маршруты server/api', () => {
     const files = readdirSync(new URL('../../server/api', import.meta.url), { recursive: true })
       .map((entry) => String(entry).replace(/\\/g, '/'))
       .filter((entry) => entry.endsWith('.get.ts'))
+      /** «Кино» ходит не в Laravel, а в Афишу: у ручки свой тест `cinema.get.test.ts`. */
+      .filter((entry) => entry !== 'cinema.get.ts')
       .sort()
 
     expect(files).toEqual(routes.map((route) => route.file).sort())

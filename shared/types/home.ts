@@ -67,6 +67,10 @@ export type HomeCinemaFilm = {
   ageRating?: string
   /** URL билетного сервиса; `#` — заглушка до интеграции */
   ticketUrl?: string
+  /** id произведения в Афише — по нему открывается её виджет покупки */
+  creationId?: string
+  /** Продажа билетов открыта: карточка включает кнопку «Купить билет» */
+  onSale?: boolean
 }
 
 export type HomeGalleryAlbum = {

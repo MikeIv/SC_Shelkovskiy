@@ -8,18 +8,47 @@ const props = withDefaults(
     posterAlt: string
     ageRating?: string
     ticketUrl?: string
+    /** id произведения в Афише — по нему открывается виджет покупки. */
+    creationId?: string
+    /** Продажа открыта по данным Афиши: кнопка активна даже без ссылки на билеты. */
+    onSale?: boolean
+    /** id города и площадки Афиши для виджета: показывает сеансы кинотеатра ТРЦ. */
+    cityId?: string | null
+    placeId?: string | null
   }>(),
   {
     ageRating: undefined,
     ticketUrl: undefined,
+    creationId: undefined,
+    onSale: undefined,
+    cityId: null,
+    placeId: null,
   },
 )
 
+const { openTicket } = useAfishaWidget()
+
+/**
+ * Кнопка активна, если у фильма есть продажа: либо Афиша прислала ссылку на билеты,
+ * либо открыт виджет по `creationId`. Моки без продажи остаются с «Билеты скоро».
+ */
 const canBuyTicket = computed(
-  () => Boolean(props.ticketUrl && props.ticketUrl !== '#'),
+  () =>
+    Boolean(props.ticketUrl && props.ticketUrl !== '#') ||
+    Boolean(props.creationId && props.onSale),
 )
 
-function onBuyTicket() {
+async function onBuyTicket() {
+  if (props.creationId) {
+    const opened = await openTicket({
+      creationId: props.creationId,
+      cityId: props.cityId,
+      placeId: props.placeId,
+    })
+
+    if (opened) return
+  }
+
   const url = props.ticketUrl
   if (!url || url === '#') {
     return

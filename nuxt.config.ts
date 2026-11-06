@@ -199,6 +199,15 @@ export default defineNuxtConfig({
     apiUpstream: '',
     apiAuth: '',
     /**
+     * Афиша (раздел «Кино»): партнёрский ключ уходит только в Nitro-прокси заголовком
+     * `X-ApiAuth-PartnerKey` — см. `server/utils/afishaApi.ts`. id города и площадки
+     * необязательны: без них ручка ищет Москву и кинотеатр ТРЦ по `afishaPlaceName`.
+     */
+    afishaPartnerKey: '',
+    afishaCityId: '',
+    afishaPlaceId: '',
+    afishaPlaceName: 'ОККО',
+    /**
      * `headers` намеренно пустой: Basic для ipx приходит только из рантайма
      * (`NUXT_IPX_HTTP_FETCH_OPTIONS_HEADERS='{"Authorization":"Basic …"}'`), иначе секрет
      * вшивается в серверный бандл и ротация кредов требует пересборки. Вложенное имя
@@ -214,6 +223,11 @@ export default defineNuxtConfig({
     },
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE ?? '',
+      /**
+       * Ключ виджета Афиши — публичный по документации (уходит в URL iframe), поэтому
+       * дефолт из договора, а не секрет. Перекрывается `NUXT_PUBLIC_AFISHA_WIDGET_KEY`.
+       */
+      afishaWidgetKey: '845f4063-1686-4aa8-bdd9-2c3bac410835',
     },
   },
 
