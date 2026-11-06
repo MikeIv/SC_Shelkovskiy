@@ -228,6 +228,11 @@ export default defineNuxtConfig({
        * дефолт из договора, а не секрет. Перекрывается `NUXT_PUBLIC_AFISHA_WIDGET_KEY`.
        */
       afishaWidgetKey: '845f4063-1686-4aa8-bdd9-2c3bac410835',
+      /**
+       * Площадка Афиши для встроенного расписания кинотеатра: «Кино Окко Щелковский».
+       * Нужна в браузере, партнёрский API не требует — см. `useAfishaWidget`.
+       */
+      afishaWidgetPlaceId: '125570',
     },
   },
 

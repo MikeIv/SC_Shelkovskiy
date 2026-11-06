@@ -2,11 +2,16 @@
  * Типы SDK виджета Афиши (`afisha.ru/w/afishaWidgetManager.global.js`).
  *
  * Документация: `https://dev.afisha.ru/afisha-widget-manager/`. Пакет не ставим: скрипт
- * грузится по клику и нужен только разделу «Кино», поэтому описан только используемый набор.
+ * грузится по требованию (подход к разделу «Кино» или клик «Купить билет»), поэтому описан
+ * только используемый набор.
  */
 
-/** Экран расписания произведения: сеансы фильма и переход к покупке (`ROUTES.creation` в SDK). */
-export type AfishaWidgetRoute = 'creation'
+/** Экраны виджета, которые нам нужны (`ROUTES` в SDK). */
+export type AfishaWidgetRoute =
+  /** Расписание произведения: сеансы фильма и переход к покупке. */
+  | 'creation'
+  /** Расписание площадки: сеансы кинотеатра ТРЦ. */
+  | 'place'
 
 export type AfishaWidgetEmbedType = 'inline' | 'modal' | 'popup'
 
@@ -18,11 +23,16 @@ export type AfishaWidgetParams = {
   creationType?: 'movie'
   creationId?: string
   cityId?: string
-  /** Предустановленный фильтр по площадке. */
+  /** Площадка Афиши: фильтр расписания и экран `place`. */
   placeId?: string
+}
+
+/** Экземпляр виджета: `destroy` снимает iframe, когда раздел размонтирован. */
+export type AfishaWidgetInstance = {
+  destroy?: () => Promise<void> | void
 }
 
 export type AfishaWidgetManager = {
   /** `parent` — DOM-элемент: в общих типах нет `document`, поэтому `unknown`. */
-  appendWidget: (params: AfishaWidgetParams, parent?: unknown) => Promise<unknown>
+  appendWidget: (params: AfishaWidgetParams, parent?: unknown) => Promise<AfishaWidgetInstance>
 }

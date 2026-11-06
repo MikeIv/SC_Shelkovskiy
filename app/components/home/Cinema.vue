@@ -24,6 +24,17 @@ const {
   showNav,
   scrollByCard,
 } = useScrollCarousel()
+
+/** Виджет Афиши не поднялся — возвращаемся к карточкам-заглушкам. */
+const widgetFailed = ref(false)
+
+/**
+ * Своих данных нет — показываем встроенное расписание Афиши. На статическом стенде
+ * серверной ручки `/api/cinema` нет, а виджет работает из браузера без ключа партнёра.
+ */
+const showWidget = computed(
+  () => !widgetFailed.value && (isDemo || items.length === 0),
+)
 </script>
 
 <template>
@@ -32,10 +43,10 @@ const {
       <div :class="$style.head">
         <div :class="$style.headTitle">
           <h2 id="home-cinema-title" :class="$style.title">Кино</h2>
-          <UiDemoDataBadge v-if="isDemo" />
+          <UiDemoDataBadge v-if="isDemo && !showWidget" />
         </div>
 
-        <div v-if="showNav" :class="$style.nav">
+        <div v-if="showNav && !showWidget" :class="$style.nav">
           <UiButtonArrow
             direction="left"
             :disabled="!canScrollPrev"
@@ -53,7 +64,14 @@ const {
         </div>
       </div>
 
+      <HomeCinemaWidget
+        v-if="showWidget"
+        :class="$style.widget"
+        @failed="widgetFailed = true"
+      />
+
       <div
+        v-else
         ref="viewportRef"
         :class="$style.viewport"
         aria-roledescription="carousel"
@@ -74,7 +92,7 @@ const {
         </ul>
       </div>
 
-      <UiButton to="/entertainment">Смотреть все</UiButton>
+      <UiButton v-if="!showWidget" to="/entertainment">Смотреть все</UiButton>
     </div>
   </section>
 </template>
@@ -140,6 +158,10 @@ const {
 
 .viewport {
   @include fs-carousel-viewport;
+}
+
+.widget {
+  width: 100%;
 }
 
 .track {

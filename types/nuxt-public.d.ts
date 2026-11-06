@@ -4,6 +4,8 @@ declare module 'nuxt/schema' {
     apiBase: string
     /** Ключ виджета Афиши: публичный, нужен только разделу «Кино» (`useAfishaWidget`). */
     afishaWidgetKey: string
+    /** Площадка Афиши (кинотеатр ТРЦ) для встроенного расписания. */
+    afishaWidgetPlaceId: string
   }
 }
 

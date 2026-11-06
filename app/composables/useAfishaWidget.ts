@@ -1,10 +1,13 @@
-import type { AfishaWidgetManager } from '#shared/types/afishaWidget'
+import type { AfishaWidgetInstance, AfishaWidgetManager } from '#shared/types/afishaWidget'
 
 /** Скрипт SDK виджета Афиши: после загрузки даёт глобальный `window.widgetManager`. */
 const WIDGET_SCRIPT_SRC = 'https://afisha.ru/w/afishaWidgetManager.global.js'
 
 /** Экран расписания фильма: сеансы и переход к покупке (`ROUTES.creation` в SDK). */
 const WIDGET_ROUTE = 'creation'
+
+/** Экран расписания площадки: сеансы кинотеатра ТРЦ (`ROUTES.place`). */
+const WIDGET_PLACE_ROUTE = 'place'
 
 /** Окно после загрузки SDK: объект появляется, только когда скрипт отработал. */
 type AfishaWidgetWindow = Window & { widgetManager?: AfishaWidgetManager }
@@ -21,25 +24,38 @@ export type AfishaTicketParams = {
 }
 
 /**
- * Виджет покупки билетов Афиши. SDK грузится по первому клику: сторонний скрипт в `head`
- * главной не нужен, пока пользователь не собрался покупать.
+ * Виджет Афиши в двух видах: модальное окно покупки по клику на карточку и встроенное
+ * расписание кинотеатра для разделов без серверных данных (статический стенд).
  *
- * `openTicket` возвращает `false`, если виджет не поднялся (ключ пуст, скрипт заблокирован
- * блокировщиком рекламы, вендор недоступен) — карточка тогда открывает ссылку Афиши.
+ * SDK грузится по требованию: сторонний скрипт в `head` главной не нужен, пока он не понадобился.
  */
 export function useAfishaWidget() {
   const config = useRuntimeConfig()
   const widgetKey = computed(() => config.public.afishaWidgetKey.trim())
+  const placeId = computed(() => config.public.afishaWidgetPlaceId.trim())
 
-  async function openTicket(params: AfishaTicketParams): Promise<boolean> {
-    if (!import.meta.client || !widgetKey.value) return false
+  /** Загружает SDK и отдаёт менеджер: `undefined`, если скрипт не поднялся. */
+  async function getManager(): Promise<AfishaWidgetManager | undefined> {
+    if (!import.meta.client || !widgetKey.value) return undefined
 
     try {
       await loadWidgetScript(widgetKey.value)
 
-      const manager = (window as AfishaWidgetWindow).widgetManager
-      if (!manager) return false
+      return (window as AfishaWidgetWindow).widgetManager
+    } catch (error) {
+      if (import.meta.dev) {
+        console.error('[useAfishaWidget]', error)
+      }
 
+      return undefined
+    }
+  }
+
+  async function openTicket(params: AfishaTicketParams): Promise<boolean> {
+    const manager = await getManager()
+    if (!manager) return false
+
+    try {
       /** `modal` SDK открывает сам и закрывает предыдущее окно, поэтому результат не нужен. */
       await manager.appendWidget(
         {
@@ -63,7 +79,34 @@ export function useAfishaWidget() {
     }
   }
 
-  return { openTicket }
+  /**
+   * Встроенное расписание кинотеатра. Нужен только `place-id`: экран `place` в виджете
+   * показывает все сеансы площадки, без города и без доступа к партнёрскому API.
+   * Возвращает экземпляр, чтобы раздел снял iframe при размонтировании.
+   */
+  async function mountPlaceWidget(
+    container: HTMLElement,
+  ): Promise<AfishaWidgetInstance | undefined> {
+    if (!placeId.value) return undefined
+
+    const manager = await getManager()
+    if (!manager) return undefined
+
+    try {
+      return await manager.appendWidget(
+        { route: WIDGET_PLACE_ROUTE, embedType: 'inline', placeId: placeId.value },
+        container,
+      )
+    } catch (error) {
+      if (import.meta.dev) {
+        console.error('[useAfishaWidget]', error)
+      }
+
+      return undefined
+    }
+  }
+
+  return { openTicket, mountPlaceWidget }
 }
 
 /**
